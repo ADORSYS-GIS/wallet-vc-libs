@@ -1,0 +1,22 @@
+{
+  "name": "@datev/cloning-decorator",
+  "version": "0.0.1",
+  "dependencies": {
+    "eslint": "^8.0.0",
+    "jest": "^29.5.0",
+    "tslib": "^2.7.0"
+  },
+  "type": "commonjs",
+  "main": "./src/index.js",
+  "typings": "./src/index.d.ts",
+  "devDependencies": {
+    "@types/jest": "^29.5.13",
+    "@typescript-eslint/eslint-plugin": "^8.6.0",
+    "@typescript-eslint/parser": "^8.6.0",
+    "typescript": "^5.6.2"
+  },
+  "scripts": {
+    "build": "tsc -p ./tsconfig.lib.json",
+    "lint": "eslint ./src --ext .ts"
+  }
+}

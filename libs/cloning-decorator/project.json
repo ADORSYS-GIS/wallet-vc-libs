@@ -1,0 +1,5 @@
+{
+  "name": "cloning-decorator",
+  "sourceRoot": "libs/cloning-decorator/src",
+  "projectType": "library"
+}
