@@ -1,0 +1,15 @@
+{
+  "name": "wallet-vc-libs",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "npm run test --workspaces"
+  },
+  "keywords": [],
+  "workspaces": [
+    "packages/*"
+  ],
+  "author": "",
+  "license": "ISC"
+}
