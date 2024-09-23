@@ -20,7 +20,7 @@ npm run build
 - This uses the build script defined in your package.json:
 ```json
 "scripts": {
-  "build": "tsc -p libs/cloning-decorator/tsconfig.lib.json"
+  "build": "tsc -p packages/cloning-decorator/tsconfig.lib.json"
 }
 ```
 
@@ -33,7 +33,7 @@ npm run lint
 - This uses the lint script defined in your package.json:
 ```json
 "scripts": {
-  "lint": "eslint libs/cloning-decorator/src --ext .ts"
+  "lint": "eslint packages/cloning-decorator/src --ext .ts"
 }
 ```
 

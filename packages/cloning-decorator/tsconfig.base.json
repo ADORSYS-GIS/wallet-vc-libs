@@ -15,7 +15,7 @@
       "skipDefaultLibCheck": true,
       "baseUrl": ".",
       "paths": {
-        "@datev/cloning-decorator": ["libs/cloning-decorator/src/index.ts"]
+        "@datev/cloning-decorator": ["packages/cloning-decorator/src/index.ts"]
       }
     },
     "exclude": ["node_modules", "tmp"]
