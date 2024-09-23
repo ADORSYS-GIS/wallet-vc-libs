@@ -37,19 +37,6 @@ npm run lint
 }
 ```
 
-## 3. Run Tests with Jest
-To ensure your tests are passing, you can run the following command:
-
-```bash
-npm run test
-```
-- This uses the test script defined in your package.json:
-```json
-"scripts": {
-  "test": "jest --config libs/cloning-decorator/jest.config.ts"
-}
-```
-
 ## Full Process Summary:
 - **Compile TypeScript**: Run **npm run build** to check for any TypeScript compilation errors.
 - **Lint**: Run **npm run lint** to identify and fix any linting issues.
