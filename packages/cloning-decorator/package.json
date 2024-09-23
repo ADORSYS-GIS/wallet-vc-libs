@@ -1,6 +1,6 @@
 {
-  "name": "@datev/cloning-decorator",
-  "version": "0.0.1",
+  "name": "cloning-decorator",
+  "version": "1.0.0",
   "type": "commonjs",
   "main": "./src/index.js",
   "typings": "./src/index.d.ts",
@@ -16,5 +16,10 @@
   "scripts": {
     "build": "tsc -p ./tsconfig.lib.json",
     "lint": "eslint ./src --ext .ts"
-  }
+  },
+  
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }
