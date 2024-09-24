@@ -1,7 +1,6 @@
 {
-  "name": "@wallet/source",
-  "version": "0.2.0",
-  "license": "MIT",
+  "name": "storage",
+  "version": "1.0.0",
   "scripts": {
     "test": "jest",
     "build": "tsc -p tsconfig.lib.json"
@@ -30,5 +29,9 @@
   },
   "type": "commonjs",
   "main": "./src/index.js",
-  "typings": "./src/index.d.ts"
+  "typings": "./src/index.d.ts",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": ""
 }
