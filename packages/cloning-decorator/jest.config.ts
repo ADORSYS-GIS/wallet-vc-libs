@@ -1,8 +1,8 @@
 /* eslint-disable */
 export default {
   displayName: 'cloning-decorator',
-  preset: '../../jest.preset.js',
   testEnvironment: 'node',
+  testMatch: ['**/*.spec.ts'],
   transform: {
     '^.+\\.[tj]s$': ['ts-jest', { tsconfig: '<rootDir>/tsconfig.spec.json' }],
   },

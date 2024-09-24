@@ -37,6 +37,20 @@ npm run lint
 }
 ```
 
+## 3. Run Unit Tests
+This will run the  tests for the library project using Jest.
+
+```bash
+npm run test
+```
+- This uses the test script defined in your package.json:
+```json
+"scripts": {
+  "test": "jest"
+}
+```
+Jest will execute tests found in files matching the pattern **/*.spec.ts.
+
 ## Full Process Summary:
 - **Compile TypeScript**: Run **npm run build** to check for any TypeScript compilation errors.
 - **Lint**: Run **npm run lint** to identify and fix any linting issues.
