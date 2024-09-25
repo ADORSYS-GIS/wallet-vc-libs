@@ -34,12 +34,12 @@ type QueryStore<T, S> = {
 type StorageTransaction<
   T,
   S extends StoreNames<T>,
-  M extends IDBTransactionMode
+  M extends IDBTransactionMode,
 > = IDBPTransaction<T, S[], M>;
 interface TransactionCallback<
   T,
   M extends IDBTransactionMode,
-  S extends StoreNames<T> = StoreNames<T>
+  S extends StoreNames<T> = StoreNames<T>,
 > {
   (tx: StorageTransaction<T, S, M>): void | Promise<void>;
 }
