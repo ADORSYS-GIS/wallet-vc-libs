@@ -1,7 +1,7 @@
 {
   "extends": ["eslint:recommended", "plugin:@typescript-eslint/recommended"],
   "parser": "@typescript-eslint/parser",
-  "ignorePatterns": ["!**/*"],
+  "ignorePatterns": ["!**/*", "node_modules/"],
   "overrides": [
     {
       "files": ["*.ts", "*.tsx", "*.js", "*.jsx"],
