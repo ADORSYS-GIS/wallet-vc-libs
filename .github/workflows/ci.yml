@@ -24,10 +24,10 @@ jobs:
         run: npm ci
 
       - name: Check formatting
-        run: npm prettier --check .
+        run: npm run format:check
 
       - name: Lint code
-        run: npm eslint .
+        run: npm run lint
 
   build:
     runs-on: ubuntu-latest
