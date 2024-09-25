@@ -90,7 +90,7 @@ describe('CloningEventEmitter', () => {
 
     for (const entry of entries) {
       await expect(testEmitMultiple(emitter, entry)).rejects.toThrow(
-        'could not be cloned'
+        'could not be cloned',
       );
     }
   });

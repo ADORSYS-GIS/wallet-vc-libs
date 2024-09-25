@@ -5,7 +5,7 @@ import { EventEmitter } from 'eventemitter3';
  */
 export class CloningEventEmitter<
   EventTypes extends EventEmitter.ValidEventTypes = string | symbol,
-  Context = unknown
+  Context = unknown,
 > extends EventEmitter<EventTypes, Context> {
   /**
    * Calls each of the listeners registered for a given event.
