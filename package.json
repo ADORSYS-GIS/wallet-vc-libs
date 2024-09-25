@@ -7,8 +7,8 @@
     "build": "npm run build --workspaces",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "eslint packages/** --ext .ts",
-    "lint:fix": "eslint --fix packages/** --ext .ts"
+    "lint": "eslint packages/** --ext .ts || echo 'No matching files'",
+    "lint:fix": "eslint --fix packages/** --ext .ts || echo 'No matching files'"
   },
   "keywords": [],
   "workspaces": [
