@@ -33,7 +33,7 @@ export function CloneMethodArgs(opts?: CloneMethodArgsOptions) {
         // Read property's descriptor
         const descriptor = Object.getOwnPropertyDescriptor(
           decorated.prototype,
-          property
+          property,
         );
 
         // Filter methods
@@ -65,6 +65,6 @@ export function CloneMethodArgs(opts?: CloneMethodArgsOptions) {
  */
 const cloneArgs = (args: unknown[], exclude: any[] = []): unknown[] => {
   return args.map((arg) =>
-    exclude.some((t) => arg instanceof t) ? arg : structuredClone(arg)
+    exclude.some((t) => arg instanceof t) ? arg : structuredClone(arg),
   );
 };
