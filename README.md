@@ -1,1 +1,1 @@
-# wallet-vc-event-bus
+# wallet-vc-libs
