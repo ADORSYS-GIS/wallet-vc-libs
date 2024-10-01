@@ -1,5 +1,5 @@
 {
-  "name": "event-bus",
+  "name": "@adorsys-gis/event-bus",
   "version": "0.0.1",
   "dependencies": {
     "@swc/helpers": "~0.5.2",
@@ -19,6 +19,20 @@
   },
   "scripts": {
     "test": "jest",
-    "build": "tsc -p tsconfig.lib.json"
-  }
+    "build": "tsc -p tsconfig.lib.json",
+    "lint": "eslint ./src --ext .ts"
+  },
+  "keywords": [
+    "event-bus",
+    "event-emitter",
+    "asynchronous",
+    "deep-cloning",
+    "event-driven",
+    "javascript",
+    "event-management",
+    "custom-events"
+  ],
+  "author": "Adorsys",
+  "license": "ISC",
+  "description": "An event-driven library for managing custom events in JavaScript applications. Built on eventemitter3, it supports both synchronous and asynchronous event handling and ensures deep cloning of emitted data to prevent unintended mutations."
 }

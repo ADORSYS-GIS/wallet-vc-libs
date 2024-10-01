@@ -1,5 +1,5 @@
 {
-  "name": "cloning-decorator",
+  "name": "@adorsys-gis/cloning-decorator",
   "version": "1.0.0",
   "type": "commonjs",
   "main": "./src/index.js",
@@ -24,8 +24,8 @@
     "test": "jest",
     "depcheck": "depcheck || true"
   },
-  "keywords": [],
-  "author": "",
+  "keywords": ["typescript", "decorator", "deep-clone", "immutability", "state-management"],
+  "author": "Adorsys",
   "license": "ISC",
-  "description": ""
+  "description": "A TypeScript decorator library for deep cloning method arguments to prevent side effects, enhancing immutability in class methods."
 }
