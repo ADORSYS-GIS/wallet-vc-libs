@@ -1,11 +1,12 @@
 {
-  "name": "storage",
+  "name": "@adorsys-gis/storage",
   "version": "1.0.0",
   "scripts": {
     "test": "jest",
-    "build": "tsc -p tsconfig.lib.json"
+    "build": "tsc -p tsconfig.lib.json",
+    "lint": "eslint ./src --ext .ts"
   },
-  "private": true,
+  "private": false,
   "dependencies": {
     "idb": "^8.0.0"
   },
@@ -30,8 +31,20 @@
   "type": "commonjs",
   "main": "./src/index.js",
   "typings": "./src/index.d.ts",
-  "keywords": [],
-  "author": "",
+  "keywords": [
+    "storage",
+    "data-storage",
+    "IndexedDB",
+    "LocalStorage",
+    "SessionStorage",
+    "browser-storage",
+    "web-apps",
+    "asynchronous-storage",
+    "data-retrieval",
+    "JavaScript",
+    "TypeScript"
+  ],
+  "author": "Adorsys",
   "license": "ISC",
-  "description": ""
+  "description": "A service module for data storage and retrieval in Progressive Web Apps (PWAs) using IndexedDB, LocalStorage, and SessionStorage. This library provides an interface for efficient asynchronous storage of structured data, designed to meet the needs of modern web applications."
 }
