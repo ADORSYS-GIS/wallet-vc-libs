@@ -24,7 +24,13 @@
     "test": "jest",
     "depcheck": "depcheck || true"
   },
-  "keywords": ["typescript", "decorator", "deep-clone", "immutability", "state-management"],
+  "keywords": [
+    "typescript",
+    "decorator",
+    "deep-clone",
+    "immutability",
+    "state-management"
+  ],
   "author": "Adorsys",
   "license": "ISC",
   "description": "A TypeScript decorator library for deep cloning method arguments to prevent side effects, enhancing immutability in class methods."
