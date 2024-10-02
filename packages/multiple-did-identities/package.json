@@ -1,0 +1,30 @@
+{
+  "name": "multiple-did-identities",
+  "version": "1.0.0",
+  "dependencies": {
+    "@adorsys-gis/storage": "^1.0.0",
+    "idb": "^8.0.0",
+    "multibase": "^4.0.6",
+    "noble-ed25519": "^1.2.6",
+    "tslib": "^2.6.2",
+    "uuid": "^8.3.2"
+  },
+  "type": "module",
+  "main": "./src/index.js",
+  "typings": "./src/index.d.ts",
+  "devDependencies": {
+    "@nrwl/jest": "^19.8.2",
+    "@types/jest": "^29.5.13",
+    "@types/uuid": "^10.0.0",
+    "@typescript-eslint/eslint-plugin": "^8.8.0",
+    "jest": "^29.7.0",
+    "ts-jest": "^29.2.5",
+    "typescript": "^5.6.2"
+  },
+  "scripts": {
+    "build": "tsc -p ./tsconfig.lib.json",
+    "lint": "eslint ./src --ext .ts",
+    "lint:fix": "eslint ./src --ext .ts --fix",
+    "test": "jest"
+  }
+}
