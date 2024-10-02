@@ -15,15 +15,14 @@
     "skipDefaultLibCheck": true,
     "baseUrl": ".",
     "paths": {
-      "@datev/cloning-decorator": ["libs/cloning-decorator/src/index.ts"],
-      "@datev/event-bus": ["libs/event-bus/src/index.ts"],
-      "@datev/multiple-did-identities": [
-        "libs/multiple-did-identities/src/index.ts"
+      "@adorsys-gis/cloning-decorator": [
+        "packages/cloning-decorator/src/index.ts"
       ],
-      "@datev/oid4vc": ["libs/oid4vc/src/index.ts"],
-      "@datev/qr-scanner": ["libs/qr-scanner/src/index.ts"],
-      "@datev/storage": ["libs/storage/src/index.ts"],
-      "@datev/usePWA": ["libs/usePWA/src/index.ts"]
+      "@adorsys-gis/event-bus": ["packages/event-bus/src/index.ts"],
+      "multiple-did-identities": [
+        "packages/multiple-did-identities/src/index.ts"
+      ],
+      "@adorsys-gis/storage": ["packages/storage/src/index.ts"]
     }
   },
   "exclude": ["node_modules", "tmp"]
