@@ -2,7 +2,7 @@
   "name": "multiple-did-identities",
   "version": "1.0.0",
   "dependencies": {
-    "@adorsys-gis/storage": "^1.0.0",
+    "@adorsys-gis/storage": "^1.0.1",
     "idb": "^8.0.0",
     "multibase": "^4.0.6",
     "noble-ed25519": "^1.2.6",
