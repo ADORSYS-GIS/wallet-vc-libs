@@ -62,7 +62,7 @@ class ContactService {
       console.error('Cannot retrieve contact: ID is required');
       throw new Error('ID must be provided');
     }
-    
+
     try {
       const record = await this.storage.findOne('contacts', id);
       return record as Contact | null;
