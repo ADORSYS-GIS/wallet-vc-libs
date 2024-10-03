@@ -14,13 +14,13 @@ describe('ContactService', () => {
     // Clear all contacts after each test
     const allContacts = await contactService.getAllContacts();
     for (const contact of allContacts) {
-      await contactService.deleteContact(contact.id);
+      await contactService.deleteContact(contact.id!);
     }
   });
 
   it('should create a new contact', async () => {
     const newContact: Contact = {
-      id: '1',
+      id: 1,
       name: 'John Doe',
       email: 'john@example.com',
       did: 'did:example:123456',
@@ -28,7 +28,7 @@ describe('ContactService', () => {
     };
 
     await contactService.createContact(newContact);
-    const retrievedContact = await contactService.getContact(newContact.id);
+    const retrievedContact = await contactService.getContact(newContact.id!);
 
     expect(retrievedContact).toHaveProperty('value.name', newContact.name);
     expect(retrievedContact).toHaveProperty('value.email', newContact.email);
@@ -36,7 +36,7 @@ describe('ContactService', () => {
 
   it('should retrieve a contact by ID', async () => {
     const contact: Contact = {
-      id: '2',
+      id: 2,
       name: 'Charlie Brown',
       email: 'charlie@example.com',
       did: 'did:example:789012',
@@ -45,14 +45,14 @@ describe('ContactService', () => {
 
     await contactService.createContact(contact);
 
-    const retrievedContact = await contactService.getContact('2');
+    const retrievedContact = await contactService.getContact(2);
     expect(retrievedContact).toHaveProperty('value.id', contact.id);
     expect(retrievedContact).toHaveProperty('value.name', contact.name);
   });
 
   it('should retrieve all contacts', async () => {
     const contact1: Contact = {
-      id: '3',
+      id: 3,
       name: 'Alice',
       email: 'alice@example.com',
       did: 'did:example:345678',
@@ -60,7 +60,7 @@ describe('ContactService', () => {
     };
 
     const contact2: Contact = {
-      id: '4',
+      id: 4,
       name: 'Bob',
       email: 'bob@example.com',
       did: 'did:example:654321',
@@ -77,7 +77,7 @@ describe('ContactService', () => {
 
   it('should update a contact', async () => {
     const contact: Contact = {
-      id: '5',
+      id: 5,
       name: 'Charlie',
       email: 'charlie@example.com',
       did: 'did:example:789012',
@@ -87,15 +87,15 @@ describe('ContactService', () => {
     await contactService.createContact(contact);
 
     const updatedFields = { name: 'Charles' };
-    await contactService.updateContact(contact.id, updatedFields);
+    await contactService.updateContact(contact.id!, updatedFields);
 
-    const updatedContact = await contactService.getContact(contact.id);
+    const updatedContact = await contactService.getContact(contact.id!);
     expect(updatedContact).toHaveProperty('value.name', updatedFields.name);
   });
 
   it('should delete a contact', async () => {
     const contact: Contact = {
-      id: '6',
+      id: 6,
       name: 'Diana',
       email: 'diana@example.com',
       did: 'did:example:345678',
@@ -104,9 +104,9 @@ describe('ContactService', () => {
 
     await contactService.createContact(contact);
 
-    await contactService.deleteContact(contact.id);
+    await contactService.deleteContact(contact.id!);
 
-    const deletedContact = await contactService.getContact(contact.id);
+    const deletedContact = await contactService.getContact(contact.id!);
     expect(deletedContact).toBeNull();
   });
 });

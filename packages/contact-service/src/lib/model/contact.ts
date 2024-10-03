@@ -3,7 +3,7 @@
  * Each contact has an id, name, email, did, and a phone number.
  */
 export interface Contact {
-  id: string;
+  id?: number;
   name: string;
   email: string;
   did: string;

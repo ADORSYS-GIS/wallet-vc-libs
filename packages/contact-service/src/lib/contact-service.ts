@@ -8,7 +8,7 @@ import { Contact } from './model/contact';
  */
 interface MyDatabase extends DBSchema {
   contacts: {
-    key: string;
+    key: number;
     value: Contact;
     indexes: { 'by-did': string };
   };
@@ -29,8 +29,9 @@ class ContactService {
           // Create an object store for contacts
           const objectStore = db.createObjectStore('contacts', {
             keyPath: 'id',
+            autoIncrement: true,
           });
-          objectStore.createIndex('by-did', 'contacts', { unique: true });
+          objectStore.createIndex('by-did', 'did', { unique: true });
         }
       },
     });
@@ -41,7 +42,7 @@ class ContactService {
    * @param contact - The contact object to be created
    * @throws Error if the insertion fails
    */
-  async createContact(contact: Contact): Promise<void> {
+  async createContact(contact: Omit<Contact, 'id'>): Promise<void> {
     try {
       await this.storage.insert('contacts', { value: contact });
     } catch (error) {
@@ -56,7 +57,12 @@ class ContactService {
    * @returns The contact object if found, otherwise null
    * @throws Error if the retrieval fails
    */
-  async getContact(id: string): Promise<Contact | null> {
+  async getContact(id: number): Promise<Contact | null> {
+    if (id == null) {
+      console.error('Cannot retrieve contact: ID is required');
+      throw new Error('ID must be provided');
+    }
+    
     try {
       const record = await this.storage.findOne('contacts', id);
       return record as Contact | null;
@@ -88,7 +94,7 @@ class ContactService {
    * @throws Error if the update fails
    */
   async updateContact(
-    id: string,
+    id: number,
     updatedFields: Partial<Contact>,
   ): Promise<void> {
     try {
@@ -104,7 +110,7 @@ class ContactService {
    * @param id - The ID of the contact to delete
    * @throws Error if the deletion fails
    */
-  async deleteContact(id: string): Promise<void> {
+  async deleteContact(id: number): Promise<void> {
     try {
       await this.storage.delete('contacts', id);
     } catch (error) {
