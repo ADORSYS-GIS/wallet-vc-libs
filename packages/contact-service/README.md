@@ -5,14 +5,14 @@ This library allows you to create, retrieve, update, and delete contacts efficie
 
 # Dependencies
 
-`@datev/storage`: External library for interacting with IndexedDB.
+`@adorsys-gis/storage`: External library for interacting with IndexedDB.
 
 # Installation
 
 To install the Contact Service Library, ensure you have the necessary dependencies set up in your NX workspace. If the library is part of a larger NX project, simply import it into your desired module as seen below.
 
 ```bash
-npm install @datev/storage
+npm install @adorsys-gis/storage
 ```
 
 # Contact Model
