@@ -1,0 +1,30 @@
+{
+  "name": "contact-exchange",
+  "$schema": "../../node_modules/nx/schemas/project-schema.json",
+  "sourceRoot": "libs/contact-exchange/src",
+  "projectType": "library",
+  "targets": {
+    "build": {
+      "executor": "@nx/js:tsc",
+      "outputs": ["{options.outputPath}"],
+      "options": {
+        "outputPath": "dist/libs/contact-exchange",
+        "main": "libs/contact-exchange/src/index.ts",
+        "tsConfig": "libs/contact-exchange/tsconfig.lib.json",
+        "assets": ["libs/contact-exchange/*.md"]
+      }
+    },
+    "lint": {
+      "executor": "@nx/eslint:lint",
+      "outputs": ["{options.outputFile}"]
+    },
+    "test": {
+      "executor": "@nx/jest:jest",
+      "outputs": ["{workspaceRoot}/coverage/{projectRoot}"],
+      "options": {
+        "jestConfig": "libs/contact-exchange/jest.config.ts"
+      }
+    }
+  },
+  "tags": []
+}
