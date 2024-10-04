@@ -1,1 +1,2 @@
-export * from './lib/contact-service';
+export { ContactService } from './lib/services';
+export { Contact } from './model/Contact';

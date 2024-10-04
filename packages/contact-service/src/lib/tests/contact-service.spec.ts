@@ -1,13 +1,13 @@
-import ContactService from '../contact-service';
-import 'fake-indexeddb/auto';
-import { Contact } from '../model/contact';
+import { ContactService } from '../ContactService';
+import { Contact } from '../../model/Contact';
+import { eventBus } from '@adorsys-gis/event-bus';
 
 describe('ContactService', () => {
   let contactService: ContactService;
 
   beforeEach(() => {
     // Initialize the ContactService before each test
-    contactService = new ContactService();
+    contactService = new ContactService(eventBus);
   });
 
   afterEach(async () => {
@@ -22,49 +22,51 @@ describe('ContactService', () => {
     const newContact: Contact = {
       id: 1,
       name: 'John Doe',
-      email: 'john@example.com',
       did: 'did:example:123456',
-      phoneNumber: '+237695412345',
     };
 
     await contactService.createContact(newContact);
     const retrievedContact = await contactService.getContact(newContact.id!);
 
-    expect(retrievedContact).toHaveProperty('value.name', newContact.name);
-    expect(retrievedContact).toHaveProperty('value.email', newContact.email);
+    expect(retrievedContact).toEqual(
+      expect.objectContaining({
+        name: newContact.name,
+        did: newContact.did,
+      }),
+    );
   });
 
   it('should retrieve a contact by ID', async () => {
     const contact: Contact = {
       id: 2,
       name: 'Charlie Brown',
-      email: 'charlie@example.com',
       did: 'did:example:789012',
-      phoneNumber: '+237674567890',
     };
 
     await contactService.createContact(contact);
 
     const retrievedContact = await contactService.getContact(2);
-    expect(retrievedContact).toHaveProperty('value.id', contact.id);
-    expect(retrievedContact).toHaveProperty('value.name', contact.name);
+
+    expect(retrievedContact).toEqual(
+      expect.objectContaining({
+        id: contact.id,
+        name: contact.name,
+        did: contact.did,
+      }),
+    );
   });
 
   it('should retrieve all contacts', async () => {
     const contact1: Contact = {
       id: 3,
       name: 'Alice',
-      email: 'alice@example.com',
       did: 'did:example:345678',
-      phoneNumber: '+237623876543',
     };
 
     const contact2: Contact = {
       id: 4,
       name: 'Bob',
-      email: 'bob@example.com',
       did: 'did:example:654321',
-      phoneNumber: '+23767654321',
     };
 
     await contactService.createContact(contact1);
@@ -79,9 +81,7 @@ describe('ContactService', () => {
     const contact: Contact = {
       id: 5,
       name: 'Charlie',
-      email: 'charlie@example.com',
       did: 'did:example:789012',
-      phoneNumber: '+237674567890',
     };
 
     await contactService.createContact(contact);
@@ -90,16 +90,21 @@ describe('ContactService', () => {
     await contactService.updateContact(contact.id!, updatedFields);
 
     const updatedContact = await contactService.getContact(contact.id!);
-    expect(updatedContact).toHaveProperty('value.name', updatedFields.name);
+
+    expect(updatedContact).toEqual(
+      expect.objectContaining({
+        id: contact.id,
+        did: contact.did,
+        name: updatedFields.name,
+      }),
+    );
   });
 
   it('should delete a contact', async () => {
     const contact: Contact = {
       id: 6,
       name: 'Diana',
-      email: 'diana@example.com',
       did: 'did:example:345678',
-      phoneNumber: '+237623876543',
     };
 
     await contactService.createContact(contact);

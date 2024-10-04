@@ -1,11 +1,10 @@
 {
-  "name": "contact-service",
+  "name": "@adorsys-gis/contact-service",
   "version": "1.0.0",
   "dependencies": {
     "@adorsys-gis/storage": "^1.0.1",
-    "fake-indexeddb": "^6.0.0",
-    "idb": "^8.0.0",
-    "tslib": "^2.7.0"
+    "@adorsys-gis/cloning-decorator": "^1.0.0",
+    "@adorsys-gis/event-bus": "^1.0.2"
   },
   "devDependencies": {
     "@types/jest": "^29.5.13",
@@ -19,7 +18,10 @@
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "tslib": "^2.7.0",
-    "typescript": "^5.6.2"
+    "typescript": "^5.6.2",
+    "fake-indexeddb": "^6.0.0",
+    "idb": "^8.0.0",
+    "eventemitter3": "^5.0.1"
   },
   "scripts": {
     "test": "jest",

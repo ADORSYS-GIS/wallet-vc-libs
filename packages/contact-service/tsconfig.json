@@ -19,10 +19,7 @@
     "lib": ["es2020", "dom"],
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
-    "baseUrl": ".",
-    "paths": {
-      "@adorsys-gis/storage": ["node_modules/@adorsys-gis/storage"]
-    }
+    "baseUrl": "."
   },
   "files": [],
   "include": [],
