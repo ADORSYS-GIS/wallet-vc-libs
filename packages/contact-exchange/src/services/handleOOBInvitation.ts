@@ -36,7 +36,6 @@ function handleOOBInvitation(
   }
 }
 
-// Example use case
 const exampleOOBInvitation: OutOfBandInvitation = {
   '@id': 'invitation-id',
   '@type': 'https://didcomm.org/out-of-band/1.0/invitation',
