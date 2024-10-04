@@ -30,5 +30,19 @@
   },
   "type": "commonjs",
   "main": "./src/index.ts",
-  "typings": "./src/index.d.ts"
+  "typings": "./src/index.d.ts",
+  "keywords": [
+    "contacts",
+    "service",
+    "IndexedDB",
+    "DIDs",
+    "decentralized",
+    "event-driven",
+    "storage",
+    "database",
+    "contacts-service"
+  ],
+  "author": "Adorsys",
+  "license": "ISC",
+  "description": "A library for managing contacts associated with Decentralized Identifiers (DIDs) using IndexedDB."
 }
