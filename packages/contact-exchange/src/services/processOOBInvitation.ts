@@ -26,7 +26,7 @@ export function processOOBInvitation(
 
     // Create a basic DIDComm Message structure
     const didCommMessage: DIDCommMessage = {
-      type: type, // Use the extracted type
+      type: type,
       from: recipientKeys[0],
       body: {
         goal: goal || undefined,
