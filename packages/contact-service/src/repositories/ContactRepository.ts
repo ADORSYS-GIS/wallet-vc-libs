@@ -38,8 +38,11 @@ export class ContactRepository {
     });
   }
 
-  async create(contact: Omit<Contact, 'id'>): Promise<void> {
-    await this.storage.insert('contacts', { value: contact });
+  async create(contact: Omit<Contact, 'id'>): Promise<Contact> {
+    const id = await this.storage.insert('contacts', {
+      value: { ...contact, id: undefined },
+    });
+    return { ...contact, id };
   }
 
   async get(id: number): Promise<Contact | null> {
@@ -52,8 +55,13 @@ export class ContactRepository {
     return results.map((item) => item.value);
   }
 
-  async update(id: number, updatedFields: Partial<Contact>): Promise<void> {
+  async update(
+    id: number,
+    updatedFields: Partial<Contact>,
+  ): Promise<Contact | null> {
     await this.storage.update('contacts', id, updatedFields);
+    const updatedContact = await this.storage.findOne('contacts', id);
+    return updatedContact ? updatedContact.value : null;
   }
 
   async delete(id: number): Promise<void> {

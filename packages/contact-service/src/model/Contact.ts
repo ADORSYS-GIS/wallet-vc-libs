@@ -1,6 +1,6 @@
 /**
  * Interface representing a contact.
- * Each contact has an id, name, email, did, and a phone number.
+ * Each contact has an id, name, and did.
  */
 export interface Contact {
   id?: number;

@@ -14,4 +14,7 @@ export enum ContactEventChannel {
   CreateContact = 'contact-created',
   UpdateContact = 'contact-updated',
   DeleteContact = 'contact-deleted',
+  Error = 'contact-error',
+  GetContactByID = 'get-contact-with-id',
+  GetAllContacts = 'get-all-contacts',
 }

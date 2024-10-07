@@ -42,7 +42,7 @@
     "database",
     "contacts-service"
   ],
-  "author": "Adorsys",
+  "author": "adorsys",
   "license": "ISC",
   "description": "A library for managing contacts associated with Decentralized Identifiers (DIDs) using IndexedDB."
 }

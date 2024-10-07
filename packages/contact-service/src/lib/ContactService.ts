@@ -18,15 +18,21 @@ export class ContactService {
 
   /**
    * Creates a new contact and stores it in the database.
-   * Emits a 'contact.created' event upon successful creation.
+   * Emits a {@link ContactEventChannel.CreateContact} event upon successful creation.
    *
    * @param contact - The contact object to be created (excluding 'id').
    */
   async createContact(contact: Omit<Contact, 'id'>): Promise<void> {
     const channel = ContactEventChannel.CreateContact;
 
-    await this.contactRepository.create(contact);
-    this.eventBus.emit(channel, contact);
+    try {
+      // Await the creation of the contact to get the created contact object
+      const createdContact = await this.contactRepository.create(contact);
+      this.eventBus.emit(channel, createdContact);
+    } catch (error) {
+      this.eventBus.emit(ContactEventChannel.Error, error);
+      throw error;
+    }
   }
 
   /**
@@ -35,8 +41,16 @@ export class ContactService {
    * @param id - The ID of the contact to retrieve.
    * @returns The contact object if found, otherwise null.
    */
-  async getContact(id: number): Promise<Contact | null> {
-    return await this.contactRepository.get(id);
+  async getContact(id: number): Promise<void> {
+    const channel = ContactEventChannel.GetContactByID;
+
+    try {
+      const contact = await this.contactRepository.get(id);
+      this.eventBus.emit(channel, contact);
+    } catch (error) {
+      this.eventBus.emit(ContactEventChannel.Error, error);
+      throw error;
+    }
   }
 
   /**
@@ -45,7 +59,16 @@ export class ContactService {
    * @returns An array of all contact objects.
    */
   async getAllContacts(): Promise<Contact[]> {
-    return await this.contactRepository.getAll();
+    const channel = ContactEventChannel.GetAllContacts;
+
+    try {
+      const contacts = await this.contactRepository.getAll();
+      this.eventBus.emit(channel, contacts);
+      return contacts;
+    } catch (error) {
+      this.eventBus.emit(ContactEventChannel.Error, error);
+      throw error;
+    }
   }
 
   /**
@@ -61,8 +84,11 @@ export class ContactService {
   ): Promise<void> {
     const channel = ContactEventChannel.UpdateContact;
 
-    await this.contactRepository.update(id, updatedFields);
-    this.eventBus.emit(channel, { id, updatedFields });
+    const updatedContact = await this.contactRepository.update(
+      id,
+      updatedFields,
+    );
+    this.eventBus.emit(channel, updatedContact);
   }
 
   /**
