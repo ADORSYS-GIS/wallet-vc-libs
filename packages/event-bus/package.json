@@ -32,7 +32,7 @@
     "event-management",
     "custom-events"
   ],
-  "author": "Adorsys",
+  "author": "adorsys",
   "license": "ISC",
   "description": "An event-driven library for managing custom events in JavaScript applications. Built on eventemitter3, it supports both synchronous and asynchronous event handling and ensures deep cloning of emitted data to prevent unintended mutations."
 }
