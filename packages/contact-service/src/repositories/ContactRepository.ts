@@ -60,8 +60,7 @@ export class ContactRepository {
     updatedFields: Partial<Contact>,
   ): Promise<Contact | null> {
     await this.storage.update('contacts', id, updatedFields);
-    const updatedContact = await this.storage.findOne('contacts', id);
-    return updatedContact ? updatedContact.value : null;
+    return this.get(id);
   }
 
   async delete(id: number): Promise<void> {

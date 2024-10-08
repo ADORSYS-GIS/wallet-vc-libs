@@ -25,18 +25,25 @@ export interface Contact {
 # Usage Example
 
 ```typescript
+import { EventEmitter } from 'eventemitter3';
 import { ContactService } from '@adorsys-gis/contact-service';
 
-const contactService = new ContactService();
+const eventBus = new EventEmitter();
+const contactService = new ContactService(eventBus);
 
 // Create a new contact (no need to include 'id', as it will be generated)
-try {
-  await contactService.createContact({
-    name: 'John Doe',
-    did: 'did:example:123456',
-  });
-  console.log('Contact created successfully!');
-} catch (error) {
+contactService.createContact({
+  name: 'John Doe',
+  did: 'did:example:123456',
+});
+
+// Listen for the contact creation event
+eventBus.on('contact-created', (createdContact) => {
+  console.log('Contact created successfully:', createdContact);
+});
+
+// Listen for errors while creating a new contact
+eventBus.on('contact-created', (error) => {
   console.error('Failed to create contact:', error);
-}
+});
 ```

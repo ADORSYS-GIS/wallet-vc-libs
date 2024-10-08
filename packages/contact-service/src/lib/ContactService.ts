@@ -22,84 +22,93 @@ export class ContactService {
    *
    * @param contact - The contact object to be created (excluding 'id').
    */
-  async createContact(contact: Omit<Contact, 'id'>): Promise<void> {
-    const channel = ContactEventChannel.CreateContact;
+  public createContact(contact: Omit<Contact, 'id'>): void {
+    const createContactChannel = ContactEventChannel.CreateContact;
 
-    try {
-      // Await the creation of the contact to get the created contact object
-      const createdContact = await this.contactRepository.create(contact);
-      this.eventBus.emit(channel, createdContact);
-    } catch (error) {
-      this.eventBus.emit(ContactEventChannel.Error, error);
-      throw error;
-    }
+    this.contactRepository
+      .create(contact)
+      .then((createdContact) => {
+        this.eventBus.emit(createContactChannel, createdContact);
+      })
+      .catch((error) => {
+        this.eventBus.emit(createContactChannel, error);
+      });
   }
 
   /**
    * Retrieves a contact by its ID.
    *
    * @param id - The ID of the contact to retrieve.
-   * @returns The contact object if found, otherwise null.
+   * Emits a {@link ContactEventChannel.GetContactByID} event when successful.
    */
-  async getContact(id: number): Promise<void> {
-    const channel = ContactEventChannel.GetContactByID;
+  public getContact(id: number): void {
+    const getContactByIdChannel = ContactEventChannel.GetContactByID;
 
-    try {
-      const contact = await this.contactRepository.get(id);
-      this.eventBus.emit(channel, contact);
-    } catch (error) {
-      this.eventBus.emit(ContactEventChannel.Error, error);
-      throw error;
-    }
+    this.contactRepository
+      .get(id)
+      .then((contact) => {
+        this.eventBus.emit(getContactByIdChannel, contact);
+      })
+      .catch((error) => {
+        this.eventBus.emit(getContactByIdChannel, error);
+      });
   }
 
   /**
-   * Retrieves all contacts from the database.
+   * Retrieves all contacts from the database and emits them via an event bus.
    *
-   * @returns An array of all contact objects.
+   * This method emits the contacts
+   * through the {@link ContactEventChannel.GetAllContacts} event.
    */
-  async getAllContacts(): Promise<Contact[]> {
-    const channel = ContactEventChannel.GetAllContacts;
+  public getAllContacts(): void {
+    const getAllContactsChannel = ContactEventChannel.GetAllContacts;
 
-    try {
-      const contacts = await this.contactRepository.getAll();
-      this.eventBus.emit(channel, contacts);
-      return contacts;
-    } catch (error) {
-      this.eventBus.emit(ContactEventChannel.Error, error);
-      throw error;
-    }
+    this.contactRepository
+      .getAll()
+      .then((contacts) => {
+        this.eventBus.emit(getAllContactsChannel, contacts);
+      })
+      .catch((error) => {
+        this.eventBus.emit(getAllContactsChannel, error);
+      });
   }
 
   /**
-   * Updates an existing contact in the database.
-   * Emits a 'contact.updated' event upon successful update.
+   * Updates a contact in the database with the provided fields
+   * and emits a {@link ContactEventChannel.UpdateContact} event upon successful update.
    *
    * @param id - The ID of the contact to update.
-   * @param updatedFields - The fields to update in the contact.
+   * @param updatedFields - An object containing the fields to update.
    */
-  async updateContact(
-    id: number,
-    updatedFields: Partial<Contact>,
-  ): Promise<void> {
-    const channel = ContactEventChannel.UpdateContact;
+  public updateContact(id: number, updatedFields: Partial<Contact>): void {
+    const updateContactChannel = ContactEventChannel.UpdateContact;
 
-    const updatedContact = await this.contactRepository.update(
-      id,
-      updatedFields,
-    );
-    this.eventBus.emit(channel, updatedContact);
+    this.contactRepository
+      .update(id, updatedFields)
+      .then((updatedContact) => {
+        this.eventBus.emit(updateContactChannel, updatedContact);
+      })
+      .catch((error) => {
+        this.eventBus.emit(updateContactChannel, error);
+      });
   }
 
   /**
    * Deletes a contact by its ID from the database.
-   * Emits a 'contact.deleted' event upon successful deletion.
+   * Emits a {@link ContactEventChannel.DeleteContact} event upon successful deletion.
    *
    * @param id - The ID of the contact to delete.
    */
-  async deleteContact(id: number): Promise<void> {
-    const channel = ContactEventChannel.DeleteContact;
-    await this.contactRepository.delete(id);
-    this.eventBus.emit(channel, { id });
+  public deleteContact(id: number): void {
+    const deleteContactChannel = ContactEventChannel.DeleteContact;
+
+    this.contactRepository
+      .delete(id)
+      .then(() => {
+        this.eventBus.emit(deleteContactChannel, { id });
+      })
+      .catch((error) => {
+        this.eventBus.emit(deleteContactChannel, error);
+      });
   }
 }
