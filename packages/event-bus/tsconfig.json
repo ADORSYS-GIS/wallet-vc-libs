@@ -13,7 +13,7 @@
     "skipLibCheck": true,
     "skipDefaultLibCheck": true,
     "emitDecoratorMetadata": true,
-    "experimentalDecorators": true,
+    "experimentalDecorators": true
   },
   "files": [],
   "include": [],
