@@ -1,0 +1,17 @@
+@keyframes wave {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+.loading-span span {
+  display: inline-block;
+  animation: wave 1s infinite;
+  transform-origin: 50% 50%;
+  margin-right: 2px;
+}
