@@ -31,19 +31,20 @@ import { ContactService } from '@adorsys-gis/contact-service';
 const eventBus = new EventEmitter();
 const contactService = new ContactService(eventBus);
 
+// Listen for the contact creation event
+eventBus.on('contact-created', (response) => {
+  if (response.status == ServiceResponse.Success) {
+    const createdContact = response.payload;
+    console.log('Contact created successfully:', createdContact);
+  } else {
+    const error = response.payload;
+    console.error('Failed to create contact:', error);
+  }
+});
+
 // Create a new contact (no need to include 'id', as it will be generated)
 contactService.createContact({
   name: 'John Doe',
   did: 'did:example:123456',
-});
-
-// Listen for the contact creation event
-eventBus.on('contact-created', (createdContact) => {
-  console.log('Contact created successfully:', createdContact);
-});
-
-// Listen for errors while creating a new contact
-eventBus.on('contact-created', (error) => {
-  console.error('Failed to create contact:', error);
 });
 ```

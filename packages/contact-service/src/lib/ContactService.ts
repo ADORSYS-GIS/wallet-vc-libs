@@ -35,13 +35,7 @@ export class ContactService {
         };
         this.eventBus.emit(createContactChannel, response);
       })
-      .catch((error) => {
-        const response: ServiceResponse<Error> = {
-          status: ServiceResponseStatus.Error,
-          payload: error,
-        };
-        this.eventBus.emit(createContactChannel, response);
-      });
+      .catch(this.sharedErrorHandler(createContactChannel));
   }
 
   /**
@@ -70,13 +64,7 @@ export class ContactService {
           this.eventBus.emit(getContactByIdChannel, response);
         }
       })
-      .catch((error) => {
-        const response: ServiceResponse<Error> = {
-          status: ServiceResponseStatus.Error,
-          payload: error,
-        };
-        this.eventBus.emit(getContactByIdChannel, response);
-      });
+      .catch(this.sharedErrorHandler(getContactByIdChannel));
   }
 
   /**
@@ -97,13 +85,7 @@ export class ContactService {
         };
         this.eventBus.emit(getAllContactsChannel, response);
       })
-      .catch((error) => {
-        const response: ServiceResponse<Error> = {
-          status: ServiceResponseStatus.Error,
-          payload: error,
-        };
-        this.eventBus.emit(getAllContactsChannel, response);
-      });
+      .catch(this.sharedErrorHandler(getAllContactsChannel));
   }
 
   /**
@@ -125,13 +107,7 @@ export class ContactService {
         };
         this.eventBus.emit(updateContactChannel, response);
       })
-      .catch((error) => {
-        const response: ServiceResponse<Error> = {
-          status: ServiceResponseStatus.Error,
-          payload: error,
-        };
-        this.eventBus.emit(updateContactChannel, response);
-      });
+      .catch(this.sharedErrorHandler(updateContactChannel));
   }
 
   /**
@@ -152,12 +128,16 @@ export class ContactService {
         };
         this.eventBus.emit(deleteContactChannel, response);
       })
-      .catch((error) => {
-        const response: ServiceResponse<Error> = {
-          status: ServiceResponseStatus.Error,
-          payload: error,
-        };
-        this.eventBus.emit(deleteContactChannel, response);
-      });
+      .catch(this.sharedErrorHandler(deleteContactChannel));
+  }
+
+  private sharedErrorHandler(channel: ContactEventChannel) {
+    return (error: unknown) => {
+      const response: ServiceResponse<Error> = {
+        status: ServiceResponseStatus.Error,
+        payload: error instanceof Error ? error : new Error(String(error)),
+      };
+      this.eventBus.emit(channel, response);
+    };
   }
 }
