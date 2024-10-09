@@ -1,8 +1,8 @@
 // process OOB invitations and add contacts to the wallet
 
-import { Wallet, Contact } from './wallet';
-import { processOOBInvitation } from './processOOBInvitation';
-import { OutOfBandInvitation } from './didcomm-oobInvitation';
+import { Wallet, Contact } from './Wallet';
+import { processOOBInvitation } from './ProcessOOBInvitation';
+import { OutOfBandInvitation } from './DIDCommOOBInvitation';
 
 const wallet = new Wallet();
 

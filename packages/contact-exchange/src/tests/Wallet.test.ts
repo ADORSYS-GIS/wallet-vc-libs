@@ -1,4 +1,4 @@
-import { Wallet, Contact } from '../services/wallet';
+import { Wallet, Contact } from '../services/Wallet';
 
 describe('Wallet', () => {
   let wallet: Wallet;

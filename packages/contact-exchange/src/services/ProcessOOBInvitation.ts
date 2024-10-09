@@ -2,7 +2,7 @@ import {
   OutOfBandInvitation,
   DIDCommMessage,
   OutOfBandService,
-} from './didcomm-oobInvitation';
+} from './DIDCommOOBInvitation';
 
 export function processOOBInvitation(
   invitation: OutOfBandInvitation,

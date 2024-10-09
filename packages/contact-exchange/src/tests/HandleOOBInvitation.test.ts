@@ -1,7 +1,7 @@
 // handleOOBInvitation.test.ts
-import { handleOOBInvitation } from '../services/handleOOBInvitation';
-import { Wallet } from '../services/wallet';
-import { OutOfBandInvitation } from '../services/didcomm-oobInvitation';
+import { handleOOBInvitation } from '../services/HandleOOBInvitation';
+import { Wallet } from '../services/Wallet';
+import { OutOfBandInvitation } from '../services/DIDCommOOBInvitation';
 
 describe('handleOOBInvitation', () => {
   it('should add a contact to the wallet', () => {

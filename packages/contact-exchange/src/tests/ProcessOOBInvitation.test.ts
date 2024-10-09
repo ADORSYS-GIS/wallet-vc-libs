@@ -1,5 +1,5 @@
-import { processOOBInvitation } from '../services/processOOBInvitation';
-import { OutOfBandInvitation } from '../services/didcomm-oobInvitation';
+import { processOOBInvitation } from '../services/ProcessOOBInvitation';
+import { OutOfBandInvitation } from '../services/DIDCommOOBInvitation';
 
 describe('processOOBInvitation', () => {
   it('should return a DIDCommMessage from a valid OOB invitation', () => {
