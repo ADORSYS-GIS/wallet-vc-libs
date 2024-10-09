@@ -1,7 +1,5 @@
 # multiple-did-identities Library
 
-This library was generated with [Nx](https://nx.dev).
-
 # DID Manager Library
 
 ## Overview
@@ -30,46 +28,13 @@ The **DID Manager Library** is equipped with a suite of features designed to add
 ### 2. **Secure Key Generation**
 
 - **Ed25519 Elliptic Curve**: Utilizes the Ed25519 elliptic curve for generating cryptographic key pairs. Ed25519 is renowned for its security and performance, providing strong protection against various cryptographic attacks.
+
 - **Asynchronous Key Generation**: Leverages asynchronous operations to generate keys without blocking the main execution thread, ensuring a smooth user experience even during intensive cryptographic processes.
 
 - **Unique Key Pairs per DID**: Each DID is backed by its own unique public and private key pair, ensuring that the compromise of one key does not affect the security of others.
 
-### 3. **Data Encryption**
-
-- **AES-CBC Encryption**: Implements the Advanced Encryption Standard in Cipher Block Chaining (AES-CBC) mode to encrypt private keys. AES-CBC is a widely trusted encryption standard that provides robust security for sensitive data.
-
-- **Initialization Vector (IV) Generation**: Generates a unique Initialization Vector (IV) for each encryption operation, enhancing security by ensuring that identical plaintexts produce different ciphertexts.
-
-- **Secure Storage of Encrypted Data**: Encrypted private keys are stored securely, preventing unauthorized access and ensuring that even if storage is compromised, the keys remain protected.
-
-### 4. **Persistent Storage**
+### 3. **Persistent Storage**
 
 - **IndexedDB Integration**: Utilizes IndexedDB, a low-level API for client-side storage of significant amounts of structured data, including files/blobs. This ensures that DID identities are stored persistently and remain accessible across browser sessions.
 
 - **Well-Defined Database Schema**: Defines a clear and efficient schema for storing DIDs, including indexing mechanisms to facilitate quick retrieval and management.
-
-- **Reliable Data Management**: Ensures data integrity and reliability, minimizing the risk of data loss or corruption through robust storage practices.
-
-### 5. **Unique Identification**
-
-- **UUID Generation**: Generates universally unique identifiers (UUIDs) for each DID identity, ensuring that every identity is distinct and easily identifiable within the system.
-
-- **Conflict Prevention**: The use of UUIDs eliminates the possibility of identifier collisions, maintaining the uniqueness and integrity of each DID.
-
-- **Traceability**: Facilitates easy tracking and management of DIDs through their unique IDs, aiding in debugging, auditing, and monitoring processes.
-
-### 6. **TypeScript Support**
-
-- **Strong Typing**: Provides comprehensive TypeScript type definitions, enhancing code reliability and reducing runtime errors by catching type-related issues during development.
-
-- **Enhanced Developer Experience**: Leverages TypeScript’s features like interfaces and type annotations to offer a more intuitive and error-resistant coding environment.
-
-- **Seamless Integration**: Compatible with TypeScript projects, allowing developers to integrate the library without facing type mismatches or compatibility issues.
-
-### 7. **Web Crypto API Integration**
-
-- **High-Performance Cryptographic Operations**: Leverages the Web Crypto API for performing secure and efficient cryptographic tasks, ensuring that encryption and decryption processes are both fast and reliable.
-
-- **Standardized Security Practices**: Aligns with modern web security standards, ensuring that the cryptographic operations meet industry best practices.
-
-- **Browser Compatibility**: Utilizes APIs that are widely supported across modern browsers, ensuring broad compatibility and functionality.
