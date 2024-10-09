@@ -1,5 +1,5 @@
 {
-  "name": "@adorsys-gis/status-service",
+  "name": "status-service",
   "version": "1.0.0",
   "scripts": {
     "test": "jest",
