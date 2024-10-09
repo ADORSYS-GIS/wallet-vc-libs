@@ -1,4 +1,5 @@
 import { EventEmitter } from 'eventemitter3';
+import { ServiceResponse, ServiceResponseStatus } from 'status-service';
 import { Contact } from '../model/Contact';
 import { ContactEventChannel } from '../model/ContactEventChannel';
 import { ContactRepository } from '../repositories/ContactRepository';
@@ -28,10 +29,18 @@ export class ContactService {
     this.contactRepository
       .create(contact)
       .then((createdContact) => {
-        this.eventBus.emit(createContactChannel, createdContact);
+        const response: ServiceResponse<Contact> = {
+          status: ServiceResponseStatus.Success,
+          payload: createdContact,
+        };
+        this.eventBus.emit(createContactChannel, response);
       })
       .catch((error) => {
-        this.eventBus.emit(createContactChannel, error);
+        const response: ServiceResponse<Error> = {
+          status: ServiceResponseStatus.Error,
+          payload: error,
+        };
+        this.eventBus.emit(createContactChannel, response);
       });
   }
 
@@ -47,10 +56,26 @@ export class ContactService {
     this.contactRepository
       .get(id)
       .then((contact) => {
-        this.eventBus.emit(getContactByIdChannel, contact);
+        if (contact) {
+          const response: ServiceResponse<Contact> = {
+            status: ServiceResponseStatus.Success,
+            payload: contact,
+          };
+          this.eventBus.emit(getContactByIdChannel, response);
+        } else {
+          const response: ServiceResponse<Error> = {
+            status: ServiceResponseStatus.Error,
+            payload: new Error(`Contact with ID ${id} not found`),
+          };
+          this.eventBus.emit(getContactByIdChannel, response);
+        }
       })
       .catch((error) => {
-        this.eventBus.emit(getContactByIdChannel, error);
+        const response: ServiceResponse<Error> = {
+          status: ServiceResponseStatus.Error,
+          payload: error,
+        };
+        this.eventBus.emit(getContactByIdChannel, response);
       });
   }
 
@@ -66,10 +91,18 @@ export class ContactService {
     this.contactRepository
       .getAll()
       .then((contacts) => {
-        this.eventBus.emit(getAllContactsChannel, contacts);
+        const response: ServiceResponse<Contact[]> = {
+          status: ServiceResponseStatus.Success,
+          payload: contacts,
+        };
+        this.eventBus.emit(getAllContactsChannel, response);
       })
       .catch((error) => {
-        this.eventBus.emit(getAllContactsChannel, error);
+        const response: ServiceResponse<Error> = {
+          status: ServiceResponseStatus.Error,
+          payload: error,
+        };
+        this.eventBus.emit(getAllContactsChannel, response);
       });
   }
 
@@ -86,10 +119,18 @@ export class ContactService {
     this.contactRepository
       .update(id, updatedFields)
       .then((updatedContact) => {
-        this.eventBus.emit(updateContactChannel, updatedContact);
+        const response: ServiceResponse<Contact> = {
+          status: ServiceResponseStatus.Success,
+          payload: updatedContact!,
+        };
+        this.eventBus.emit(updateContactChannel, response);
       })
       .catch((error) => {
-        this.eventBus.emit(updateContactChannel, error);
+        const response: ServiceResponse<Error> = {
+          status: ServiceResponseStatus.Error,
+          payload: error,
+        };
+        this.eventBus.emit(updateContactChannel, response);
       });
   }
 
@@ -105,10 +146,18 @@ export class ContactService {
     this.contactRepository
       .delete(id)
       .then(() => {
-        this.eventBus.emit(deleteContactChannel, { id });
+        const response: ServiceResponse<{ id: number }> = {
+          status: ServiceResponseStatus.Success,
+          payload: { id },
+        };
+        this.eventBus.emit(deleteContactChannel, response);
       })
       .catch((error) => {
-        this.eventBus.emit(deleteContactChannel, error);
+        const response: ServiceResponse<Error> = {
+          status: ServiceResponseStatus.Error,
+          payload: error,
+        };
+        this.eventBus.emit(deleteContactChannel, response);
       });
   }
 }

@@ -1,4 +1,5 @@
 import { eventBus } from '@adorsys-gis/event-bus';
+import { ServiceResponse, ServiceResponseStatus } from 'status-service';
 import { Contact } from '../../model/Contact';
 import { ContactEventChannel } from '../../model/ContactEventChannel';
 import { ContactService } from '../ContactService';
@@ -11,79 +12,136 @@ describe('ContactService', () => {
     contactService = new ContactService(eventBus);
   });
 
-  afterEach((done) => {
-    // Listen for the emitted contacts from getAllContacts
-    const getAllEvent = waitForEvent(ContactEventChannel.GetAllContacts);
+  afterEach(async () => {
+    // Clear all contacts after each test
+    const deleteAllContactsEvent = new Promise<void>((resolve) => {
+      eventBus.once(
+        ContactEventChannel.GetAllContacts,
+        async (response: ServiceResponse<Contact[]>) => {
+          if (response.status === ServiceResponseStatus.Success) {
+            const contacts = response.payload;
+            if (Array.isArray(contacts)) {
+              for (const contact of contacts) {
+                contactService.deleteContact(contact.id!);
+              }
+            }
+          }
+          resolve();
+        },
+      );
 
-    contactService.getAllContacts(); // Trigger the emission of contacts
+      contactService.getAllContacts();
+    });
 
-    getAllEvent
-      .then(async (contacts) => {
-        for (const contact of contacts) {
-          contactService.deleteContact(contact.id!);
-        }
-        done(); // Signal that the afterEach is complete
-      })
-      .catch(() => {
-        done(); // If there's an error in getting contacts, just finish
-      });
+    await deleteAllContactsEvent;
   });
 
   // Helper function to wait for an event
   const waitForEvent = (channel: ContactEventChannel) => {
-    return new Promise<any[]>((resolve) => {
-      // Use 'any[]' if expecting an array
+    return new Promise<ServiceResponse<Contact>>((resolve) => {
       eventBus.once(channel, (data) => resolve(data));
     });
   };
 
-  it('should create a new contact and emit the event', (done) => {
+  it('should create a new contact and emit the event', async () => {
     const newContact: Omit<Contact, 'id'> = {
       name: 'John Doe',
       did: 'did:example:123456',
     };
 
-    // Set up the event listener for the creation event
-    eventBus.once(ContactEventChannel.CreateContact, (createdContact) => {
-      expect(createdContact).toEqual(
-        expect.objectContaining({
+    const createEvent = waitForEvent(ContactEventChannel.CreateContact);
+    contactService.createContact(newContact);
+
+    const createdContact = await createEvent;
+
+    expect(createdContact).toEqual(
+      expect.objectContaining({
+        status: ServiceResponseStatus.Success,
+        payload: expect.objectContaining({
           name: newContact.name,
           did: newContact.did,
           id: expect.any(Number),
         }),
-      );
-      done();
-    });
-
-    // Call the createContact method
-    contactService.createContact(newContact);
+      }),
+    );
   });
 
-  it('should retrieve a contact by ID', (done) => {
+  it('should emit an error when failing to create a contact', async () => {
+    const newContact: Omit<Contact, 'id'> = {
+      name: 'John Doe',
+      did: 'did:example:123456',
+    };
+
+    jest
+      .spyOn(contactService['contactRepository'], 'create')
+      .mockRejectedValueOnce(new Error('Failed to create contact'));
+
+    const createEvent = waitForEvent(ContactEventChannel.CreateContact);
+    contactService.createContact(newContact);
+
+    const createdContactResponse = await createEvent;
+
+    expect(createdContactResponse).toEqual(
+      expect.objectContaining({
+        status: ServiceResponseStatus.Error,
+        payload: expect.objectContaining({
+          name: 'Error',
+          message: 'Failed to create contact',
+        }),
+      }),
+    );
+  });
+
+  it('should retrieve a contact by ID', async () => {
     const newContact: Omit<Contact, 'id'> = {
       name: 'Charlie Brown',
       did: 'did:example:789012',
     };
 
-    eventBus.once(ContactEventChannel.CreateContact, async (createdContact) => {
-      const getEvent = waitForEvent(ContactEventChannel.GetContactByID);
-      contactService.getContact(createdContact.id!);
-      const retrievedContact = await getEvent;
-
-      expect(retrievedContact).toEqual(
-        expect.objectContaining({
-          id: createdContact.id,
-          name: createdContact.name,
-          did: createdContact.did,
-        }),
-      );
-      done();
-    });
-
+    const createEvent = waitForEvent(ContactEventChannel.CreateContact);
     contactService.createContact(newContact);
+    const createdContact = await createEvent;
+
+    const getEvent = waitForEvent(ContactEventChannel.GetContactByID);
+    contactService.getContact(createdContact.payload.id!);
+    const retrievedContact = await getEvent;
+
+    expect(retrievedContact).toEqual(
+      expect.objectContaining({
+        status: ServiceResponseStatus.Success,
+        payload: expect.objectContaining({
+          id: createdContact.payload.id,
+          name: createdContact.payload.name,
+          did: createdContact.payload.did,
+        }),
+      }),
+    );
   });
 
-  it('should retrieve all contacts', (done) => {
+  it('should emit an error when failing to retrieve a contact by ID', async () => {
+    const nonExistentId = 999; // An ID that doesn't exist
+
+    // Mock repository to simulate failure
+    jest
+      .spyOn(contactService['contactRepository'], 'get')
+      .mockRejectedValueOnce(new Error('Contact not found'));
+
+    const getEvent = waitForEvent(ContactEventChannel.GetContactByID);
+    contactService.getContact(nonExistentId);
+    const result = await getEvent;
+
+    expect(result).toEqual(
+      expect.objectContaining({
+        status: ServiceResponseStatus.Error,
+        payload: expect.objectContaining({
+          name: 'Error',
+          message: 'Contact not found',
+        }),
+      }),
+    );
+  });
+
+  it('should retrieve all contacts', async () => {
     const contact1: Omit<Contact, 'id'> = {
       name: 'Alice',
       did: 'did:example:345678',
@@ -94,83 +152,187 @@ describe('ContactService', () => {
       did: 'did:example:654321',
     };
 
-    // Create the first contact
-    eventBus.once(ContactEventChannel.CreateContact, async () => {
-      // Create the second contact
-      eventBus.once(ContactEventChannel.CreateContact, async () => {
-        const getAllEvent = waitForEvent(ContactEventChannel.GetAllContacts);
-        contactService.getAllContacts();
-        const contacts = await getAllEvent;
-
-        expect(contacts).toHaveLength(2);
-        expect(contacts).toEqual(
-          expect.arrayContaining([
-            expect.objectContaining({
-              name: contact1.name,
-              did: contact1.did,
-            }),
-            expect.objectContaining({
-              name: contact2.name,
-              did: contact2.did,
-            }),
-          ]),
-        );
-        done();
-      });
-
-      contactService.createContact(contact2);
-    });
-
+    // Create contacts
+    const createEvent1 = waitForEvent(ContactEventChannel.CreateContact);
     contactService.createContact(contact1);
+    await createEvent1;
+
+    const createEvent2 = waitForEvent(ContactEventChannel.CreateContact);
+    contactService.createContact(contact2);
+    await createEvent2;
+
+    const getAllEvent = waitForEvent(ContactEventChannel.GetAllContacts);
+    contactService.getAllContacts();
+    const contacts = await getAllEvent;
+
+    expect(contacts).toEqual(
+      expect.objectContaining({
+        status: ServiceResponseStatus.Success,
+        payload: expect.arrayContaining([
+          expect.objectContaining({
+            name: contact1.name,
+            did: contact1.did,
+          }),
+          expect.objectContaining({
+            name: contact2.name,
+            did: contact2.did,
+          }),
+        ]),
+      }),
+    );
   });
 
-  it('should update a contact', (done) => {
+  it('should emit an error when failing to retrieve all contacts', async () => {
+    // Mock repository to simulate failure
+    jest
+      .spyOn(contactService['contactRepository'], 'getAll')
+      .mockRejectedValueOnce(new Error('Retrieval failed'));
+
+    const getAllEvent = waitForEvent(ContactEventChannel.GetAllContacts);
+    contactService.getAllContacts();
+    const result = await getAllEvent;
+
+    expect(result).toEqual(
+      expect.objectContaining({
+        status: ServiceResponseStatus.Error,
+        payload: expect.objectContaining({
+          name: 'Error',
+          message: 'Retrieval failed',
+        }),
+      }),
+    );
+  });
+
+  it('should update a contact', async () => {
     const contact: Omit<Contact, 'id'> = {
       name: 'Charlie',
       did: 'did:example:789012',
     };
 
-    eventBus.once(ContactEventChannel.CreateContact, async (createdContact) => {
-      const updatedFields = { name: 'Charles' };
-      const updateEvent = waitForEvent(ContactEventChannel.UpdateContact);
+    // Create a contact
+    const createEvent = waitForEvent(ContactEventChannel.CreateContact);
+    contactService.createContact(contact);
+    const createdContact = await createEvent;
 
-      contactService.updateContact(createdContact.id!, updatedFields);
-      const updatedContact = await updateEvent;
+    const updatedFields = { name: 'Charles' };
+    const updateEvent = waitForEvent(ContactEventChannel.UpdateContact);
 
-      expect(updatedContact).toEqual(
-        expect.objectContaining({
-          id: createdContact.id,
+    // Update the contact
+    contactService.updateContact(createdContact.payload.id!, updatedFields);
+    const updatedContact = await updateEvent;
+
+    expect(updatedContact).toEqual(
+      expect.objectContaining({
+        status: ServiceResponseStatus.Success,
+        payload: expect.objectContaining({
+          id: createdContact.payload.id,
           name: updatedFields.name,
         }),
-      );
-      done();
-    });
-
-    contactService.createContact(contact);
+      }),
+    );
   });
 
-  // it('should delete a contact and verify it no longer exists', (done) => {
-  //   const contact: Omit<Contact, 'id'> = {
-  //     name: 'Charlie Brown',
-  //     did: 'did:example:789012',
-  //   };
+  it('should emit an error when failing to update a contact', async () => {
+    const contact: Omit<Contact, 'id'> = {
+      name: 'Charlie',
+      did: 'did:example:789012',
+    };
 
-  //   eventBus.once(ContactEventChannel.CreateContact, async (createdContact) => {
-  //     const deleteEvent = waitForEvent(ContactEventChannel.DeleteContact);
+    jest
+      .spyOn(contactService['contactRepository'], 'create')
+      .mockResolvedValueOnce({
+        ...contact,
+        id: 1,
+      });
 
-  //     contactService.deleteContact(createdContact.id!);
-  //     const { id: deletedContactId } = await deleteEvent;
+    const createEvent = waitForEvent(ContactEventChannel.CreateContact);
+    contactService.createContact(contact);
+    const createdContact = await createEvent;
 
-  //     expect(deletedContactId).toBe(createdContact.id);
+    // Mock the update method to simulate failure
+    jest
+      .spyOn(contactService['contactRepository'], 'update')
+      .mockRejectedValueOnce(new Error('Update failed'));
 
-  //     // Ensure contact is no longer retrievable
-  //     contactService.getContact(deletedContactId!).catch(() => {
-  //       // Contact should not be found
-  //       expect(true).toBe(true);
-  //       done();
-  //     });
-  //   });
+    const updateEvent = waitForEvent(ContactEventChannel.UpdateContact);
+    const updatedFields = { name: 'Charles' };
 
-  //   contactService.createContact(contact);
-  // });
+    contactService.updateContact(createdContact.payload.id!, updatedFields);
+    const result = await updateEvent;
+
+    expect(result).toEqual(
+      expect.objectContaining({
+        status: ServiceResponseStatus.Error,
+        payload: expect.objectContaining({
+          name: 'Error',
+          message: 'Update failed',
+        }),
+      }),
+    );
+  });
+
+  it('should delete a contact and verify it no longer exists', async () => {
+    const contact: Omit<Contact, 'id'> = {
+      name: 'Charlie Brown',
+      did: 'did:example:789012',
+    };
+
+    const createEvent = waitForEvent(ContactEventChannel.CreateContact);
+    contactService.createContact(contact);
+    const createdContact = await createEvent;
+
+    const deleteEvent = waitForEvent(ContactEventChannel.DeleteContact);
+    contactService.deleteContact(createdContact.payload.id!);
+    const {
+      payload: { id: deletedContactId },
+    } = await deleteEvent;
+
+    expect(deletedContactId).toBe(createdContact.payload.id);
+
+    // Ensure contact is no longer retrievable
+    try {
+      const getEvent = waitForEvent(ContactEventChannel.GetContactByID);
+      contactService.getContact(deletedContactId!);
+      await getEvent;
+    } catch {
+      expect(true).toBe(true);
+    }
+  });
+
+  it('should emit an error when failing to delete a contact', async () => {
+    const contact: Omit<Contact, 'id'> = {
+      name: 'Charlie Brown',
+      did: 'did:example:789012',
+    };
+
+    jest
+      .spyOn(contactService['contactRepository'], 'create')
+      .mockResolvedValueOnce({
+        ...contact,
+        id: 1,
+      });
+
+    const createEvent = waitForEvent(ContactEventChannel.CreateContact);
+    contactService.createContact(contact);
+    const createdContact = await createEvent;
+
+    // Mock the delete method to simulate failure
+    jest
+      .spyOn(contactService['contactRepository'], 'delete')
+      .mockRejectedValueOnce(new Error('Deletion failed'));
+
+    const deleteEvent = waitForEvent(ContactEventChannel.DeleteContact);
+    contactService.deleteContact(createdContact.payload.id!);
+    const result = await deleteEvent;
+
+    expect(result).toEqual(
+      expect.objectContaining({
+        status: ServiceResponseStatus.Error,
+        payload: expect.objectContaining({
+          name: 'Error',
+          message: 'Deletion failed',
+        }),
+      }),
+    );
+  });
 });
