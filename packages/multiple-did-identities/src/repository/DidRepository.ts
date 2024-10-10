@@ -1,7 +1,22 @@
 import { StorageFactory } from '@adorsys-gis/storage';
-import { DidSchema } from './DidSchema';
-import { DIDKeyPair } from '../did-methods/IDidMethod';
 import { StorageError } from '@adorsys-gis/storage/src/lib/errors/StorageError';
+import { DBSchema } from 'idb';
+import { DIDKeyPair } from 'src/did-methods/IDidMethod';
+
+
+interface DidSchema extends DBSchema {
+  dids: {
+    key: string; // The DID string
+    value: {
+      did: string;
+      method: string;
+      document: DIDKeyPair;
+      createdAt: number;
+    };
+    indexes: { 'by-method': string };
+  };
+}
+
 
 export class DidRepository {
   private storageFactory: StorageFactory<DidSchema>;
