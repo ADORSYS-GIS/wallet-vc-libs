@@ -1,1 +1,1 @@
-export * from './lib/multiple-did-identities';
+export * from './lib/DIDIdentityService';

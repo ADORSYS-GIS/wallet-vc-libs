@@ -2,6 +2,7 @@
   "name": "multiple-did-identities",
   "version": "1.0.0",
   "dependencies": {
+    "@adorsys-gis/cloning-decorator": "^1.0.0",
     "@adorsys-gis/storage": "^1.0.1",
     "@noble/ed25519": "^2.1.0",
     "base58-universal": "^2.0.0",

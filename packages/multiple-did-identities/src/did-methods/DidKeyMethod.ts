@@ -17,7 +17,7 @@ export class DidKeyMethod implements IDidMethod {
       const privateKey = ed.utils.randomPrivateKey();
       const publicKey = await ed.getPublicKey(privateKey);
 
-      // Step 2: Convert keys to JWK format
+      // Convert keys to JWK format
       const publicKeyJwk: JWK = {
         kty: 'OKP',
         crv: 'Ed25519',
