@@ -1,5 +1,8 @@
 import { eventBus } from '@adorsys-gis/event-bus';
-import { ServiceResponse, ServiceResponseStatus } from 'status-service';
+import {
+  ServiceResponse,
+  ServiceResponseStatus,
+} from '@adorsys-gis/status-service';
 import { Contact } from '../../model/Contact';
 import { ContactEventChannel } from '../../model/ContactEventChannel';
 import { ContactService } from '../ContactService';
@@ -182,11 +185,11 @@ describe('ContactService', () => {
     );
   });
 
-  it('should emit an error when failing to retrieve all contacts', async () => {
-    // Mock repository to simulate failure
+  it('should emit an error when failing to retrieve all contacts with a non-Error value', async () => {
+    // Mock repository to simulate failure with a non-Error object (e.g., a string)
     jest
       .spyOn(contactService['contactRepository'], 'getAll')
-      .mockRejectedValueOnce(new Error('Retrieval failed'));
+      .mockRejectedValueOnce('Non-Error failure');
 
     const getAllEvent = waitForEvent(ContactEventChannel.GetAllContacts);
     contactService.getAllContacts();
@@ -197,7 +200,7 @@ describe('ContactService', () => {
         status: ServiceResponseStatus.Error,
         payload: expect.objectContaining({
           name: 'Error',
-          message: 'Retrieval failed',
+          message: 'Non-Error failure',
         }),
       }),
     );

@@ -1,5 +1,8 @@
 import { EventEmitter } from 'eventemitter3';
-import { ServiceResponse, ServiceResponseStatus } from 'status-service';
+import {
+  ServiceResponse,
+  ServiceResponseStatus,
+} from '@adorsys-gis/status-service';
 import { Contact } from '../model/Contact';
 import { ContactEventChannel } from '../model/ContactEventChannel';
 import { ContactRepository } from '../repositories/ContactRepository';

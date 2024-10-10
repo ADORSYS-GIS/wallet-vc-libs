@@ -17,7 +17,10 @@ The library is designed to be easy to integrate into your existing TypeScript pr
 ## Example
 
 ```typescript
-import { ServiceResponse, ServiceResponseStatus } from 'status-service';
+import {
+  ServiceResponse,
+  ServiceResponseStatus,
+} from '@adorsys-gis/status-service';
 
 // Example of a successful service response
 const successResponse: ServiceResponse<string> = {
