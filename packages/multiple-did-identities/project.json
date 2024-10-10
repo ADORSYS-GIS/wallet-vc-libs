@@ -1,0 +1,6 @@
+{
+  "name": "multiple-did-identities",
+  "sourceRoot": "packages/multiple-did-identities/src",
+  "projectType": "library",
+  "tags": []
+}
