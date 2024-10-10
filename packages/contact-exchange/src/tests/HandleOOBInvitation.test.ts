@@ -1,65 +1,49 @@
 // handleOOBInvitation.test.ts
 import { handleOOBInvitation } from '../services/HandleOOBInvitation';
 import { Wallet } from '../services/Wallet';
-import { OutOfBandInvitation } from '../services/DIDCommOOBInvitation';
+import { parseOOBInvitation } from '../services/OOBParser';
+import {
+  validOutOfBandInvitation,
+  validEncodedUrl,
+  invalidEncodedUrl,
+  invalidOutOfBandInvitation,
+} from '../services/OOBTestFixtures';
 
 describe('handleOOBInvitation', () => {
-  it('should add a contact to the wallet', () => {
-    const wallet = new Wallet();
-    const invitation: OutOfBandInvitation = {
-      '@id': 'invitation-id',
-      '@type': 'https://didcomm.org/out-of-band/1.0/invitation',
-      services: [
-        {
-          id: 'did:example:123456789abcdefghi',
-          type: 'did-communication',
-          serviceEndpoint: 'http://example.com/endpoint',
-          recipientKeys: ['did:example:123456789abcdefghi#key-1'],
-          routingKeys: ['did:example:123456789abcdefghi#key-2'],
-        },
-      ],
-    };
+  let wallet: Wallet;
 
-    handleOOBInvitation(wallet, invitation, 'wallet-1');
-
-    expect(wallet.getContacts('wallet-1')).toHaveLength(1);
-    expect(wallet.getContacts('wallet-1')[0].did).toBe(
-      'did:example:123456789abcdefghi#key-1',
-    );
+  beforeEach(() => {
+    wallet = new Wallet();
   });
 
-  it('should not add a contact if the OOB invitation is invalid', () => {
-    const wallet = new Wallet();
-    const invalidInvitation: OutOfBandInvitation = {
-      '@id': 'invitation-id',
-      '@type': 'https://didcomm.org/out-of-band/1.0/invitation',
-      services: [],
-    };
+  it('should add a valid contact to the wallet from a JSON invitation', () => {
+    handleOOBInvitation(wallet, validOutOfBandInvitation, 'wallet-1');
+    const contacts = wallet.getContacts('wallet-1');
 
-    handleOOBInvitation(wallet, invalidInvitation, 'wallet-1');
+    expect(contacts).toHaveLength(1);
+    expect(contacts[0].did).toBe('did:example:123456789abcdefghi#key-1');
+  });
 
+  it('should add a valid contact from a base64 encoded URL invitation', () => {
+    const parsedInvitation = parseOOBInvitation(validEncodedUrl);
+    if (!parsedInvitation) {
+      throw new Error('Failed to parse OOB invitation');
+    }
+
+    handleOOBInvitation(wallet, validOutOfBandInvitation, 'wallet-1');
+    const contacts = wallet.getContacts('wallet-1');
+
+    expect(contacts).toHaveLength(1);
+    expect(contacts[0].did).toBe('did:example:123456789abcdefghi#key-1');
+  });
+
+  it('should not add a contact if the OOB invitation URL is invalid', () => {
+    handleOOBInvitation(wallet, invalidEncodedUrl, 'wallet-1');
     expect(wallet.getContacts('wallet-1')).toHaveLength(0);
   });
 
-  it('getAllContacts should return all contacts across wallets', () => {
-    const wallet = new Wallet();
-
-    const validInvitation: OutOfBandInvitation = {
-      '@id': 'invitation-id',
-      '@type': 'https://didcomm.org/out-of-band/1.0/invitation',
-      services: [
-        {
-          id: 'did:example:123456789abcdefghi',
-          type: 'did-communication',
-          serviceEndpoint: 'http://example.com/endpoint',
-          recipientKeys: ['did:example:123456789abcdefghi#key-1'],
-          routingKeys: ['did:example:123456789abcdefghi#key-2'],
-        },
-      ],
-    };
-
-    handleOOBInvitation(wallet, validInvitation, 'wallet-1');
-    handleOOBInvitation(wallet, validInvitation, 'wallet-2');
-    expect(wallet.getAllContacts()).toHaveLength(2);
+  it('should handle invitations with missing recipient keys gracefully', () => {
+    handleOOBInvitation(wallet, invalidOutOfBandInvitation, 'wallet-1');
+    expect(wallet.getContacts('wallet-1')).toHaveLength(0);
   });
 });

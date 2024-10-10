@@ -1,18 +1,27 @@
-# contact-exchange
+# Contact Exchange Library
 
 This library was generated with [Nx](https://nx.dev).
 
+# Building the Library
+
+- Before builld, please move to the root directory of the library folder, that is **contact-exchange** and installl dependencies with :
+
+```bash
+npm i
+``
+
 ## Building
 
-Run `nx build contact-exchange` to build the library.
+Run `npm run build ` to build the library.
 
 ## Running unit tests
 
-Run `nx test contact-exchange` to execute the unit tests via [Jest](https://jestjs.io).
+Run `nx run test ` to execute the unit tests via [Jest](https://jestjs.io).
 
 ## Basic overview of the library
 
 ```
+
           +---------------+
           |  Wallet     |
           +---------------+
@@ -21,7 +30,7 @@ Run `nx test contact-exchange` to execute the unit tests via [Jest](https://jest
                   |
                   v
           +---------------+
-          |  Contact Storage  |
+          |  Contact Storage|
           +---------------+
                   |
                   |  (Accessible by all identities)
@@ -30,13 +39,14 @@ Run `nx test contact-exchange` to execute the unit tests via [Jest](https://jest
           +---------------+
           |  Identities    |
           +---------------+
-          |       |
+               |
                   |  DIDComm Messaging
                   |
                   v
             +---------------+
-              Wallet          |
+            |  Wallet        |
             +---------------+
 
+```
 
 ```

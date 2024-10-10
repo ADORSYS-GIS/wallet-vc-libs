@@ -1,40 +1,31 @@
+// processOOBInvitation.test.ts
 import { processOOBInvitation } from '../services/ProcessOOBInvitation';
-import { OutOfBandInvitation } from '../services/DIDCommOOBInvitation';
+import { parseOOBInvitation } from '../services/OOBParser';
+import {
+  validOutOfBandInvitation,
+  validEncodedUrl,
+  invalidEncodedUrl,
+} from '../services/OOBTestFixtures';
 
 describe('processOOBInvitation', () => {
-  it('should return a DIDCommMessage from a valid OOB invitation', () => {
-    const invitation: OutOfBandInvitation = {
-      '@id': 'invitation-id',
-      '@type': 'https://didcomm.org/out-of-band/1.0/invitation',
-      services: [
-        {
-          id: 'did:example:123456789abcdefghi',
-          type: 'did-communication',
-          serviceEndpoint: 'http://example.com/endpoint',
-          recipientKeys: ['did:example:123456789abcdefghi#key-1'],
-          routingKeys: ['did:example:123456789abcdefghi#key-2'],
-        },
-      ],
-    };
-
-    const didCommMessage = processOOBInvitation(invitation);
+  it('should return a valid DIDCommMessage from a valid OOB invitation', () => {
+    const didCommMessage = processOOBInvitation(validOutOfBandInvitation);
 
     expect(didCommMessage).not.toBeNull();
     expect(didCommMessage?.type).toBe(
-      'https://didcomm.org/out-of-band/1.0/invitation',
+      'https://didcomm.org/out-of-band/2.0/invitation',
     );
     expect(didCommMessage?.from).toBe('did:example:123456789abcdefghi#key-1');
   });
 
-  it('should return null for an invalid OOB invitation', () => {
-    const invitation: OutOfBandInvitation = {
-      '@id': 'invitation-id',
-      '@type': 'https://didcomm.org/out-of-band/1.0/invitation',
-      services: [],
-    };
+  it('should parse a valid OOB invitation URL and return the invitation', () => {
+    const result = parseOOBInvitation(validEncodedUrl);
+    expect(result).not.toBeNull();
+    expect(result?.invitation['@cid']).toBe('Invitation-ID');
+  });
 
-    const didCommMessage = processOOBInvitation(invitation);
-
-    expect(didCommMessage).toBeNull();
+  it('should return null for an invalid URL', () => {
+    const result = parseOOBInvitation(invalidEncodedUrl);
+    expect(result).toBeNull();
   });
 });

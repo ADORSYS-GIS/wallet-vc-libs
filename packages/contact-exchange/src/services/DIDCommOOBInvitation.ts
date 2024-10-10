@@ -12,6 +12,7 @@ interface DIDCommMessage {
 interface OutOfBandInvitation {
   '@id': string;
   '@type': string;
+  '@cid': string;
   label?: string;
   goal?: string;
   goal_code?: string;

@@ -3,12 +3,44 @@ import {
   DIDCommMessage,
   OutOfBandService,
 } from './DIDCommOOBInvitation';
+import { parseOOBInvitation } from './OOBParser';
 
+/**
+ * Process an out-of-band invitation and return a DIDComm message.
+ *
+ * @param invitation - The out-of-band invitation to process, either as a string (URL) or an object.
+ * @returns A DIDComm message, or null if the invitation is invalid.
+ */
 export function processOOBInvitation(
-  invitation: OutOfBandInvitation,
+  invitation: OutOfBandInvitation | string,
 ): DIDCommMessage | null {
   try {
-    const { '@id': id, '@type': type, services, label, goal } = invitation;
+    let parsedInvitation: OutOfBandInvitation | null = null;
+
+    // Check if the invitation is a URL
+    if (typeof invitation === 'string') {
+      const parsed = parseOOBInvitation(invitation);
+      if (parsed) {
+        parsedInvitation = parsed.invitation;
+      } else {
+        throw new Error('Failed to parse OOB invitation from URL.');
+      }
+      // Add the encoded part to the parsed invitation
+      (
+        parsedInvitation as OutOfBandInvitation & { encodedPart: string }
+      ).encodedPart = parsed.encodedPart;
+    } else {
+      parsedInvitation = invitation;
+    }
+
+    // Extract the necessary fields from the parsed invitation
+    const {
+      '@id': id,
+      '@type': type,
+      services,
+      label,
+      goal,
+    } = parsedInvitation;
 
     // Validate that services are provided in the OOB invitation
     if (!services || services.length === 0) {
@@ -19,9 +51,7 @@ export function processOOBInvitation(
     const service =
       typeof services[0] === 'string' ? { id: services[0] } : services[0];
 
-    // Cast service to OutOfBandService type
     const outOfBandService = service as OutOfBandService;
-
     const { serviceEndpoint, recipientKeys, routingKeys } = outOfBandService;
 
     // Create a basic DIDComm Message structure
@@ -42,7 +72,6 @@ export function processOOBInvitation(
 
     return didCommMessage;
   } catch (error) {
-    // Enhanced error handling
     console.error(
       'Error processing OOB Invitation:',
       error instanceof Error ? error.message : error,

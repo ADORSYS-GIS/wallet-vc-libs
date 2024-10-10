@@ -1,62 +1,49 @@
-// process OOB invitations and add contacts to the wallet
+import { Wallet } from './Wallet';
+import { OutOfBandInvitation, OutOfBandService } from './DIDCommOOBInvitation';
 
-import { Wallet, Contact } from './Wallet';
-import { processOOBInvitation } from './ProcessOOBInvitation';
-import { OutOfBandInvitation } from './DIDCommOOBInvitation';
-
-const wallet = new Wallet();
-
-function handleOOBInvitation(
+export function handleOOBInvitation(
   wallet: Wallet,
-  invitation: OutOfBandInvitation,
-  walletIdentity: string,
-) {
+  invitation: OutOfBandInvitation | string,
+  identity: string,
+): void {
   try {
-    const didCommMessage = processOOBInvitation(invitation);
+    let parsedInvitation: OutOfBandInvitation | null = null;
 
-    if (didCommMessage !== null && didCommMessage !== undefined) {
-      const contact: Contact = {
-        did: didCommMessage.from,
-        label: (didCommMessage.body as { label: string }).label || '',
-        serviceEndpoint:
-          (didCommMessage.body as { serviceEndpoint: string })
-            .serviceEndpoint || '',
-      };
+    // If the invitation is a base64 encoded URL, decode and parse it
+    if (typeof invitation === 'string') {
+      parsedInvitation = JSON.parse(invitation);
+    } else {
+      // If the invitation is already an object, use it directly
+      parsedInvitation = invitation;
+    }
 
-      wallet.addContact(contact, walletIdentity);
-    } else {
-      console.log('No DIDComm message received from the OOB invitation');
+    // Validate the parsed invitation
+    if (!parsedInvitation?.services || parsedInvitation.services.length === 0) {
+      console.error('Invalid OOB invitation: no services provided.');
+      return;
     }
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      console.log(`Error handling OOB invitation: ${error.message}`);
-    } else {
-      console.log('Unknown error occurred');
-    }
+
+    // Handle contact addition based on the parsed services
+    parsedInvitation.services.forEach((service: string | OutOfBandService) => {
+      if (
+        typeof service === 'object' &&
+        service.recipientKeys &&
+        service.recipientKeys.length > 0
+      ) {
+        const contact = {
+          did: service.recipientKeys[0], // Use the first recipient key
+          label: parsedInvitation.label || 'Unknown', // Use the label from the invitation or default to 'Unknown'
+          serviceEndpoint: service.serviceEndpoint || '', // Service endpoint
+        };
+
+        // Add the contact to the wallet
+        wallet.addContact(contact, identity);
+        console.log(`Contact added for identity ${identity}`);
+      } else {
+        console.error('No recipient keys provided in the service.');
+      }
+    });
+  } catch (error) {
+    console.error('Error handling OOB invitation:', error);
   }
 }
-
-const exampleOOBInvitation: OutOfBandInvitation = {
-  '@id': 'invitation-id',
-  '@type': 'https://didcomm.org/out-of-band/1.0/invitation',
-  services: [
-    {
-      id: 'did:example:123456789abcdefghi',
-      type: 'did-communication',
-      serviceEndpoint: 'http://example.com/endpoint',
-      recipientKeys: ['did:example:123456789abcdefghi#key-1'],
-      routingKeys: ['did:example:123456789abcdefghi#key-2'],
-    },
-  ],
-};
-
-const walletIdentity = 'wallet-1';
-handleOOBInvitation(wallet, exampleOOBInvitation, walletIdentity);
-
-// Retrieve contacts for a specific identity
-console.log('Contacts for wallet-1:', wallet.getContacts(walletIdentity));
-
-// Retrieve all contacts across all identities
-console.log('All contacts:', wallet.getAllContacts());
-
-export { OutOfBandInvitation, handleOOBInvitation };

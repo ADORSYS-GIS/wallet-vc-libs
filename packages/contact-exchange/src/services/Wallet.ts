@@ -8,7 +8,6 @@ export interface Contact {
 
 export class Wallet {
   private identities: Map<string, Contact[]>;
-  static getAllContacts: unknown;
 
   constructor() {
     this.identities = new Map();
@@ -16,6 +15,14 @@ export class Wallet {
 
   // Store contact for a specific identity
   addContact(contact: Contact, identity: string): void {
+    // Validate the contact before adding
+    if (!contact.did || !contact.serviceEndpoint) {
+      console.log(
+        'Invalid contact: missing required fields (did or serviceEndpoint)',
+      );
+      return;
+    }
+
     if (!this.identities.has(identity)) {
       this.identities.set(identity, []);
     }
