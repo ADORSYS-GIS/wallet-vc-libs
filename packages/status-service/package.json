@@ -36,5 +36,5 @@
   "typings": "./src/index.d.ts",
   "author": "adorsys",
   "license": "ISC",
-  "description": "A TypeScript library that provides a standardized way to handle and represent service operation responses, including success and error states."
+  "description": ""
 }
