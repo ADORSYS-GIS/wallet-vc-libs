@@ -1,4 +1,4 @@
-import { IDidMethod, DIDDocument } from './IDidMethod';
+import { IDidMethod, DIDKeyPair } from './IDidMethod';
 import { DidKeyMethod } from './DidKeyMethod';
 import { DidPeerMethod } from './DidPeerMethod';
 
@@ -19,7 +19,7 @@ export class DidMethodFactory {
    * @param method - The DID method to use ('key' or 'peer').
    * @returns A Promise that resolves to a DIDDocument.
    */
-  static async generateDid(method: string): Promise<DIDDocument> {
+  static async generateDid(method: string): Promise<DIDKeyPair> {
     const didMethod = this.create(method);
     return didMethod.generate();
   }

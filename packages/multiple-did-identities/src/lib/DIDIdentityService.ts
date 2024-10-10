@@ -1,7 +1,11 @@
 import { DidMethodFactory } from '../did-methods/DidMethodFactory';
 import { DidRepository } from '../repository/DidRepository';
 import { EventEmitter } from 'eventemitter3';
-// import { DidEventChannel } from '../utils/DidEventChannel';
+import {
+  ServiceResponse,
+  ServiceResponseStatus,
+} from '@adorsys-gis/status-service';
+import { DidEventChannel } from '../utils/DidEventChannel';
 
 export class DIDIdentityService {
   private didRepository: DidRepository;
@@ -12,40 +16,115 @@ export class DIDIdentityService {
 
   /**
    * Create a DID identity using the specified method ('key' or 'peer').
+   * Emits a {@link DidEventChannel.CreateDidIdentity} event upon successful creation.
+   *
    * @param method - The DID method to use ('key' or 'peer').
-   * @returns A Promise that resolves to the saved DID document.
    */
   public async createDidIdentity(method: string): Promise<void> {
-    // const createDidIdentityChannel = DidEventChannel.CreateDidIdentity
+    const createDidIdentityChannel = DidEventChannel.CreateDidIdentity;
 
-    const didDocument = await DidMethodFactory.generateDid(method);
-    this.didRepository.createDidId(didDocument,method);
+    try {
+      const didDocument = await DidMethodFactory.generateDid(method);
+      await this.didRepository.createDidId(didDocument, method);
+
+      const response: ServiceResponse<{ did: string }> = {
+        status: ServiceResponseStatus.Success,
+        payload: { did: didDocument.did },
+      };
+
+      this.eventBus.emit(createDidIdentityChannel, response);
+    } catch (error) {
+      this.sharedErrorHandler(createDidIdentityChannel)(error);
+    }
   }
 
   /**
    * Delete a DID identity by its DID.
+   * Emits a {@link DidEventChannel.DeleteDidIdentity} event upon successful deletion.
+   *
    * @param did - The DID to delete.
-   * @returns A Promise that resolves to a boolean indicating success.
    */
   public async deleteDidIdentity(did: string): Promise<void> {
-    await this.didRepository.deleteDidId(did);
+    const deleteDidIdentityChannel = DidEventChannel.DeleteDidIdentity;
 
+    try {
+      await this.didRepository.deleteDidId(did);
+
+      const response: ServiceResponse<{ message: string; deletedDid: string }> =
+        {
+          status: ServiceResponseStatus.Success,
+          payload: {
+            message: `DID identity with ID ${did} was successfully deleted.`,
+            deletedDid: did, // Include the deleted DID for confirmation
+          },
+        };
+
+      this.eventBus.emit(deleteDidIdentityChannel, response);
+    } catch (error) {
+      this.sharedErrorHandler(deleteDidIdentityChannel)(error);
+    }
   }
 
   /**
-   * Find one DID identity by its DID.
-   * @param did - The DID to find.
-   * @returns A Promise that resolves to the DID document, or null if not found.
+   * Find a DID identity by its DID.
+   * Emits a {@link DidEventChannel.GetSingleDidIdentity} event upon successful retrieval.
+   *
+   * @param did - The DID to retrieve.
    */
   public async findDidIdentity(did: string): Promise<void> {
-    this.didRepository.getADidId(did);
+    const findDidIdentityChannel = DidEventChannel.GetSingleDidIdentity;
+
+    try {
+      const didRecord = await this.didRepository.getADidId(did);
+
+      const response: ServiceResponse<{
+        did: string;
+        method: string;
+        createdAt: number;
+      }> = {
+        status: ServiceResponseStatus.Success,
+        payload: didRecord!,
+      };
+
+      this.eventBus.emit(findDidIdentityChannel, response);
+    } catch (error) {
+      this.sharedErrorHandler(findDidIdentityChannel)(error);
+    }
   }
 
   /**
    * Find all DID identities.
-   * @returns A Promise that resolves to an array of DID documents.
+   * Emits a {@link DidEventChannel.GetAllidIdentities} event upon successful retrieval.
    */
   public async findAllDidIdentities(): Promise<void> {
-    this.didRepository.getAllDidIds();
+    const findAllDidIdentitiesChannel = DidEventChannel.GetAllidIdentities;
+
+    try {
+      const didRecords = await this.didRepository.getAllDidIds();
+
+      const response: ServiceResponse<
+        { did: string; method: string; createdAt: number }[]
+      > = {
+        status: ServiceResponseStatus.Success,
+        payload: didRecords,
+      };
+
+      this.eventBus.emit(findAllDidIdentitiesChannel, response);
+    } catch (error) {
+      this.sharedErrorHandler(findAllDidIdentitiesChannel)(error);
+    }
+  }
+
+  /**
+   * Shared error handler that emits an error response.
+   */
+  private sharedErrorHandler(channel: DidEventChannel) {
+    return (error: unknown) => {
+      const response: ServiceResponse<Error> = {
+        status: ServiceResponseStatus.Error,
+        payload: error instanceof Error ? error : new Error(String(error)),
+      };
+      this.eventBus.emit(channel, response);
+    };
   }
 }

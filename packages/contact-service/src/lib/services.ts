@@ -1,6 +1,7 @@
 import { CloneMethodArgs } from '@adorsys-gis/cloning-decorator';
 import EventEmitter from 'eventemitter3';
-import { DIDIdentityService as _DIDIdentityService } from './DIDIdentityService';
+
+import { ContactService as _ContactService } from './ContactService';
 
 // This decorator function will deep clone every argument
 // passed to any method of the class it decorates, except
@@ -8,4 +9,4 @@ import { DIDIdentityService as _DIDIdentityService } from './DIDIdentityService'
 // the same event bus instance between layers.
 const decorate = CloneMethodArgs({ exclude: [EventEmitter] });
 
-export const DIDIdentityService = decorate(_DIDIdentityService);
+export const ContactService = decorate(_ContactService);

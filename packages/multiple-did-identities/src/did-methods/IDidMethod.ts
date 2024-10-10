@@ -1,6 +1,6 @@
 import { JWK } from 'jose';
 
-export interface DIDDocument {
+export interface DIDKeyPair {
   did: string;
   privateKey: JWK;
   publicKey: JWK;
@@ -8,5 +8,5 @@ export interface DIDDocument {
 
 export interface IDidMethod {
   method: string;
-  generate(): Promise<DIDDocument>;
+  generate(): Promise<DIDKeyPair>;
 }

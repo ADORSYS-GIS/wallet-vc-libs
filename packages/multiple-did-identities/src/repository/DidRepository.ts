@@ -1,6 +1,6 @@
-import { StorageFactory } from '@adorsys-gis/storage'; 
+import { StorageFactory } from '@adorsys-gis/storage';
 import { DidSchema } from './DidSchema';
-import { DIDDocument } from '../did-methods/IDidMethod';
+import { DIDKeyPair } from '../did-methods/IDidMethod';
 import { StorageError } from '@adorsys-gis/storage/src/lib/errors/StorageError';
 
 export class DidRepository {
@@ -24,7 +24,7 @@ export class DidRepository {
    * @param method The DID method ('key' or 'peer').
    * @returns The stored DIDDocument.
    */
-  async createDidId(didDoc: DIDDocument, method: string): Promise<void> {
+  async createDidId(didDoc: DIDKeyPair, method: string): Promise<void> {
     const payload = {
       did: didDoc.did,
       method,
@@ -33,7 +33,10 @@ export class DidRepository {
     };
 
     try {
-      await this.storageFactory.insert('dids', { key: didDoc.did, value: payload });
+      await this.storageFactory.insert('dids', {
+        key: didDoc.did,
+        value: payload,
+      });
     } catch (error) {
       throw new StorageError((error as Error).message, 'insert');
     }
@@ -57,34 +60,37 @@ export class DidRepository {
    * @param did The DID string to find.
    * @returns The corresponding DIDDocument or null if not found.
    */
-  async getADidId(did: string): Promise<{ did: string; method: string; createdAt: number } | null> {
+  async getADidId(
+    did: string,
+  ): Promise<{ did: string; method: string; createdAt: number } | null> {
     try {
-        const record = await this.storageFactory.findOne('dids', did);
-        if (record) {
-            const { did, method, createdAt } = record.value;
-            return { did, method, createdAt };
-        }
-        return null; // Return null if no record is found
+      const record = await this.storageFactory.findOne('dids', did);
+      if (record) {
+        const { did, method, createdAt } = record.value;
+        return { did, method, createdAt };
+      }
+      return null; // Return null if no record is found
     } catch (error) {
-        throw new StorageError((error as Error).message, 'findOne');
+      throw new StorageError((error as Error).message, 'findOne');
     }
-}
+  }
 
   /**
- * Retrieves all stored DID identities.
- * @returns An array of objects containing did, method, and createdAt for each identity.
- */
-async getAllDidIds(): Promise<{ did: string; method: string; createdAt: number }[]> {
+   * Retrieves all stored DID identities.
+   * @returns An array of objects containing did, method, and createdAt for each identity.
+   */
+  async getAllDidIds(): Promise<
+    { did: string; method: string; createdAt: number }[]
+  > {
     try {
-        const records = await this.storageFactory.findAll('dids');
-        // Map to return only the required fields
-        return records.map((record) => {
-            const { did, method, createdAt } = record.value;
-            return { did, method, createdAt };
-        });
+      const records = await this.storageFactory.findAll('dids');
+      // Map to return only the required fields
+      return records.map((record) => {
+        const { did, method, createdAt } = record.value;
+        return { did, method, createdAt };
+      });
     } catch (error) {
-        throw new StorageError((error as Error).message, 'findAll');
+      throw new StorageError((error as Error).message, 'findAll');
     }
-}
-
+  }
 }
