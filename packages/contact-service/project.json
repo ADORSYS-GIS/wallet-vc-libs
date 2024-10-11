@@ -1,0 +1,5 @@
+{
+  "name": "contact-service",
+  "sourceRoot": "packages/contact-service/src",
+  "projectType": "library"
+}
