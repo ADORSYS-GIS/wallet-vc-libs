@@ -1,5 +1,5 @@
 {
-  "name": "@datev/contact-exchange",
+  "name": "contact-exchange",
   "version": "0.0.1",
   "dependencies": {
     "jest-worker": "^29.7.0",

@@ -1,13 +1,14 @@
 // OOBTestFixtures.ts
+
+// Base64 Encoded URL fixtures
+import { Buffer } from 'buffer';
 import { OutOfBandInvitation } from '../services/DIDCommOOBInvitation';
 import { Contact } from '../services/Wallet';
 
-/**
- * A valid OutOfBandInvitation fixture.
- */
+// Updated OutOfBandInvitation fixture
 export const validOutOfBandInvitation: OutOfBandInvitation = {
-  '@id': 'invitation-id',
-  '@type': 'https://didcomm.org/out-of-band/2.0/invitation',
+  id: 'invitation-id',
+  type: 'https://didcomm.org/out-of-band/2.0/invitation',
   services: [
     {
       id: 'did:example:123456789abcdefghi',
@@ -16,15 +17,14 @@ export const validOutOfBandInvitation: OutOfBandInvitation = {
       recipientKeys: ['did:example:123456789abcdefghi#key-1'],
     },
   ],
-  '@cid': '',
+  cid: '',
+  encodedPart: '',
 };
 
-/**
- * An invalid OutOfBandInvitation fixture, with no recipient keys.
- */
+// Updated invalid OutOfBandInvitation fixture
 export const invalidOutOfBandInvitation: OutOfBandInvitation = {
-  '@id': 'invitation-id',
-  '@type': 'https://didcomm.org/out-of-band/2.0/invitation',
+  id: 'invitation-id',
+  type: 'https://didcomm.org/out-of-band/2.0/invitation',
   services: [
     {
       id: 'did:example:123456789abcdefghi',
@@ -33,50 +33,37 @@ export const invalidOutOfBandInvitation: OutOfBandInvitation = {
       recipientKeys: [],
     },
   ],
-  '@cid': '',
+  cid: '',
+  encodedPart: '',
 };
 
-// Base64 Encoded URL fixtures
-import { Buffer } from 'buffer';
-
+// Create a JSON string from the validOutOfBandInvitation object
 const validOutOfBandInvitationJson = JSON.stringify(validOutOfBandInvitation);
+
+// Create a base64 encoded URL from the JSON string
 const encodedUrl = Buffer.from(validOutOfBandInvitationJson).toString('base64');
 
-/**
- * A valid encoded URL fixture.
- */
-export const validEncodedUrl = `https://mediator.rootsid.cloud?_oob=${encodedUrl}`;
+// Updated valid encoded URL fixture
+export const validEncodedUrl = `_oob=${encodedUrl}`;
 
-/**
- * An invalid encoded URL fixture.
- */
+// Invalid encoded URL fixture remains unchanged
 export const invalidEncodedUrl = 'invalid-url';
 
 // Contact fixtures
-
-/**
- * A valid Contact fixture.
- */
 export const validContact: Contact = {
   did: 'did:example:123456789abcdefghi',
   label: 'Alice',
   serviceEndpoint: 'http://example.com/endpoint',
 };
 
-/**
- * A second valid Contact fixture.
- */
 export const secondValidContact: Contact = {
   did: 'did:example:987654321abcdefghi',
   label: 'Bob',
-  serviceEndpoint: 'http://example.com/endpoint',
+  serviceEndpoint: 'http://example.com/endpoint2',
 };
 
-/**
- * An invalid Contact fixture, with empty values.
- */
 export const invalidContact: Contact = {
-  did: ' invalid-did',
-  label: ' label-too-long'.repeat(100),
-  serviceEndpoint: 'not-a-url',
+  did: 'invalid-did',
+  label: 'Invalid Contact',
+  serviceEndpoint: '', // Invalid service endpoint
 };

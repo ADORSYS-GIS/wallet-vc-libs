@@ -1,5 +1,6 @@
-// Types for DIDComm and Out of Band (OOB) Invitations
+// Updated Types for DIDComm and Out of Band (OOB) Invitations
 interface DIDCommMessage {
+  serviceId: string;
   id: string;
   type: string;
   from: string;
@@ -10,9 +11,10 @@ interface DIDCommMessage {
 }
 
 interface OutOfBandInvitation {
-  '@id': string;
-  '@type': string;
-  '@cid': string;
+  encodedPart: string;
+  id: string;
+  type: string;
+  cid: string;
   label?: string;
   goal?: string;
   goal_code?: string;

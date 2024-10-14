@@ -1,3 +1,4 @@
+// processOOBInvitation.ts
 import {
   OutOfBandInvitation,
   DIDCommMessage,
@@ -11,6 +12,7 @@ import { parseOOBInvitation } from './OOBParser';
  * @param invitation - The out-of-band invitation to process, either as a string (URL) or an object.
  * @returns A DIDComm message, or null if the invitation is invalid.
  */
+
 export function processOOBInvitation(
   invitation: OutOfBandInvitation | string,
 ): DIDCommMessage | null {
@@ -20,27 +22,20 @@ export function processOOBInvitation(
     // Check if the invitation is a URL
     if (typeof invitation === 'string') {
       const parsed = parseOOBInvitation(invitation);
-      if (parsed) {
-        parsedInvitation = parsed.invitation;
-      } else {
+      if (!parsed) {
         throw new Error('Failed to parse OOB invitation from URL.');
       }
-      // Add the encoded part to the parsed invitation
-      (
-        parsedInvitation as OutOfBandInvitation & { encodedPart: string }
-      ).encodedPart = parsed.encodedPart;
+      parsedInvitation = parsed;
     } else {
       parsedInvitation = invitation;
     }
 
+    if (!parsedInvitation) {
+      throw new Error('Invalid invitation');
+    }
+
     // Extract the necessary fields from the parsed invitation
-    const {
-      '@id': id,
-      '@type': type,
-      services,
-      label,
-      goal,
-    } = parsedInvitation;
+    const { id, type, services, label, goal } = parsedInvitation;
 
     // Validate that services are provided in the OOB invitation
     if (!services || services.length === 0) {
@@ -48,26 +43,29 @@ export function processOOBInvitation(
     }
 
     // Determine if the first service is a string or an object
-    const service =
-      typeof services[0] === 'string' ? { id: services[0] } : services[0];
+    const service = services[0];
+    if (typeof service !== 'object') {
+      throw new Error('Service must be an object');
+    }
 
     const outOfBandService = service as OutOfBandService;
     const { serviceEndpoint, recipientKeys, routingKeys } = outOfBandService;
 
     // Create a basic DIDComm Message structure
     const didCommMessage: DIDCommMessage = {
-      type: type,
+      type,
       from: recipientKeys[0],
       body: {
-        goal: goal || undefined,
-        label: label || undefined,
+        goal,
+        label,
         recipientKeys,
         routingKeys,
         serviceEndpoint,
       },
       to: [],
       created_time: new Date().toISOString(),
-      id: id,
+      id,
+      serviceId: '',
     };
 
     return didCommMessage;

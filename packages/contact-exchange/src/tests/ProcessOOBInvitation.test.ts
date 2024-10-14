@@ -13,10 +13,13 @@ describe('processOOBInvitation', () => {
     expect(didCommMessage?.from).toBe('did:example:123456789abcdefghi#key-1');
   });
 
-  it('should return a valid DIDComm message from a valid OOB invitation URL', () => {
-    const result = processOOBInvitation(validEncodedUrl);
-    expect(result).not.toBeNull();
-    expect(result?.type).toBe('https://didcomm.org/out-of-band/2.0/invitation');
-    expect(result?.from).toBe('did:example:123456789abcdefghi#key-1');
+  it('should return a DIDComm message for a valid OOB invitation URL', () => {
+    const didCommMessage = processOOBInvitation(validEncodedUrl);
+
+    expect(didCommMessage).not.toBeNull();
+    expect(didCommMessage?.type).toBe(
+      'https://didcomm.org/out-of-band/2.0/invitation',
+    );
+    expect(didCommMessage?.from).toBe('did:example:123456789abcdefghi#key-1');
   });
 });

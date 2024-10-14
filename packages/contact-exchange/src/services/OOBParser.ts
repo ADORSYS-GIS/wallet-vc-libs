@@ -1,43 +1,44 @@
+// parseOOBInvitation.ts
 import { OutOfBandInvitation } from './DIDCommOOBInvitation';
 
-export interface ParsedOOB {
-  invitation: OutOfBandInvitation;
-  encodedPart: string;
-}
-
-export function parseOOBInvitation(url: string): ParsedOOB | null {
-  const urlPattern = /^(https:\/\/mediator\.rootsid\.cloud\?_oob=)(.*)$/;
+export function parseOOBInvitation(url: string): OutOfBandInvitation | null {
+  const urlPattern = /(_oob=)([A-Za-z0-9\-_+=/]+)$/;
   const match = url.match(urlPattern);
+
   if (!match) {
     return null;
   }
 
-  const encodedPart = match[2];
   try {
-    const decodedData = atob(encodedPart); // Decoding base64
-    const invitation: OutOfBandInvitation = JSON.parse(decodedData);
+    const base64Part = match[2];
+    const decoded = Buffer.from(base64Part, 'base64').toString();
+    const invitation = JSON.parse(decoded) as OutOfBandInvitation;
 
-    // Validate the invitation object
-    if (!invitation['@id'] || !invitation['@type']) {
-      throw new Error('Invalid invitation object');
+    if (!invitation.id || !invitation.type) {
+      console.error('Invalid invitation structure: Missing id or type');
+      return null;
     }
 
-    // Map @cid to @id if present
-    if (invitation['@cid'] && !invitation['@id']) {
-      invitation['@id'] = invitation['@cid'];
+    // Check if services is an array of objects
+    if (Array.isArray(invitation.services) && invitation.services.length > 0) {
+      const service = invitation.services[0];
+      if (typeof service !== 'object') {
+        console.error('Invalid service structure: Service must be an object');
+        return null;
+      }
     }
 
-    return { invitation, encodedPart };
-  } catch (error) {
-    if (
-      error instanceof DOMException &&
-      error.name === 'InvalidCharacterError'
-    ) {
-      throw new Error('Invalid base64 encoding');
-    } else if (error instanceof SyntaxError) {
-      throw new Error('Invalid JSON');
+    return invitation;
+  } catch (error: unknown) {
+    const typedError = error as Error;
+    console.error(`Error parsing OOB invitation: ${typedError.message}`);
+    if (typedError instanceof SyntaxError) {
+      console.error('Invalid JSON format');
+    } else if (typedError instanceof Error) {
+      console.error(`Error: ${typedError.message}`);
     } else {
-      throw error;
+      console.error(`Unknown error: ${typedError}`);
     }
+    return null;
   }
 }

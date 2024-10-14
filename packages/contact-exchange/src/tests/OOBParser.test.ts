@@ -7,16 +7,11 @@ import {
   validContact,
 } from './OOBTestFixtures';
 
-// Update the validEncodedUrl in OOBTestFixtures to match the new URL format
-// For example:
-// export const validEncodedUrl = 'https://mediator.rootsid.cloud?_oob=eyJ0eXBlIjoiaHR0cHM6Ly9kaWRjb21tLm9yZy9vdXQtb2YtYmFuZC8yLjAvaW52aXRhdGlvbiIsImlkIjoiMDczODZhZTUtMjYzYi00ZjgwLWE2M2ItZmI5OTE1ODIzM2IyIiwiZnJvbSI6ImRpZDpwZWVyOjIuRXo2TFNtczU1NVloRnRobjFXVjhjaURCcFptODZoSzl0cDgzV29qSlVteFBHazFoWi5WejZNa21kQmpNeUI0VFM1VWJiUXc1NHN6bTh5dk1NZjFmdEdWMnNRVllBeGFlV2hFLlNleUpwWkNJNkltNWxkeTFwWkNJc0luUWlPaUprYlNJc0luTWlPaUpvZEhSd2N6b3ZMMjFsWkdsaGRHOXlMbkp2YjNSemFXUXVZMnh2ZFdRaUxDSmhJanBiSW1ScFpHTnZiVzB2ZGpJaVhYMCIsImJvZHkiOnsiZ29hbF9jb2RlIjoicmVxdWVzdC1tZWRpYXRlIiwiZ29hbCI6IlJlcXVlc3RNZWRpYXRlIiwibGFiZWwiOiJNZWRpYXRvciIsImFjY2VwdCI6WyJkaWRjb21tL3YyIl19fQ';
-
 describe('OOBParser', () => {
   it('should parse a valid OOB invitation URL and return the invitation', () => {
     const result = parseOOBInvitation(validEncodedUrl);
-    console.log('Result:', result);
     expect(result).not.toBeNull();
-    expect(result?.invitation['@id']).toBe('invitation-id');
+    expect(result?.id).toBe('invitation-id');
   });
 
   it('should return null for an invalid URL', () => {
@@ -36,7 +31,7 @@ describe('OOBParser', () => {
     }
 
     const wallet = new Wallet();
-    handleOOBInvitation(wallet, parsedInvitation.invitation, 'wallet-1');
+    handleOOBInvitation(wallet, parsedInvitation, 'wallet-1');
     const contacts = wallet.getContacts('wallet-1');
 
     expect(contacts).toHaveLength(1);
@@ -50,7 +45,7 @@ describe('OOBParser', () => {
 
     const parsedInvitation = parseOOBInvitation(validEncodedUrl);
     if (parsedInvitation) {
-      handleOOBInvitation(wallet, parsedInvitation.invitation, 'wallet-1');
+      handleOOBInvitation(wallet, parsedInvitation, 'wallet-1');
     }
     const contacts = wallet.getContacts('wallet-1');
 
@@ -60,7 +55,10 @@ describe('OOBParser', () => {
 
   it('should not add a contact for an invalid OOB invitation URL', () => {
     const wallet = new Wallet();
-    handleOOBInvitation(wallet, invalidEncodedUrl, 'wallet-1');
+    const result = parseOOBInvitation(invalidEncodedUrl);
+    if (result) {
+      handleOOBInvitation(wallet, result, 'wallet-1');
+    }
     const contacts = wallet.getContacts('wallet-1');
 
     expect(contacts).toHaveLength(0);
