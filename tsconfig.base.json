@@ -19,7 +19,8 @@
     "noFallthroughCasesInSwitch": true,
     "forceConsistentCasingInFileNames": true,
     "resolveJsonModule": true,
-    "composite": true
+    "composite": true,
+    "allowJs": true
   },
   "exclude": ["node_modules", "tmp"]
 }
