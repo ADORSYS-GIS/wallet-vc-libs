@@ -1,6 +1,6 @@
 {
   "name": "@adorsys-gis/event-bus",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "dependencies": {
     "@swc/helpers": "~0.5.2",
     "eventemitter3": "5.0.1"
