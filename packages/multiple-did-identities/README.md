@@ -1,5 +1,3 @@
-# multiple-did-identities Library
-
 # DID Manager Library
 
 ## Overview
@@ -23,15 +21,9 @@ The **DID Manager Library** is equipped with a suite of features designed to add
 - **Creation of Multiple DIDs**: Easily generate and manage multiple DIDs within a single wallet. This is particularly useful for applications that require distinct identities for different purposes or transactions.
 - **Organized Storage**: Each DID is stored with its unique attributes, ensuring organized and efficient management. Developers can categorize and handle DIDs based on specific criteria or use cases.
 
-- **Scalable Solutions**: Designed to handle a growing number of DIDs without compromising performance or security, making it suitable for both small-scale and enterprise-level applications.
-
 ### 2. **Secure Key Generation**
 
 - **Ed25519 Elliptic Curve**: Utilizes the Ed25519 elliptic curve for generating cryptographic key pairs. Ed25519 is renowned for its security and performance, providing strong protection against various cryptographic attacks.
-
-- **Asynchronous Key Generation**: Leverages asynchronous operations to generate keys without blocking the main execution thread, ensuring a smooth user experience even during intensive cryptographic processes.
-
-- **Unique Key Pairs per DID**: Each DID is backed by its own unique public and private key pair, ensuring that the compromise of one key does not affect the security of others.
 
 ### 3. **Persistent Storage**
 

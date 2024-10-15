@@ -55,7 +55,7 @@ export class DIDIdentityService {
           status: ServiceResponseStatus.Success,
           payload: {
             message: `DID identity with ID ${did} was successfully deleted.`,
-            deletedDid: did, // Include the deleted DID for confirmation
+            deletedDid: did,
           },
         };
 
@@ -97,7 +97,7 @@ export class DIDIdentityService {
    * Emits a {@link DidEventChannel.GetAllidIdentities} event upon successful retrieval.
    */
   public async findAllDidIdentities(): Promise<void> {
-    const findAllDidIdentitiesChannel = DidEventChannel.GetAllidIdentities;
+    const findAllDidIdentitiesChannel = DidEventChannel.GetAllDidIdentities;
 
     try {
       const didRecords = await this.didRepository.getAllDidIds();

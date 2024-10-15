@@ -1,5 +1,5 @@
-import * as ed from '@noble/ed25519';
-import { base58btc } from 'multiformats/bases/base58';
+import { ed25519 } from '@noble/curves/ed25519';
+import bs58 from 'bs58';
 import { JWK } from 'jose';
 import { IDidMethod, DIDKeyPair } from './IDidMethod';
 import { base64UrlEncode } from '../utils/base64UrlEncode';
@@ -12,8 +12,8 @@ export class DidKeyMethod implements IDidMethod {
   method = 'key';
 
   async generate(): Promise<DIDKeyPair> {
-    const privateKey = ed.utils.randomPrivateKey();
-    const publicKey = await ed.getPublicKey(privateKey);
+    const privateKey = ed25519.utils.randomPrivateKey();
+    const publicKey = ed25519.getPublicKey(privateKey);
 
     // Convert keys to JWK format
     const publicKeyJwk: JWK = {
@@ -27,8 +27,8 @@ export class DidKeyMethod implements IDidMethod {
       d: base64UrlEncode(privateKey),
     };
 
-    // Encode the public key using base58btc directly
-    const publicKeyBase58 = base58btc.encode(publicKey);
+    // Encode the public key using bs58 directly
+    const publicKeyBase58 = bs58.encode(publicKey);
 
     // Construct the DID:key identifier
     const did = `did:key:${publicKeyBase58}`;

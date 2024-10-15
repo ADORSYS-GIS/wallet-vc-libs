@@ -3,7 +3,6 @@ import { StorageError } from '@adorsys-gis/storage/src/lib/errors/StorageError';
 import { DBSchema } from 'idb';
 import { DIDKeyPair } from 'src/did-methods/IDidMethod';
 
-
 interface DidSchema extends DBSchema {
   dids: {
     key: string; // The DID string
@@ -16,7 +15,6 @@ interface DidSchema extends DBSchema {
     indexes: { 'by-method': string };
   };
 }
-
 
 export class DidRepository {
   private storageFactory: StorageFactory<DidSchema>;
@@ -35,9 +33,9 @@ export class DidRepository {
 
   /**
    * Creates and stores a new DID identity.
-   * @param didDoc The DIDDocument to store.
+   * @param didDoc The DIDKeypair to store.
    * @param method The DID method ('key' or 'peer').
-   * @returns The stored DIDDocument.
+   * @returns The stored DIDIdentity.
    */
   async createDidId(didDoc: DIDKeyPair, method: string): Promise<void> {
     const payload = {

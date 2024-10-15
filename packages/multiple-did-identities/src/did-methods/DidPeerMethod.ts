@@ -1,6 +1,5 @@
-// src/did-methods/DidPeerMethod.ts
-import * as ed from '@noble/ed25519';
-import { base58btc } from 'multiformats/bases/base58';
+import { ed25519 } from '@noble/curves/ed25519';
+import bs58 from 'bs58';
 import { JWK } from 'jose';
 import { IDidMethod, DIDKeyPair } from './IDidMethod';
 import { base64UrlEncode } from '../utils/base64UrlEncode';
@@ -13,8 +12,8 @@ export class DidPeerMethod implements IDidMethod {
   method = 'peer';
 
   async generate(): Promise<DIDKeyPair> {
-    const privateKey = ed.utils.randomPrivateKey(); // Uint8Array
-    const publicKey = await ed.getPublicKey(privateKey); // Uint8Array
+    const privateKey = ed25519.utils.randomPrivateKey();
+    const publicKey = ed25519.getPublicKey(privateKey);
 
     // Convert keys to JWK format
     const publicKeyJwk: JWK = {
@@ -34,8 +33,8 @@ export class DidPeerMethod implements IDidMethod {
     // Prepend the multicodec prefix to the public key
     const prefixedPublicKey = new Uint8Array([ED25519_PUB_CODE, ...publicKey]);
 
-    // Encode the prefixed public key using multibase (base58btc)
-    const publicKeyBase58 = base58btc.encode(prefixedPublicKey); // Uint8Array
+    // Encode the prefixed public key using bs58
+    const publicKeyBase58 = bs58.encode(prefixedPublicKey);
 
     // Construct the DID:peer identifier
     const did = `did:peer:${publicKeyBase58}`;

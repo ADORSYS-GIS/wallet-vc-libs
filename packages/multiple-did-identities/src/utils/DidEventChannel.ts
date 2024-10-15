@@ -6,6 +6,6 @@
 export enum DidEventChannel {
   CreateDidIdentity = 'did-identity-created',
   DeleteDidIdentity = 'did-identity-deleted',
-  GetSingleDidIdentity = 'get-single-did-identy',
-  GetAllidIdentities = 'get-all-did-identities',
+  GetSingleDidIdentity = 'get-single-did-identity',
+  GetAllDidIdentities = 'get-all-did-identities',
 }
