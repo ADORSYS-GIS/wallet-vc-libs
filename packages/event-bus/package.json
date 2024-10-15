@@ -1,13 +1,13 @@
 {
   "name": "@adorsys-gis/event-bus",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "dependencies": {
     "@swc/helpers": "~0.5.2",
     "eventemitter3": "5.0.1"
   },
   "type": "commonjs",
-  "main": "dist/index.js",
-  "typings": "dist/index.d.ts",
+  "main": "dist/src/index.js",
+  "typings": "dist/src/index.d.ts",
   "devDependencies": {
     "@swc/core": "^1.7.28",
     "@swc/jest": "^0.2.36",

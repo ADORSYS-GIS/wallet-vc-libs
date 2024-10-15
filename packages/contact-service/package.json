@@ -1,14 +1,14 @@
 {
   "name": "@adorsys-gis/contact-service",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "type": "commonjs",
   "main": "dist/src/index.js",
   "typings": "dist/src/index.d.ts",
   "dependencies": {
     "@adorsys-gis/cloning-decorator": "^1.0.1",
-    "@adorsys-gis/event-bus": "^1.0.4",
+    "@adorsys-gis/event-bus": "^1.0.5",
     "@adorsys-gis/status-service": "^1.0.0",
-    "@adorsys-gis/storage": "^1.0.2"
+    "@adorsys-gis/storage": "^1.0.3"
   },
   "devDependencies": {
     "@swc/core": "^1.7.28",
