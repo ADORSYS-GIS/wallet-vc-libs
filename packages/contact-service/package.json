@@ -1,10 +1,14 @@
 {
   "name": "@adorsys-gis/contact-service",
   "version": "1.0.0",
+  "type": "commonjs",
+  "main": "dist/src/index.js",
+  "typings": "dist/src/index.d.ts",
   "dependencies": {
     "@adorsys-gis/cloning-decorator": "^1.0.0",
-    "@adorsys-gis/event-bus": "^1.0.2",
-    "@adorsys-gis/storage": "^1.0.1"
+    "@adorsys-gis/event-bus": "^1.0.4",
+    "@adorsys-gis/storage": "^1.0.1",
+    "@adorsys-gis/status-service": "^1.0.0"
   },
   "devDependencies": {
     "@types/jest": "^29.5.13",
@@ -30,9 +34,6 @@
     "build": "tsc -p tsconfig.lib.json",
     "lint": "eslint ./src --ext .ts"
   },
-  "type": "commonjs",
-  "main": "./src/index.ts",
-  "typings": "./src/index.d.ts",
   "keywords": [
     "contacts",
     "service",

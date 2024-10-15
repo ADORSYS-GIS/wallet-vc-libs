@@ -2,8 +2,8 @@
   "name": "@adorsys-gis/cloning-decorator",
   "version": "1.0.0",
   "type": "commonjs",
-  "main": "./src/index.js",
-  "typings": "./src/index.d.ts",
+  "main": "dist/src/index.js",
+  "typings": "dist/src/index.d.ts",
   "devDependencies": {
     "@types/jest": "^29.5.13",
     "@types/node": "^22.6.1",

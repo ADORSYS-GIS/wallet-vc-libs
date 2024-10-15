@@ -1,6 +1,9 @@
 {
   "name": "@adorsys-gis/storage",
   "version": "1.0.1",
+  "type": "commonjs",
+  "main": "dist/src/index.js",
+  "typings": "dist/src/index.d.ts",
   "scripts": {
     "test": "jest",
     "build": "tsc -p tsconfig.lib.json",
@@ -28,9 +31,6 @@
     "typescript": "^5.6.2",
     "webpack": "^5.94.0"
   },
-  "type": "commonjs",
-  "main": "./src/index.ts",
-  "typings": "./src/index.d.ts",
   "keywords": [
     "storage",
     "data-storage",

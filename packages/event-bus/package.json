@@ -6,8 +6,8 @@
     "eventemitter3": "5.0.1"
   },
   "type": "commonjs",
-  "main": "./src/index.ts",
-  "typings": "./src/index.d.ts",
+  "main": "dist/index.js",
+  "typings": "dist/index.d.ts",
   "devDependencies": {
     "@swc/core": "^1.7.28",
     "@swc/jest": "^0.2.36",
