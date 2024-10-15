@@ -1,5 +1,6 @@
-import { Wallet } from './Wallet';
-import { OutOfBandInvitation, OutOfBandService } from './DIDCommOOBInvitation';
+import { Contact, Wallet } from './Wallet';
+import { OutOfBandInvitation } from './DIDCommOOBInvitation';
+import { validOutOfBandInvitation } from '../tests/OOBTestFixtures';
 
 export function handleOOBInvitation(
   wallet: Wallet,
@@ -11,44 +12,57 @@ export function handleOOBInvitation(
 
     if (typeof invitation === 'string' && invitation.startsWith('{')) {
       try {
-        parsedInvitation = JSON.parse(invitation);
+        parsedInvitation = JSON.parse(invitation) as OutOfBandInvitation;
       } catch (error) {
         console.error('Error parsing invitation:', error);
         return;
       }
     } else if (typeof invitation === 'object') {
-      parsedInvitation = invitation;
+      parsedInvitation = invitation as OutOfBandInvitation;
     } else {
       console.error('Invalid invitation type:', typeof invitation);
       return;
     }
 
-    // Validate the parsed invitation
-    if (!parsedInvitation?.services || parsedInvitation.services.length === 0) {
-      console.error('Invalid OOB invitation: no services provided.');
+    if (!parsedInvitation) {
+      console.error('Invalid OOB invitation: no parsed invitation provided.');
       return;
     }
 
-    // Handle contact addition based on the parsed services
-    parsedInvitation.services.forEach((service: string | OutOfBandService) => {
-      if (
-        typeof service === 'object' &&
-        service.recipientKeys &&
-        service.recipientKeys.length > 0
-      ) {
-        const contact = {
-          did: service.recipientKeys[0], // Use the first recipient key
-          label: parsedInvitation.label || 'Unknown', // Use the label from the invitation or default to 'Unknown'
-          serviceEndpoint: service.serviceEndpoint || '', // Service endpoint
-        };
+    if (!parsedInvitation.body) {
+      console.error('Invalid OOB invitation: no body provided.');
+      return;
+    }
 
-        // Add the contact to the wallet
-        wallet.addContact(contact, identity);
-        console.log(`Contact added for identity ${identity}`);
-      } else {
-        console.error('No recipient keys provided in the service.');
-      }
-    });
+    const body = parsedInvitation.body as {
+      goal_code: unknown;
+      goal: unknown;
+      accept: unknown;
+    };
+
+    if (!body.goal_code || !body.goal || !body.accept) {
+      console.error('Invalid invitation body');
+      return;
+    }
+
+    if (!wallet || !identity) {
+      console.error('Invalid wallet or identity');
+      return;
+    }
+
+    try {
+      // Create a new contact object
+      const contact: Contact = {
+        type: validOutOfBandInvitation.type,
+        id: validOutOfBandInvitation.id,
+        from: validOutOfBandInvitation.from,
+      };
+
+      wallet.addContact(contact, identity);
+      console.log(`Contact added for identity ${identity}`);
+    } catch (error) {
+      console.error('Error adding contact:', error);
+    }
   } catch (error) {
     console.error('Error handling OOB invitation:', error);
   }

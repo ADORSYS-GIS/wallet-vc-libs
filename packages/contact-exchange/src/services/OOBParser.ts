@@ -1,4 +1,3 @@
-// parseOOBInvitation.ts
 import { OutOfBandInvitation } from './DIDCommOOBInvitation';
 
 export function parseOOBInvitation(url: string): OutOfBandInvitation | null {
@@ -19,13 +18,10 @@ export function parseOOBInvitation(url: string): OutOfBandInvitation | null {
       return null;
     }
 
-    // Check if services is an array of objects
-    if (Array.isArray(invitation.services) && invitation.services.length > 0) {
-      const service = invitation.services[0];
-      if (typeof service !== 'object') {
-        console.error('Invalid service structure: Service must be an object');
-        return null;
-      }
+    // Check if body is an object
+    if (!invitation.body || typeof invitation.body !== 'object') {
+      console.error('Invalid invitation structure: Body must be an object');
+      return null;
     }
 
     return invitation;

@@ -13,22 +13,16 @@ interface DIDCommMessage {
 interface OutOfBandInvitation {
   encodedPart: string;
   id: string;
+  from: string;
   type: string;
-  cid: string;
-  label?: string;
   goal?: string;
   goal_code?: string;
-  services: Array<string | OutOfBandService>;
+  body: {
+    goal_code?: string;
+    goal?: string;
+    accept?: string[];
+  };
   attachments?: Array<unknown>;
 }
 
-interface OutOfBandService {
-  id: string;
-  type: string;
-  serviceEndpoint: string;
-  recipientKeys: string[];
-  routingKeys?: string[];
-  accept?: string[];
-}
-
-export { DIDCommMessage, OutOfBandInvitation, OutOfBandService };
+export { DIDCommMessage, OutOfBandInvitation };

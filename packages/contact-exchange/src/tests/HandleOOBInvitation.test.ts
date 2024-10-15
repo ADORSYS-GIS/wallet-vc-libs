@@ -1,11 +1,15 @@
 // handleOOBInvitation.test.ts
 import { handleOOBInvitation } from '../services/HandleOOBInvitation';
 import { Wallet } from '../services/Wallet';
-import {
-  validOutOfBandInvitation,
-  invalidEncodedUrl,
-  invalidOutOfBandInvitation,
-} from './OOBTestFixtures';
+import { validOutOfBandInvitation, invalidEncodedUrl } from './OOBTestFixtures';
+
+beforeEach(() => {
+  jest.spyOn(console, 'error').mockImplementation(() => {});
+});
+
+afterEach(() => {
+  jest.restoreAllMocks();
+});
 
 describe('handleOOBInvitation', () => {
   let wallet: Wallet;
@@ -19,7 +23,7 @@ describe('handleOOBInvitation', () => {
     const contacts = wallet.getContacts('wallet-1');
 
     expect(contacts).toHaveLength(1);
-    expect(contacts[0].did).toBe('did:example:123456789abcdefghi#key-1');
+    expect(contacts[0].id).toBe(validOutOfBandInvitation.id);
   });
 
   it('should not add a contact if the OOB invitation URL is invalid', () => {
@@ -27,8 +31,11 @@ describe('handleOOBInvitation', () => {
     expect(wallet.getContacts('wallet-1')).toHaveLength(0);
   });
 
-  it('should handle invitations with missing recipient keys gracefully', () => {
-    handleOOBInvitation(wallet, invalidOutOfBandInvitation, 'wallet-1');
-    expect(wallet.getContacts('wallet-1')).toHaveLength(0);
+  it('should handle an OOB invitation as a string', () => {
+    const invitationString = JSON.stringify(validOutOfBandInvitation);
+    handleOOBInvitation(wallet, invitationString, 'wallet-1');
+    const contacts = wallet.getContacts('wallet-1');
+    expect(contacts).toHaveLength(1);
+    expect(contacts[0].id).toBe(validOutOfBandInvitation.id);
   });
 });

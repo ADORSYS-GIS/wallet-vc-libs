@@ -1,9 +1,5 @@
 // processOOBInvitation.ts
-import {
-  OutOfBandInvitation,
-  DIDCommMessage,
-  OutOfBandService,
-} from './DIDCommOOBInvitation';
+import { OutOfBandInvitation, DIDCommMessage } from './DIDCommOOBInvitation';
 import { parseOOBInvitation } from './OOBParser';
 
 /**
@@ -12,7 +8,6 @@ import { parseOOBInvitation } from './OOBParser';
  * @param invitation - The out-of-band invitation to process, either as a string (URL) or an object.
  * @returns A DIDComm message, or null if the invitation is invalid.
  */
-
 export function processOOBInvitation(
   invitation: OutOfBandInvitation | string,
 ): DIDCommMessage | null {
@@ -33,34 +28,25 @@ export function processOOBInvitation(
     if (!parsedInvitation) {
       throw new Error('Invalid invitation');
     }
+    if (
+      !parsedInvitation ||
+      !parsedInvitation.body ||
+      !parsedInvitation.body.goal_code
+    ) {
+      return null;
+    }
 
     // Extract the necessary fields from the parsed invitation
-    const { id, type, services, label, goal } = parsedInvitation;
-
-    // Validate that services are provided in the OOB invitation
-    if (!services || services.length === 0) {
-      throw new Error('No service provided in the OOB invitation.');
-    }
-
-    // Determine if the first service is a string or an object
-    const service = services[0];
-    if (typeof service !== 'object') {
-      throw new Error('Service must be an object');
-    }
-
-    const outOfBandService = service as OutOfBandService;
-    const { serviceEndpoint, recipientKeys, routingKeys } = outOfBandService;
+    const { id, type, body } = parsedInvitation;
 
     // Create a basic DIDComm Message structure
     const didCommMessage: DIDCommMessage = {
       type,
-      from: recipientKeys[0],
+      from: '',
       body: {
-        goal,
-        label,
-        recipientKeys,
-        routingKeys,
-        serviceEndpoint,
+        goal: body.goal,
+        goal_code: body.goal_code,
+        accept: body.accept,
       },
       to: [],
       created_time: new Date().toISOString(),
