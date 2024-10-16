@@ -1,6 +1,6 @@
 {
   "name": "@adorsys-gis/storage",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "scripts": {
     "test": "jest",
     "build": "tsc -p tsconfig.lib.json",
