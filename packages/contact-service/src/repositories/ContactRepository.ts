@@ -40,7 +40,7 @@ export class ContactRepository {
 
   async create(contact: Omit<Contact, 'id'>): Promise<Contact> {
     const id = await this.storage.insert('contacts', {
-      value: { ...contact, id: undefined },
+      value: { ...contact },
     });
     return { ...contact, id };
   }
