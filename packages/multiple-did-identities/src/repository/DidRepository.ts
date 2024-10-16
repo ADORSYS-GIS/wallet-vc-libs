@@ -1,7 +1,7 @@
 import { StorageFactory } from '@adorsys-gis/storage';
 import { StorageError } from '@adorsys-gis/storage/src/lib/errors/StorageError';
 import { DBSchema } from 'idb';
-import { DIDKeyPair } from 'src/did-methods/IDidMethod';
+import { DIDKeyPair } from '../did-methods/IDidMethod';
 
 interface DidSchema extends DBSchema {
   dids: {
