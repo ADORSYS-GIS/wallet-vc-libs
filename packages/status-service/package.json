@@ -1,6 +1,9 @@
 {
   "name": "@adorsys-gis/status-service",
   "version": "1.0.0",
+  "type": "commonjs",
+  "main": "dist/src/index.js",
+  "typings": "dist/src/index.d.ts",
   "scripts": {
     "test": "jest",
     "build": "tsc -p tsconfig.lib.json",
@@ -31,9 +34,6 @@
     "status",
     "library"
   ],
-  "type": "commonjs",
-  "main": "./src/index.ts",
-  "typings": "./src/index.d.ts",
   "author": "adorsys",
   "license": "ISC",
   "description": ""
