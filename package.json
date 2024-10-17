@@ -16,7 +16,8 @@
     "packages/status-service",
     "packages/storage",
     "packages/event-bus",
-    "packages/contact-service"
+    "packages/contact-service",
+    "packages/contact-exchange"
   ],
   "author": "",
   "license": "ISC",
