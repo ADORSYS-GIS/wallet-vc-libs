@@ -18,6 +18,7 @@
     "packages/storage",
     "packages/event-bus",
     "packages/contact-service",
+    "packages/contact-exchange",
     "packages/multiple-did-identities"
   ],
   "author": "",
