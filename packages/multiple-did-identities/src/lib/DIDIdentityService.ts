@@ -1,4 +1,4 @@
-import { DidMethodFactory } from '../did-methods/DidMethodFactory';
+import { DidMethodFactory, DIDMethodName } from '../did-methods/DidMethodFactory';
 import { DidRepository } from '../repository/DidRepository';
 import { EventEmitter } from 'eventemitter3';
 import {
@@ -20,7 +20,7 @@ export class DIDIdentityService {
    *
    * @param method - The DID method to use ('key' or 'peer').
    */
-  public async createDidIdentity(method: string): Promise<void> {
+  public async createDidIdentity(method: DIDMethodName): Promise<void> {
     const createDidIdentityChannel = DidEventChannel.CreateDidIdentity;
 
     try {

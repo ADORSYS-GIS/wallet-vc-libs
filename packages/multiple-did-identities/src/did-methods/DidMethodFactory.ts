@@ -2,12 +2,19 @@ import { IDidMethod, DIDKeyPair } from './IDidMethod';
 import { DidKeyMethod } from './DidKeyMethod';
 import { DidPeerMethod } from './DidPeerMethod';
 
+// Declare enum for the supported DID methods
+export enum DIDMethodName {
+  Key = 'key',
+  Peer = 'peer'
+}
+
 export class DidMethodFactory {
-  static create(method: string): IDidMethod {
+  // Update the 'method' argument type to use the enum
+  static create(method: DIDMethodName): IDidMethod {
     switch (method) {
-      case 'key':
+      case DIDMethodName.Key:
         return new DidKeyMethod();
-      case 'peer':
+      case DIDMethodName.Peer:
         return new DidPeerMethod();
       default:
         throw new Error(`Unsupported DID method: ${method}`);
@@ -16,10 +23,10 @@ export class DidMethodFactory {
 
   /**
    * Generates a DID using the specified method.
-   * @param method - The DID method to use ('key' or 'peer').
-   * @returns A Promise that resolves to a DIDDocument.
+   * @param method - The DID method to use (DIDMethodName.Key or DIDMethodName.Peer).
+   * @returns A Promise that resolves to a DIDKeyPair.
    */
-  static async generateDid(method: string): Promise<DIDKeyPair> {
+  static async generateDid(method: DIDMethodName): Promise<DIDKeyPair> {
     const didMethod = this.create(method);
     return didMethod.generate();
   }

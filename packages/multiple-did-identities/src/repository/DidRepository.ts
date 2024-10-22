@@ -1,17 +1,13 @@
 import { StorageFactory } from '@adorsys-gis/storage';
 import { StorageError } from '@adorsys-gis/storage/src/lib/errors/StorageError';
 import { DBSchema } from 'idb';
-import { DIDKeyPair } from '../did-methods/IDidMethod';
+import { DIDKeyPair, DidIdValue, DidIdentity } from '../did-methods/IDidMethod';
+
 
 interface DidSchema extends DBSchema {
   dids: {
     key: string; // The DID string
-    value: {
-      did: string;
-      method: string;
-      document: DIDKeyPair;
-      createdAt: number;
-    };
+    value: DidIdValue
     indexes: { 'by-method': string };
   };
 }
@@ -38,7 +34,7 @@ export class DidRepository {
    * @returns The stored DIDIdentity.
    */
   async createDidId(didDoc: DIDKeyPair, method: string): Promise<void> {
-    const payload = {
+    const payload: DidIdValue = {
       did: didDoc.did,
       method,
       document: didDoc,
@@ -75,7 +71,7 @@ export class DidRepository {
    */
   async getADidId(
     did: string,
-  ): Promise<{ did: string; method: string; createdAt: number } | null> {
+  ): Promise<DidIdentity | null> {
     try {
       const record = await this.storageFactory.findOne('dids', did);
       if (record) {
@@ -92,9 +88,7 @@ export class DidRepository {
    * Retrieves all stored DID identities.
    * @returns An array of objects containing did, method, and createdAt for each identity.
    */
-  async getAllDidIds(): Promise<
-    { did: string; method: string; createdAt: number }[]
-  > {
+  async getAllDidIds(): Promise<DidIdentity[]> {
     try {
       const records = await this.storageFactory.findAll('dids');
       // Map to return only the required fields

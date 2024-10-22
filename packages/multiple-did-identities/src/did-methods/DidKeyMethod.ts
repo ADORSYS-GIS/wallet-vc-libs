@@ -27,11 +27,14 @@ export class DidKeyMethod implements IDidMethod {
       d: base64UrlEncode(privateKey),
     };
 
+    // Define the Multicodec Prefix for Ed25519 Public Key
+    const ED25519_PUB_CODE = new Uint8Array([0xed, 0x01]);
+
     // Encode the public key using bs58 directly
-    const publicKeyBase58 = bs58.encode(publicKey);
+    const publicKeyBase58 = bs58.encode([...ED25519_PUB_CODE, ...publicKey]);
 
     // Construct the DID:key identifier
-    const did = `did:key:${publicKeyBase58}`;
+    const did = `did:key:z${publicKeyBase58}`;
 
     return {
       did,
