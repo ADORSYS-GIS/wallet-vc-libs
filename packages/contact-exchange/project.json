@@ -1,0 +1,5 @@
+{
+  "name": "contact-exchange",
+  "sourceRoot": "libs/contact-exchange/src",
+  "projectType": "library"
+}
