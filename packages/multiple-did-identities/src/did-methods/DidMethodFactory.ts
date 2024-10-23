@@ -5,7 +5,7 @@ import { DidPeerMethod } from './DidPeerMethod';
 // Declare enum for the supported DID methods
 export enum DIDMethodName {
   Key = 'key',
-  Peer = 'peer'
+  Peer = 'peer',
 }
 
 export class DidMethodFactory {

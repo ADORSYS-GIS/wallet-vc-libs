@@ -3,13 +3,14 @@ import bs58 from 'bs58';
 import { JWK } from 'jose';
 import { IDidMethod, DIDKeyPair } from './IDidMethod';
 import { base64UrlEncode } from '../utils/base64UrlEncode';
+import { DIDMethodName } from './DidMethodFactory';
 
 /**
  * DID:key Method Implementation
  * Generates a DID:key identifier using the Ed25519 public key.
  */
 export class DidKeyMethod implements IDidMethod {
-  method = 'key';
+  method = DIDMethodName.Key;
 
   async generate(): Promise<DIDKeyPair> {
     const privateKey = ed25519.utils.randomPrivateKey();

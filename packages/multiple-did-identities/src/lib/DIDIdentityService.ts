@@ -1,4 +1,7 @@
-import { DidMethodFactory, DIDMethodName } from '../did-methods/DidMethodFactory';
+import {
+  DidMethodFactory,
+  DIDMethodName,
+} from '../did-methods/DidMethodFactory';
 import { DidRepository } from '../repository/DidRepository';
 import { EventEmitter } from 'eventemitter3';
 import {

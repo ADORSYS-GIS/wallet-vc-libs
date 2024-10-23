@@ -1,4 +1,5 @@
 import { JWK } from 'jose';
+import { DIDMethodName } from './DidMethodFactory';
 
 export interface DIDKeyPair {
   did: string;
@@ -7,19 +8,19 @@ export interface DIDKeyPair {
 }
 
 export interface IDidMethod {
-  method: string;
+  method: DIDMethodName;
   generate(): Promise<DIDKeyPair>;
 }
 
 export interface DidIdValue {
   did: string;
-  method: string;
+  method: DIDMethodName;
   document: DIDKeyPair;
   createdAt: number;
 }
 
 export interface DidIdentity {
   did: string;
-  method: string;
+  method: DIDMethodName;
   createdAt: number;
 }
