@@ -1,4 +1,4 @@
-import { Exception, Result } from '@zxing/library';
+import { QRCode } from 'jsqr';
 
 export interface IQrScannerProps<T = unknown> {
   /**
@@ -6,13 +6,13 @@ export interface IQrScannerProps<T = unknown> {
    * @param result The result of the qr-code (parsed)
    * @param rawResult The result of the qr-code
    */
-  onResult: (result: T, rawResult: Result) => void;
+  onResult: (data: string | T, code: QRCode) => void;
   /** This event gets fired when an exception occurs.
    *
    * The returned value will modify the display error message.
    * If no string is returned the default exception message is displayed.
    * */
-  onError?: (error: Exception) => string | void;
+  onError?: (error: Error) => string | void;
   /** Validate the qr codes data */
   validate?: (data: unknown) => T;
   /**
@@ -59,6 +59,6 @@ export interface IQrScannerProps<T = unknown> {
    * ```
    */
   children?: (
-    videoElement: React.RefObject<HTMLVideoElement>,
+    videoElement: React.RefObject<HTMLVideoElement>
   ) => React.ReactNode;
 }

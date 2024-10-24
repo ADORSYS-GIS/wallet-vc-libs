@@ -17,7 +17,8 @@
     "packages/storage",
     "packages/event-bus",
     "packages/contact-service",
-    "packages/contact-exchange"
+    "packages/contact-exchange",
+    "packages/qr-scanner"
   ],
   "author": "",
   "license": "ISC",

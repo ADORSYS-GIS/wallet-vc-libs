@@ -1,10 +1,14 @@
 {
-  "name": "qr-scanner",
+  "name": "@adorsys-gis/qr-scanner",
   "version": "1.0.0",
   "description": "",
-  "main": "index.ts",
+  "type": "commonjs",
+  "main": "dist/src/index.js",
+  "typings": "dist/src/index.d.ts",
   "scripts": {
-    "test": "jest"
+    "test": "jest --passWithNoTests",
+    "build": "tsc -p tsconfig.lib.json",
+    "lint": "eslint ./src --ext .ts"
   },
   "dependencies": {
     "@emotion/react": "^11.11.3",
@@ -14,7 +18,8 @@
     "react-router-dom": "^6.21.2",
     "@types/react": "^18.0.20",
     "@types/react-dom": "^18.0.9",
-    "@zxing/library": "^0.20.0"
+    "jsqr": "^1.4.0",
+    "tslib": "^2.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.14.5",

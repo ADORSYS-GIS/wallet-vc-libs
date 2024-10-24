@@ -2,6 +2,5 @@
   "name": "qr-scanner",
   "sourceRoot": "libs/qr-scanner/src",
   "projectType": "library",
-  "tags": [],
-  "targets": {}
+  "tags": []
 }

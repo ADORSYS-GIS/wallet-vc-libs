@@ -1,87 +1,135 @@
-import {
-  BrowserMultiFormatReader,
-  Exception,
-  NotFoundException,
-  Result,
-} from '@zxing/library';
+import jsQR from 'jsqr';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Loading } from './Loading';
 import { IQrScannerProps } from './qrScannerProps';
 
 export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
   const videoRef = useRef<HTMLVideoElement>(null);
-  const reader = useRef(new BrowserMultiFormatReader());
+  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const [error, setError] = useState<string | null>(null);
+  const [isScanning, setIsScanning] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
-  const [error, setError] = useState<Exception | null>(null);
+  const captureFrame = useCallback(() => {
+    if (!canvasRef.current || !videoRef.current) return;
 
-  const handleDecodeError = useCallback(
-    (error: Exception) => {
-      let customErrorMessage: string | null = null;
-      if (props.onError) {
-        const errorMessage = props.onError(error);
-        if (typeof errorMessage === 'string') customErrorMessage = errorMessage;
-      } else console.warn('QrScanner: Unhandled exception!');
-      setError(
-        customErrorMessage !== null ? new Exception(customErrorMessage) : error,
-      );
-    },
-    [props],
-  );
+    const canvas = canvasRef.current;
+    const video = videoRef.current;
+    const context = canvas.getContext('2d');
 
-  const getQrData = useCallback(
-    (result: Result) => {
-      try {
-        let data: T;
-        try {
-          data = JSON.parse(result.getText());
-        } catch (error) {
-          return props.validate
-            ? props.validate(result.getText())
-            : (result.getText() as T);
-        }
-        return props.validate ? props.validate(data) : data;
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (error: any) {
-        if (!!error && typeof error.message == 'string')
-          throw new Exception(error.message);
-        throw new Exception('Unknown error');
+    if (context) {
+      if (
+        video.readyState < 4 ||
+        video.videoWidth === 0 ||
+        video.videoHeight === 0
+      ) {
+        console.log('Video not ready yet');
+        return;
       }
-    },
-    [props],
-  );
+
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      // Draw the video frame to the canvas
+      context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      if (canvas.width === 0 || canvas.height === 0) {
+        console.log('Canvas not ready yet');
+        return;
+      }
+
+      try {
+        const imageData = context.getImageData(
+          0,
+          0,
+          canvas.width,
+          canvas.height
+        );
+        if (imageData.data.length === 0) {
+          console.log('Image data not ready yet');
+          return;
+        }
+        const code = jsQR(imageData.data, canvas.width, canvas.height);
+        if (code) {
+          try {
+            console.log('QR code data:', code.data);
+            const data = decodeURIComponent(code.data);
+            props.onResult(data, code);
+          } catch (error: unknown) {
+            setError('Failed to parse QR data');
+            console.error(error);
+          }
+        } /*else {
+          setError('QR code not found');
+        }*/
+      } catch (error: unknown) {
+        setError('Error decoding QR code');
+        console.error(error);
+      }
+    }
+  }, [props]);
 
   useEffect(() => {
-    if (!videoRef.current || !reader.current.isMediaDevicesSuported) {
-      if (videoRef.current && !reader.current.isMediaDevicesSuported)
-        setError(new Exception('Camera inaccessible'));
-      else if (!videoRef.current && reader.current.isMediaDevicesSuported)
-        setError(new Exception('Video element not found'));
-      else setError(new Exception('Video and Camera inaccessible'));
+    const startVideo = async () => {
+      if (videoRef.current) {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({
+            video: { facingMode: props.facingMode || 'environment' },
+          });
+          videoRef.current.srcObject = stream;
+          videoRef.current.setAttribute('playsinline', 'true'); // For iOS
+
+          // Add event listener for canplay event
+          if (videoRef.current) {
+            videoRef.current.addEventListener('canplay', () => {
+              if (videoRef.current) {
+                videoRef.current.play();
+              }
+            });
+          }
+
+          setIsScanning(true);
+          setIsLoading(false);
+        } catch (err) {
+          setError('Camera inaccessible');
+          props.onError && props.onError(err as Error);
+        }
+      }
+    };
+
+    startVideo();
+
+    return () => {
+      if (videoRef.current && videoRef.current.srcObject) {
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+        (videoRef.current.srcObject as MediaStream)
+          .getTracks()
+          .forEach((track) => track.stop());
+      }
+    };
+  }, [props]);
+
+  useEffect(() => {
+    if (!isScanning) {
+      console.warn('isScanning must be true');
       return;
     }
-    reader.current.timeBetweenDecodingAttempts = props.scanDelay ?? 500;
-    reader.current
-      .decodeFromConstraints(
-        {
-          audio: false,
-          video: {
-            facingMode: props.facingMode || 'environment',
-          },
-        },
-        videoRef.current,
-        (result, error) => {
-          if (result) {
-            props.onResult(getQrData(result), result);
-            setError(null);
-          } else if (error) handleDecodeError(error);
-        },
-      )
-      .catch(handleDecodeError);
+
+    const scanInterval = setInterval(captureFrame, props.scanDelay ?? 500);
+
+    return () => clearInterval(scanInterval);
+  }, [captureFrame, isScanning, props.scanDelay]);
+
+  const stopScanning = useCallback(() => {
+    setIsScanning(false);
+  }, []);
+
+  useEffect(() => {
     return () => {
-      // eslint-disable-next-line react-hooks/exhaustive-deps
-      reader.current.reset();
+      stopScanning();
     };
-  }, [getQrData, handleDecodeError, props, videoRef]);
+  }, [stopScanning]);
+
   if (props.children) return <>{props.children(videoRef)}</>;
 
   return (
@@ -96,23 +144,25 @@ export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
     >
       <div
         style={{
-          color:
-            error instanceof NotFoundException || !error ? 'inherit' : 'red',
+          color: error ? 'red' : 'inherit',
           textAlign: 'center',
           fontWeight: 500,
           width: '100%',
         }}
       >
-        {error instanceof NotFoundException || !error ? (
-          <Loading message="🌀 Searching for Qr code" />
+        {isLoading ? (
+          <Loading message="Initializing camera..." />
+        ) : error ? (
+          <div style={{ color: 'red' }}>{error}</div>
         ) : (
-          error.message
+          <Loading message="🌀 Searching for QR code" />
         )}
       </div>
       <video
         ref={videoRef}
         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
       />
+      <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
     </div>
   );
 }
