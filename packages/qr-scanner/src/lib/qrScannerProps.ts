@@ -59,6 +59,6 @@ export interface IQrScannerProps<T = unknown> {
    * ```
    */
   children?: (
-    videoElement: React.RefObject<HTMLVideoElement>
+    videoElement: React.RefObject<HTMLVideoElement>,
   ) => React.ReactNode;
 }

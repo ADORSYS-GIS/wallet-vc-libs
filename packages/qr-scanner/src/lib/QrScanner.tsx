@@ -43,7 +43,7 @@ export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
           0,
           0,
           canvas.width,
-          canvas.height
+          canvas.height,
         );
         if (imageData.data.length === 0) {
           console.log('Image data not ready yet');
