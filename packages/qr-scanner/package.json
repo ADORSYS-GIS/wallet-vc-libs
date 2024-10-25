@@ -7,18 +7,18 @@
   "typings": "dist/src/index.d.ts",
   "scripts": {
     "test": "jest --passWithNoTests",
-    "build": "tsc -p tsconfig.lib.json",
+    "build": "rimraf dist && webpack --config webpack.config.js",
     "lint": "eslint ./src --ext .ts"
   },
   "dependencies": {
     "@emotion/react": "^11.11.3",
     "@emotion/styled": "^11.11.0",
-    "react": "18.2.0",
-    "react-dom": "18.2.0",
-    "react-router-dom": "^6.21.2",
     "@types/react": "^18.0.20",
     "@types/react-dom": "^18.0.9",
     "jsqr": "^1.4.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-router-dom": "^6.21.2",
     "tslib": "^2.3.0"
   },
   "devDependencies": {
@@ -29,6 +29,7 @@
     "@types/node": "18.16.9",
     "@types/react": "18.2.33",
     "@types/react-dom": "18.2.14",
+    "css-loader": "^7.1.2",
     "eslint": "~8.48.0",
     "eslint-config-next": "13.4.4",
     "eslint-config-prettier": "^9.0.0",
@@ -37,8 +38,14 @@
     "eslint-plugin-jsx-a11y": "6.7.1",
     "eslint-plugin-react": "7.32.2",
     "eslint-plugin-react-hooks": "4.6.0",
+    "mini-css-extract-plugin": "^2.9.1",
     "react-refresh": "^0.10.0",
-    "typescript": "~5.2.2"
+    "rimraf": "^6.0.1",
+    "style-loader": "^4.0.0",
+    "ts-loader": "^9.5.1",
+    "typescript": "~5.2.2",
+    "webpack": "^5.95.0",
+    "webpack-cli": "^5.1.4"
   },
   "keywords": [],
   "author": "adorsys",

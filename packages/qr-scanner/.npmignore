@@ -4,6 +4,7 @@ tsconfig.json
 dist/**/*.tsbuildinfo
 tsconfig.spec.json
 tsconfig.lib.json
+webpack.config.js
 
 # Ignore source code and TypeScript files
 src/*
