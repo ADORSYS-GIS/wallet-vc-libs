@@ -1,4 +1,4 @@
-import { IDidMethod, DIDKeyPair } from './IDidMethod';
+import { IDidMethod, DIDKeyPair, DIDKeyPairMethod1 } from './IDidMethod';
 import { DidKeyMethod } from './DidKeyMethod';
 import { DidPeerMethod } from './DidPeerMethod';
 
@@ -8,8 +8,10 @@ export enum DIDMethodName {
   Peer = 'peer',
 }
 
+export type DIDKeyPairVariants = DIDKeyPair | DIDKeyPairMethod1;
+export type PeerGenerationMethod = 'method0' | 'method1' | 'method2' | 'method3' | 'method4';
+
 export class DidMethodFactory {
-  // Update the 'method' argument type to use the enum
   static create(method: DIDMethodName): IDidMethod {
     switch (method) {
       case DIDMethodName.Key:
@@ -24,10 +26,14 @@ export class DidMethodFactory {
   /**
    * Generates a DID using the specified method.
    * @param method - The DID method to use (DIDMethodName.Key or DIDMethodName.Peer).
+   * @param methodType - The specific generation method to use for the Peer method.
    * @returns A Promise that resolves to a DIDKeyPair.
    */
-  static async generateDid(method: DIDMethodName): Promise<DIDKeyPair> {
+  static async generateDid(method: DIDMethodName, methodType?: PeerGenerationMethod): Promise<DIDKeyPairVariants> {
     const didMethod = this.create(method);
+    if (method === DIDMethodName.Peer && methodType) {
+      return (didMethod as DidPeerMethod).generate(methodType);
+    }
     return didMethod.generate();
   }
 }

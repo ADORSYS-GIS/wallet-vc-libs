@@ -24,3 +24,7 @@ export interface DidIdentity {
   method: DIDMethodName;
   createdAt: number;
 }
+
+export interface DIDKeyPairMethod1 extends DIDKeyPair{
+  genesisDocument: object;
+}
