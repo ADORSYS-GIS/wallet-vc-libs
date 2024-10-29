@@ -43,7 +43,7 @@ export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
           0,
           0,
           canvas.width,
-          canvas.height
+          canvas.height,
         );
         if (imageData.data.length === 0) {
           console.log('Image data not ready yet');
@@ -79,25 +79,25 @@ export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
               .getTracks()
               .forEach((track) => track.stop());
           }
-    
+
           // Start new stream
           const stream = await navigator.mediaDevices.getUserMedia({
             video: { facingMode: props.facingMode || 'environment' },
           });
           videoRef.current.srcObject = stream;
-    
+
           // Set playsinline attribute for iOS
           videoRef.current.setAttribute('playsinline', 'true');
-    
+
           // Ensure video element is visible and ready to play
           videoRef.current.addEventListener('loadedmetadata', () => {
             setTimeout(() => {
               videoRef.current!.style.display = 'block';
               videoRef.current!.classList.add('ready');
               videoRef.current!.play();
-            }, 1000); // Adjust the delay as needed
+            }, 1000); // set a delay for stabilizing the video
           });
-    
+
           setIsScanning(true);
           setIsLoading(false);
         } catch (err) {
@@ -107,7 +107,7 @@ export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
           }
         }
       }
-    };    
+    };
 
     startVideo();
 
