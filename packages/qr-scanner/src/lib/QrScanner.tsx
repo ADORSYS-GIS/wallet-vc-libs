@@ -43,7 +43,7 @@ export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
           0,
           0,
           canvas.width,
-          canvas.height,
+          canvas.height
         );
         if (imageData.data.length === 0) {
           console.log('Image data not ready yet');
@@ -73,35 +73,46 @@ export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
     const startVideo = async () => {
       if (videoRef.current) {
         try {
+          // Stop any existing stream
+          if (videoRef.current.srcObject) {
+            (videoRef.current.srcObject as MediaStream)
+              .getTracks()
+              .forEach((track) => track.stop());
+          }
+    
+          // Start new stream
           const stream = await navigator.mediaDevices.getUserMedia({
             video: { facingMode: props.facingMode || 'environment' },
           });
           videoRef.current.srcObject = stream;
-          videoRef.current.setAttribute('playsinline', 'true'); // For iOS
-
-          // Add event listener for canplay event
-          if (videoRef.current) {
-            videoRef.current.addEventListener('canplay', () => {
-              if (videoRef.current) {
-                videoRef.current.play();
-              }
-            });
-          }
-
+    
+          // Set playsinline attribute for iOS
+          videoRef.current.setAttribute('playsinline', 'true');
+    
+          // Ensure video element is visible and ready to play
+          videoRef.current.addEventListener('loadedmetadata', () => {
+            setTimeout(() => {
+              videoRef.current!.style.display = 'block';
+              videoRef.current!.classList.add('ready');
+              videoRef.current!.play();
+            }, 1000); // Adjust the delay as needed
+          });
+    
           setIsScanning(true);
           setIsLoading(false);
         } catch (err) {
           setError('Camera inaccessible');
-          props.onError && props.onError(err as Error);
+          if (props.onError) {
+            props.onError(err as Error);
+          }
         }
       }
-    };
+    };    
 
     startVideo();
 
     return () => {
       if (videoRef.current && videoRef.current.srcObject) {
-        // eslint-disable-next-line react-hooks/exhaustive-deps
         (videoRef.current.srcObject as MediaStream)
           .getTracks()
           .forEach((track) => track.stop());
@@ -160,6 +171,7 @@ export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
       </div>
       <video
         ref={videoRef}
+        className="video"
         style={{ width: '100%', height: '100%', objectFit: 'cover' }}
       />
       <canvas ref={canvasRef} style={{ display: 'none' }}></canvas>
