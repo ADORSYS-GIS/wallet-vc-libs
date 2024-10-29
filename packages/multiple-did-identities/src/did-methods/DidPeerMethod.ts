@@ -28,8 +28,8 @@ export class DidPeerMethod implements IDidMethod {
         return this.generateMethod1();
       case 'method2':
         return this.generateMethod2();
-      // case 'method3':
-      //   return this.generateMethod3();
+      case 'method3':
+        return this.generateMethod3();
       // case 'method4':
       //   return this.generateMethod4();
       default:
@@ -220,6 +220,27 @@ export class DidPeerMethod implements IDidMethod {
       publicKeyV: publicKeyJwkV,
       privateKeyE: privateKeyJwkE,
       publicKeyE: publicKeyJwkE,
+    };
+  }
+
+
+  public async generateMethod3(): Promise<DIDKeyPairMethod2> {
+
+    const method2Result = await this.generateMethod2();
+    const didMethod2 = method2Result.did;
+
+    const didWithoutPrefix = didMethod2.replace(/^did:peer:2/, '');
+    const hashBuffer = createHash('sha256').update(didWithoutPrefix).digest();
+    const encodedHash = `z${bs58.encode(hashBuffer)}`;
+    const didMethod3 = `did:peer:3${encodedHash}`;
+
+    return {
+      did: didMethod3,
+      didDocument: method2Result.didDocument,
+      privateKeyV: method2Result.privateKeyV,
+      publicKeyV: method2Result.publicKeyV,
+      privateKeyE: method2Result.privateKeyE,
+      publicKeyE: method2Result.publicKeyE,
     };
   }
 
