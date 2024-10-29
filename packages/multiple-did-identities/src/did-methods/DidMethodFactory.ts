@@ -1,6 +1,6 @@
-import { IDidMethod, DIDKeyPair, DIDKeyPairMethod1 } from './IDidMethod';
 import { DidKeyMethod } from './DidKeyMethod';
 import { DidPeerMethod } from './DidPeerMethod';
+import { DIDKeyPair, DIDKeyPairMethod1, DIDKeyPairMethod2, IDidMethod } from './IDidMethod';
 
 // Declare enum for the supported DID methods
 export enum DIDMethodName {
@@ -9,11 +9,15 @@ export enum DIDMethodName {
 }
 
 export enum PurposeCode {
+  Assertion = 'A',
+  Encryption = 'E',
   Verification = 'V',
-  Encryption = 'E'
+  Capability_Invocation = 'I',
+  Capability_Delegation = 'D',
+  Service = 'S'
 }
 
-export type DIDKeyPairVariants = DIDKeyPair | DIDKeyPairMethod1;
+export type DIDKeyPairVariants = DIDKeyPair | DIDKeyPairMethod1 | DIDKeyPairMethod2;
 export type PeerGenerationMethod = 'method0' | 'method1' | 'method2' | 'method3' | 'method4';
 
 export class DidMethodFactory {

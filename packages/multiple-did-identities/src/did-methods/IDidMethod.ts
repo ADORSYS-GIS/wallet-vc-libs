@@ -1,15 +1,18 @@
 import { JWK } from 'jose';
-import { DIDMethodName, PurposeCode } from './DidMethodFactory';
+import { DIDKeyPairVariants, DIDMethodName } from './DidMethodFactory';
 
-export interface DIDKeyPair {
+export interface Did {
   did: string;
+}
+
+export interface DIDKeyPair extends Did {
   privateKey: JWK;
   publicKey: JWK;
 }
 
 export interface IDidMethod {
   method: DIDMethodName;
-  generate(): Promise<DIDKeyPair>;
+  generate(): Promise<DIDKeyPairVariants>;
 }
 
 export interface DidIdValue {
@@ -25,13 +28,16 @@ export interface DidIdentity {
   createdAt: number;
 }
 
-export interface DIDKeyPairMethod1 extends DIDKeyPair{
+export interface DIDKeyPairMethod1 extends DIDKeyPair {
   genesisDocument: object;
 }
 
-export interface DIDKeyPairMethod2 {
-  did: string;
+export interface DIDKeyPairMethod2 extends Did {
   didDocument: DIDDocumentMethod2;
+  privateKeyV: JWK;
+  publicKeyV: JWK;
+  privateKeyE: JWK;
+  publicKeyE: JWK;
 }
 
 export interface DIDDocumentMethod2 {
@@ -60,4 +66,13 @@ export interface Service {
 export interface KeyPurpose {
   purpose: string;
   publicKeyMultibase: string;
+}
+
+export interface AbbreviatedService {
+  t: string;
+  s: {
+    uri: string;
+    a: string[];
+    r: string[];
+  };
 }
