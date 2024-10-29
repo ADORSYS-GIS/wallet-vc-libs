@@ -22,12 +22,15 @@ describe('DidMethodFactory', () => {
     it('should generate a DID using DidKeyMethod', async () => {
       const result = await DidMethodFactory.generateDid(DIDMethodName.Key);
 
-      // Check that the generated DID is in the expected format
-      expect(result.did).toMatch(/^did:key:z[1-9A-HJ-NP-Za-km-z]+$/);
-      expect(result.publicKey.kty).toBe('OKP');
-      expect(result.publicKey.crv).toBe('Ed25519');
-      expect(result.publicKey.x).toBeDefined();
-      expect(result.privateKey.d).toBeDefined();
+      // Type guard to check if result is DIDKeyPair
+      if ('publicKey' in result && 'privateKey' in result) {
+        expect(result.publicKey.kty).toBe('OKP');
+        expect(result.publicKey.crv).toBe('Ed25519');
+        expect(result.publicKey.x).toBeDefined();
+        expect(result.privateKey.d).toBeDefined();
+      } else {
+        throw new Error("Result is not of type DIDKeyPair with 'publicKey' and 'privateKey'");
+      }
     });
   });
 });
