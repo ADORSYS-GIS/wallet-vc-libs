@@ -8,6 +8,11 @@ export enum DIDMethodName {
   Peer = 'peer',
 }
 
+export enum PurposeCode {
+  Verification = 'V',
+  Encryption = 'E'
+}
+
 export type DIDKeyPairVariants = DIDKeyPair | DIDKeyPairMethod1;
 export type PeerGenerationMethod = 'method0' | 'method1' | 'method2' | 'method3' | 'method4';
 
