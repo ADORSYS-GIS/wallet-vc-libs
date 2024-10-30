@@ -1,9 +1,9 @@
 // Wallet.test.ts
 import { Wallet } from '../services/Wallet';
 import {
-  validContact,
-  secondValidContact,
   invalidContact,
+  secondValidContact,
+  validContact,
 } from './OOBTestFixtures';
 
 describe('Wallet', () => {
