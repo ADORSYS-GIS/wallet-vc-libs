@@ -29,7 +29,12 @@ export interface DidIdentity {
 }
 
 export interface DIDKeyPairMethod1 extends DIDKeyPair {
-  genesisDocument: object;
+  genesisDocument: GenesisDocument;
+}
+
+export interface GenesisDocument {
+  '@context': string[];
+  verificationMethod: VerificationMethod2[];
 }
 
 export interface DIDKeyPairMethod2 extends Did {
@@ -54,11 +59,19 @@ export interface VerificationMethod2 {
   publicKeyMultibase: string;
 }
 
+
+export interface VerificationMethod4 {
+  id: string;
+  type: string;
+  publicKeyMultibase: string;
+}
+
 export interface Service {
+  id: string;
   type: string;
   serviceEndpoint: {
     uri: string;
-    accept?: string[];
+    accept: string[];
     routingKeys?: string[];
   };
 }
@@ -75,4 +88,31 @@ export interface AbbreviatedService {
     a: string[];
     r: string[];
   };
+}
+
+export interface DIDDocumentMethod4 {
+  '@context': string[];
+  verificationMethod: VerificationMethod4[];
+  authentication: string[];
+  assertionMethod?: string[];
+  keyAgreement?: string[];
+  capabilityInvocation?: string[];
+  capabilityDelegation?: string[];
+  service: Service[];
+}
+
+export interface DIDKeyPairMethod4 extends Did {
+  didShort: string
+  didDocument: DIDDocumentMethod4;
+  privateKey1: JWK;
+  publicKey1: JWK;
+  privateKey2: JWK;
+  publicKey2: JWK;
+}
+
+export interface JWKKeys {
+  kty: string;
+  crv: string;
+  x: string;
+  d?: string;
 }

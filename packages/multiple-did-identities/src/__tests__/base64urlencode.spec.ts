@@ -1,4 +1,5 @@
-import { base64UrlEncode } from '../utils/base64UrlEncode';
+import { base64UrlEncode, base64UrlEncodeService } from '../utils/base64UrlEncode';
+import { concatenateKeyStrings } from '../utils/concatenateKeyStrings';
 
 describe('base64UrlEncode', () => {
   it('should encode a simple Uint8Array to base64 URL-safe string', () => {
@@ -23,5 +24,52 @@ describe('base64UrlEncode', () => {
     const data = new Uint8Array([]);
     const result = base64UrlEncode(data);
     expect(result).toBe('');
+  });
+});
+
+// ENCODING STRINGS
+
+describe('base64UrlEncodeService', () => {
+  it('should correctly encode a given string in base64url format', () => {
+      const input = "hello world";
+      const expectedOutput = "aGVsbG8gd29ybGQ";
+
+      const result = base64UrlEncodeService(input);
+      expect(result).toBe(expectedOutput);
+  });
+
+  it('should handle an empty string correctly', () => {
+      const input = "";
+      const expectedOutput = "";
+
+      const result = base64UrlEncodeService(input);
+      expect(result).toBe(expectedOutput);
+  });
+
+  it('should handle special characters correctly', () => {
+      const input = "test@example.com";
+      const expectedOutput = "dGVzdEBleGFtcGxlLmNvbQ";
+
+      const result = base64UrlEncodeService(input);
+      expect(result).toBe(expectedOutput);
+  });
+});
+
+// CONCATENATING STRINGS
+
+describe('concatenateKeyStrings', () => {
+  it('should concatenate multiple strings into one', () => {
+      const result = concatenateKeyStrings("hello", " ", "world");
+      expect(result).toBe("hello world");
+  });
+
+  it('should return a single string unchanged', () => {
+      const result = concatenateKeyStrings("single");
+      expect(result).toBe("single");
+  });
+
+  it('should return an empty string if no strings are provided', () => {
+      const result = concatenateKeyStrings();
+      expect(result).toBe("");
   });
 });
