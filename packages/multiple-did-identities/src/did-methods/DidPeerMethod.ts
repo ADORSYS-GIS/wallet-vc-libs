@@ -1,11 +1,12 @@
 import bs58 from 'bs58';
 import { createHash } from 'crypto';
+import { canonicalize } from 'json-canonicalize';
 import { base64UrlEncodeService } from '../utils/base64UrlEncode';
 import { concatenateKeyStrings } from '../utils/concatenateKeyStrings';
 import { convertServiceToAbbreviatedFormat } from '../utils/convertServiceToAbbreviatedFormat';
 import { generateKeyPairs } from '../utils/generateKeyPairs';
 import { DIDKeyPairVariants, DIDMethodName, PeerGenerationMethod, PurposeCode } from './DidMethodFactory';
-import { DIDDocumentMethod2, DIDDocumentMethod4, DIDKeyPair, DIDKeyPairMethod1, DIDKeyPairMethod2, DIDKeyPairMethod4, IDidMethod, Service, VerificationMethod2, VerificationMethod4, GenesisDocument } from './IDidMethod';
+import { DIDDocumentMethod2, DIDDocumentMethod4, DIDKeyPair, DIDKeyPairMethod1, DIDKeyPairMethod2, DIDKeyPairMethod4, GenesisDocument, IDidMethod, Service, VerificationMethod2, VerificationMethod4 } from './IDidMethod';
 
 /**
  * DID:peer Method Implementation
@@ -37,7 +38,7 @@ export class DidPeerMethod implements IDidMethod {
   }
 
 
-  // DID PEER METHOD 0 (did:peer:0)
+  // DID PEER METHOD 0 (did:peer:0) --------RESOLVABLE
   public async generateMethod0(): Promise<DIDKeyPair> {
 
     const keyPair = await generateKeyPairs(1);
@@ -70,7 +71,7 @@ export class DidPeerMethod implements IDidMethod {
     // Create the genesis document (stored variant) without the DID
     const genesisDocument: GenesisDocument = {
       '@context': ['https://www.w3.org/ns/did/v1'],
-      verificationMethod:  [
+      verificationMethod: [
         {
           id: '#id',
           controller: '#id',
@@ -80,13 +81,18 @@ export class DidPeerMethod implements IDidMethod {
       ],
     };
 
-    // Hash the serialized genesis document
-    const genesisDocumentString = JSON.stringify(genesisDocument);
-    const hashBuffer = createHash('sha256').update(genesisDocumentString).digest();
+    // Canonicalize the JSON document to ensure consistent structure for hashing
+    const canonicalizedGenesisDocument = canonicalize(genesisDocument);
 
-    // Encode the hash with base58 to use in the DID
-    const didNumericBasis = bs58.encode(hashBuffer);
-    const did = `did:peer:1z${didNumericBasis}`;
+    // Calculate SHA256 hash
+    const hash = createHash('sha256');
+    hash.update(canonicalizedGenesisDocument);
+    const sha256Hash = hash.digest();
+
+    // Convert SHA256 hash to base58
+    const multicodecDescriptor = new Uint8Array([0x12, 0x20]);
+    const base58Encoded = bs58.encode([...multicodecDescriptor, ...sha256Hash]);
+    const did = `did:peer:1z${base58Encoded}`;
 
     // Return DID, key pair, and genesis document for reference
     return {
@@ -99,7 +105,7 @@ export class DidPeerMethod implements IDidMethod {
   }
 
 
-  // DID PEER METHOD 2 (did:peer:2)
+  // DID PEER METHOD 2 (did:peer:2)-------RESOLVABLE
   public async generateMethod2(): Promise<DIDKeyPairMethod2> {
 
     const keyPairs = await generateKeyPairs(2);
@@ -107,11 +113,8 @@ export class DidPeerMethod implements IDidMethod {
     const KeyE = keyPairs[1];
 
     const ED25519_PUB_CODE = new Uint8Array([0xed, 0x01]);
-    const publicKeyVBase58 = bs58.encode([...ED25519_PUB_CODE, ...KeyV.rawPublicKey]);
-    const publicKeyEBase58 = bs58.encode([...ED25519_PUB_CODE, ...KeyE.rawPublicKey]);
-
-    const publicKeyMultibaseV = `z${publicKeyVBase58}`;
-    const publicKeyMultibaseE = `z${publicKeyEBase58}`;
+    const publicKeyMultibaseV = `z${bs58.encode([...ED25519_PUB_CODE, ...KeyV.rawPublicKey])}`;
+    const publicKeyMultibaseE = `z${bs58.encode([...ED25519_PUB_CODE, ...KeyE.rawPublicKey])}`;
 
     const purposepublicKeyMultibaseV = `.${PurposeCode.Verification}${publicKeyMultibaseV}`;
     const purposepublicKeyMultibaseE = `.${PurposeCode.Encryption}${publicKeyMultibaseE}`;
@@ -136,7 +139,7 @@ export class DidPeerMethod implements IDidMethod {
     // Iterate through each service, convert and encode
     for (const svc of service) {
       const abbreviatedService = convertServiceToAbbreviatedFormat(svc);
-      const jsonString = JSON.stringify(abbreviatedService);
+      const jsonString = canonicalize(abbreviatedService);
 
       // Encode each abbreviated service individually
       const encodedService = `.${PurposeCode.Service}${base64UrlEncodeService(jsonString)}`;
@@ -167,7 +170,7 @@ export class DidPeerMethod implements IDidMethod {
 
     // Build the DID document
     const didDocument: DIDDocumentMethod2 = {
-      '@context': ['https://www.w3.org/ns/did/v1','https://w3id.org/security/multikey/v1'],
+      '@context': ['https://www.w3.org/ns/did/v1', 'https://w3id.org/security/multikey/v1'],
       id: did,
       verificationMethod: verificationMethod,
       service: service
@@ -184,6 +187,7 @@ export class DidPeerMethod implements IDidMethod {
   }
 
 
+  // DID PEER METHOD 3 (did:peer:3)
   public async generateMethod3(): Promise<DIDKeyPairMethod2> {
 
     const method2Result = await this.generateMethod2();
@@ -204,6 +208,8 @@ export class DidPeerMethod implements IDidMethod {
     };
   }
 
+
+  // DID PEER METHOD 4 (did:peer:4)-------RESOLVABLE
   public async generateMethod4(): Promise<DIDKeyPairMethod4> {
     // Generate the specified number of key pairs
     const keyPairs = await generateKeyPairs(2);
@@ -211,33 +217,24 @@ export class DidPeerMethod implements IDidMethod {
     const Key2 = keyPairs[1];
 
     const ED25519_PUB_CODE = new Uint8Array([0xed, 0x01]);
-    const publicKeyBase58Key1 = bs58.encode([...ED25519_PUB_CODE, ...Key1.rawPublicKey]);
-    const publicKeyBase58Key2 = bs58.encode([...ED25519_PUB_CODE, ...Key2.rawPublicKey]);
+    const publicKeyMultibaseKey1 = `z${bs58.encode([...ED25519_PUB_CODE, ...Key1.rawPublicKey])}`;
+    const publicKeyMultibaseKey2 = `z${bs58.encode([...ED25519_PUB_CODE, ...Key2.rawPublicKey])}`;
 
-    const publicKeyMultibaseKey1 = `z${publicKeyBase58Key1}`;
-    const publicKeyMultibaseKey2 = `z${publicKeyBase58Key2}`;
-
-    // Define a service endpoint
+    // Define a service or services
     const service: Service[] = [
-      {
-        id: '#didcommmessaging',
-        type: 'DIDCommMessaging',
-        serviceEndpoint: {
-          uri: 'http://example.com/didcomm',
-          accept: ['didcomm/v2'],
-          routingKeys: []
-        }
-      }
+      //all services needed will provided here following the structure found in the IDidMethod.ts file
     ];
 
     const verificationMethod: VerificationMethod4[] = [
       {
         id: '#key-1',
+        controller: '#didcontroller',
         type: 'Ed25519VerificationKey2018',
         publicKeyMultibase: publicKeyMultibaseKey1
       },
       {
         id: '#key-2',
+        controller: '#didcontroller',
         type: 'Ed25519VerificationKey2018',
         publicKeyMultibase: publicKeyMultibaseKey2
       }
@@ -247,15 +244,14 @@ export class DidPeerMethod implements IDidMethod {
     const didDocument: DIDDocumentMethod4 = {
       '@context': ['https://www.w3.org/ns/did/v1', 'https://w3id.org/security/suites/ed25519-2018/v1'],
       verificationMethod: verificationMethod,
-      authentication: ['#key-1'],
       service: service
     };
 
     // Build the long and short form DID
     // Encode the Document
-    const didDocumentString = JSON.stringify(didDocument);
+    const didDocumentString = canonicalize(didDocument);
     const jsonBytes = new TextEncoder().encode(didDocumentString);
-    const prefixedBytes = new Uint8Array([0x02, 0x00, ...jsonBytes]);
+    const prefixedBytes = new Uint8Array([0x80, 0x04, ...jsonBytes]);
     const encodedDocument = bs58.encode(prefixedBytes);
     const prefixedEncodedDocument = `z${encodedDocument}`; // encoded document
 

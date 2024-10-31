@@ -62,6 +62,7 @@ export interface VerificationMethod2 {
 
 export interface VerificationMethod4 {
   id: string;
+  controller?: string;
   type: string;
   publicKeyMultibase: string;
 }
@@ -69,11 +70,13 @@ export interface VerificationMethod4 {
 export interface Service {
   id: string;
   type: string;
-  serviceEndpoint: {
-    uri: string;
-    accept: string[];
-    routingKeys?: string[];
-  };
+  serviceEndpoint: ServicesEndpoint
+}
+
+export interface ServicesEndpoint {
+  uri: string;
+  accept: string[];
+  routingKeys: string[];
 }
 
 export interface KeyPurpose {
@@ -93,7 +96,7 @@ export interface AbbreviatedService {
 export interface DIDDocumentMethod4 {
   '@context': string[];
   verificationMethod: VerificationMethod4[];
-  authentication: string[];
+  authentication?: string[];
   assertionMethod?: string[];
   keyAgreement?: string[];
   capabilityInvocation?: string[];
