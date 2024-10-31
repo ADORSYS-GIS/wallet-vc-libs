@@ -18,7 +18,8 @@ export interface IDidMethod {
 export interface DidIdValue {
   did: string;
   method: DIDMethodName;
-  document: DIDKeyPair;
+  method_type: string;
+  document: DIDKeyPairVariants;
   createdAt: number;
 }
 

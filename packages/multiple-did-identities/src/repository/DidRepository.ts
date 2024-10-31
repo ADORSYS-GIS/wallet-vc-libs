@@ -1,7 +1,7 @@
 import { StorageFactory } from '@adorsys-gis/storage';
 import { DBSchema } from 'idb';
-import { DIDKeyPair, DidIdValue, DidIdentity } from '../did-methods/IDidMethod';
-import { DIDMethodName } from '../did-methods/DidMethodFactory';
+import { DidIdValue, DidIdentity } from '../did-methods/IDidMethod';
+import { DIDMethodName, DIDKeyPairVariants } from '../did-methods/DidMethodFactory';
 
 interface DidSchema extends DBSchema {
   dids: {
@@ -32,10 +32,34 @@ export class DidRepository {
    * @param method The DID method ('key' or 'peer').
    * @returns The stored DIDIdentity.
    */
-  async createDidId(didDoc: DIDKeyPair, method: DIDMethodName): Promise<void> {
+  async createDidId(didDoc: DIDKeyPairVariants, method: DIDMethodName): Promise<void> {
+    let methodType;
+
+    // Check the DID to determine its type based on the prefix
+    if (method === DIDMethodName.Peer) {
+      const did = didDoc.did;
+
+      if (did.startsWith('did:peer:0')) {
+        methodType = 'Method0';
+      } else if (did.startsWith('did:peer:1')) {
+        methodType = 'Method1';
+      } else if (did.startsWith('did:peer:2')) {
+        methodType = 'Method2';
+      } else if (did.startsWith('did:peer:3')) {
+        methodType = 'Method3';
+      } else if (did.startsWith('did:peer:4')) {
+        methodType = 'Method4';
+      } else {
+        methodType = 'Unknown Method type';
+      }
+    } else {
+      methodType = '';
+    }
+
     const payload: DidIdValue = {
       did: didDoc.did,
       method: method,
+      method_type: methodType,
       document: didDoc,
       createdAt: Date.now(),
     };

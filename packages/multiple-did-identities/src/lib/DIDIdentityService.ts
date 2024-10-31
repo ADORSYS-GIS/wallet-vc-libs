@@ -1,6 +1,7 @@
 import {
   DidMethodFactory,
   DIDMethodName,
+  PeerGenerationMethod
 } from '../did-methods/DidMethodFactory';
 import { DidRepository } from '../repository/DidRepository';
 import { EventEmitter } from 'eventemitter3';
@@ -23,11 +24,12 @@ export class DIDIdentityService {
    *
    * @param method - The DID method to use ('key' or 'peer').
    */
-  public async createDidIdentity(method: DIDMethodName): Promise<void> {
+  public async createDidIdentity(method: DIDMethodName, methodType?: PeerGenerationMethod): Promise<void> {
     const createDidIdentityChannel = DidEventChannel.CreateDidIdentity;
 
     try {
-      const didDocument = await DidMethodFactory.generateDid(method);
+      const didDocument = await DidMethodFactory.generateDid(method, method === DIDMethodName.Peer ? methodType : undefined);
+      
       await this.didRepository.createDidId(didDocument, method);
 
       const response: ServiceResponse<{ did: string }> = {
