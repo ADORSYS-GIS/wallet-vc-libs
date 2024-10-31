@@ -15,6 +15,12 @@ import {
   BOB_SECRETS,
 } from '../PackAndUnpackFixtures';
 
+const MESSAGE_ID = '1234567890';
+const MESSAGE_TYP = 'application/didcomm-plain+json';
+const MESSAGE_TYPE = 'http://example.com/protocols/lets_do_lunch/1.0/proposal';
+const ALICE_KID = ALICE_DID + '#key-x25519-1';
+const MESSAGE_BODY = { messagespecificattribute: 'and its value' };
+
 class ExampleDIDResolver implements DIDResolver {
   knownDids: DIDDoc[];
 
@@ -45,25 +51,33 @@ class ExampleSecretsResolver implements SecretsResolver {
   }
 }
 
+function createDidResolver(knownDids: DIDDoc[]): ExampleDIDResolver {
+  return new ExampleDIDResolver(knownDids);
+}
+
+function createSecretsResolver(knownSecrets: Secret[]): ExampleSecretsResolver {
+  return new ExampleSecretsResolver(knownSecrets);
+}
+
 describe('DIDComm message pack and unpack', () => {
   let didResolver: ExampleDIDResolver;
   let secretsResolver: ExampleSecretsResolver;
 
   beforeEach(() => {
-    didResolver = new ExampleDIDResolver([ALICE_DID_DOC, BOB_DID_DOC]);
-    secretsResolver = new ExampleSecretsResolver(ALICE_SECRETS);
+    didResolver = createDidResolver([ALICE_DID_DOC, BOB_DID_DOC]);
+    secretsResolver = createSecretsResolver(ALICE_SECRETS);
   });
 
   it('should pack, encrypt, and then unpack a message successfully', async () => {
     const msg = new Message({
-      id: '1234567890',
-      typ: 'application/didcomm-plain+json',
-      type: 'http://example.com/protocols/lets_do_lunch/1.0/proposal',
+      id: MESSAGE_ID,
+      typ: MESSAGE_TYP,
+      type: MESSAGE_TYPE,
       from: ALICE_DID,
       to: [BOB_DID],
       created_time: 1516269022,
       expires_time: 1516385931,
-      body: { messagespecificattribute: 'and its value' },
+      body: MESSAGE_BODY,
     });
 
     // Pack and encrypt the message
@@ -79,16 +93,14 @@ describe('DIDComm message pack and unpack', () => {
     );
 
     expect(encryptedMsg).toBeDefined();
-    expect(encryptMetadata).toHaveProperty('from_kid');
-    expect(encryptMetadata).toHaveProperty(
-      'from_kid',
-      ALICE_DID + '#key-x25519-1',
-    );
-    expect(encryptMetadata).toHaveProperty('to_kids');
+    expect(encryptMetadata).toMatchObject({
+      from_kid: ALICE_KID,
+      to_kids: expect.any(Array),
+    });
 
     // Reinitialize resolvers for the receiving party
-    didResolver = new ExampleDIDResolver([ALICE_DID_DOC, BOB_DID_DOC]);
-    secretsResolver = new ExampleSecretsResolver(BOB_SECRETS);
+    didResolver = createDidResolver([ALICE_DID_DOC, BOB_DID_DOC]);
+    secretsResolver = createSecretsResolver(BOB_SECRETS);
 
     // Unpack and decrypt the message
     const [unpackedMsg, unpackMetadata] = await Message.unpack(
@@ -98,39 +110,31 @@ describe('DIDComm message pack and unpack', () => {
       {},
     );
 
-    const unpackedContent = unpackedMsg.as_value(); // Use .as_value() to get the actual content
-    expect(unpackedContent).toHaveProperty('id', '1234567890');
-    expect(unpackedContent).toHaveProperty(
-      'typ',
-      'application/didcomm-plain+json',
-    );
-    expect(unpackedContent).toHaveProperty(
-      'type',
-      'http://example.com/protocols/lets_do_lunch/1.0/proposal',
-    );
-    expect(unpackedContent.body).toHaveProperty(
-      'messagespecificattribute',
-      'and its value',
-    );
+    const unpackedContent = unpackedMsg.as_value();
+    expect(unpackedContent).toMatchObject({
+      id: MESSAGE_ID,
+      typ: MESSAGE_TYP,
+      type: MESSAGE_TYPE,
+      body: MESSAGE_BODY,
+    });
 
-    expect(unpackMetadata).toHaveProperty('sign_from'); // Ensure metadata shows encryption
-    expect(unpackMetadata).toHaveProperty(
-      'encrypted_from_kid',
-      ALICE_DID + '#key-x25519-1',
-    ); // Confirm correct sender's key
-    expect(unpackMetadata).toHaveProperty('encrypted_to_kids'); // Ensure recipient's key ID exists
+    expect(unpackMetadata).toMatchObject({
+      sign_from: expect.any(String),
+      encrypted_from_kid: ALICE_KID,
+      encrypted_to_kids: expect.any(Array),
+    });
   });
 
   it('should unpack an encrypted message successfully', async () => {
     const msg = new Message({
-      id: '1234567890',
-      typ: 'application/didcomm-plain+json',
-      type: 'http://example.com/protocols/lets_do_lunch/1.0/proposal',
+      id: MESSAGE_ID,
+      typ: MESSAGE_TYP,
+      type: MESSAGE_TYPE,
       from: ALICE_DID,
       to: [BOB_DID],
       created_time: 1516269022,
       expires_time: 1516385931,
-      body: { messagespecificattribute: 'and its value' },
+      body: MESSAGE_BODY,
     });
 
     // Pack the message to simulate sending it
@@ -146,8 +150,8 @@ describe('DIDComm message pack and unpack', () => {
     );
 
     // Unpack the message to simulate receiving it
-    didResolver = new ExampleDIDResolver([ALICE_DID_DOC, BOB_DID_DOC]);
-    secretsResolver = new ExampleSecretsResolver(BOB_SECRETS);
+    didResolver = createDidResolver([ALICE_DID_DOC, BOB_DID_DOC]);
+    secretsResolver = createSecretsResolver(BOB_SECRETS);
 
     const [unpackedMsg, unpackMetadata] = await Message.unpack(
       encryptedMsg,
@@ -157,20 +161,15 @@ describe('DIDComm message pack and unpack', () => {
     );
 
     expect(unpackedMsg).toBeDefined();
-    expect(unpackedMsg.as_value()).toHaveProperty(
-      'body.messagespecificattribute',
-      'and its value',
-    );
-    expect(unpackedMsg.as_value()).toHaveProperty(
-      'typ',
-      'application/didcomm-plain+json',
-    );
+    expect(unpackedMsg.as_value()).toMatchObject({
+      typ: MESSAGE_TYP,
+      body: MESSAGE_BODY,
+    });
 
-    expect(unpackMetadata).toHaveProperty('sign_from');
-    expect(unpackMetadata).toHaveProperty(
-      'encrypted_from_kid',
-      ALICE_DID + '#key-x25519-1',
-    ); // Confirm correct sender's key
-    expect(unpackMetadata).toHaveProperty('encrypted_to_kids'); // Ensure recipient's key ID exists
+    expect(unpackMetadata).toMatchObject({
+      sign_from: expect.any(String),
+      encrypted_from_kid: ALICE_KID,
+      encrypted_to_kids: expect.any(Array),
+    });
   });
 });
