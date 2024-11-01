@@ -1,7 +1,10 @@
 import { StorageFactory } from '@adorsys-gis/storage';
 import { DBSchema } from 'idb';
 import { DidIdValue, DidIdentity } from '../did-methods/IDidMethod';
-import { DIDMethodName, DIDKeyPairVariants } from '../did-methods/DidMethodFactory';
+import {
+  DIDMethodName,
+  DIDKeyPairVariants,
+} from '../did-methods/DidMethodFactory';
 
 interface DidSchema extends DBSchema {
   dids: {
@@ -32,7 +35,10 @@ export class DidRepository {
    * @param method The DID method ('key' or 'peer').
    * @returns The stored DIDIdentity.
    */
-  async createDidId(didDoc: DIDKeyPairVariants, method: DIDMethodName): Promise<void> {
+  async createDidId(
+    didDoc: DIDKeyPairVariants,
+    method: DIDMethodName,
+  ): Promise<void> {
     let methodType;
 
     // Check the DID to determine its type based on the prefix
@@ -40,17 +46,17 @@ export class DidRepository {
       const did = didDoc.did;
 
       if (did.startsWith('did:peer:0')) {
-        methodType = 'Method0';
+        methodType = 'method0';
       } else if (did.startsWith('did:peer:1')) {
-        methodType = 'Method1';
+        methodType = 'method1';
       } else if (did.startsWith('did:peer:2')) {
-        methodType = 'Method2';
+        methodType = 'method2';
       } else if (did.startsWith('did:peer:3')) {
-        methodType = 'Method3';
+        methodType = 'method3';
       } else if (did.startsWith('did:peer:4')) {
-        methodType = 'Method4';
+        methodType = 'method4';
       } else {
-        methodType = 'Unknown Method type';
+        throw new Error('Unknown Method type');
       }
     } else {
       methodType = '';
@@ -85,8 +91,14 @@ export class DidRepository {
   async getADidId(did: string): Promise<DidIdentity> {
     const record = await this.storageFactory.findOne('dids', did);
 
-    const { did: storedDid, method, createdAt } = record.value;
-    return { did: storedDid, method, createdAt };
+    const { did: storedDid, method, method_type, createdAt } = record.value;
+
+    // Check if the DID starts with "did:key" to determine whether to include methodType
+    const didIdentity: DidIdentity = storedDid.startsWith('did:key')
+      ? { did: storedDid, method, createdAt }
+      : { did: storedDid, method, method_type, createdAt };
+
+    return didIdentity;
   }
 
   /**
@@ -96,8 +108,15 @@ export class DidRepository {
   async getAllDidIds(): Promise<DidIdentity[]> {
     const records = await this.storageFactory.findAll('dids');
     return records.map((record) => {
-      const { did, method, createdAt } = record.value;
-      return { did, method, createdAt };
+      const { did, method, method_type, createdAt } = record.value;
+
+      // Return an object including method_type if it exists for any DID
+      return {
+        did,
+        method,
+        method_type: method_type, // Return method_type for all records if it exists
+        createdAt,
+      };
     });
   }
 }
