@@ -27,16 +27,25 @@ describe('DidPeerMethod', () => {
     expect(result.did).toMatch(/^did:peer:3/); // Ensure the DID starts with 'did:peer:3'
 
     // Validate the didDocument structure
-    expect(result.didDocument).toHaveProperty('@context', expect.arrayContaining(['https://www.w3.org/ns/did/v1']));
+    expect(result.didDocument).toHaveProperty(
+      '@context',
+      expect.arrayContaining(['https://www.w3.org/ns/did/v1']),
+    );
     expect(result.didDocument).toHaveProperty('id', result.didDocument.id);
 
     // Verify that the verificationMethod from method 2 is included in the didDocument
     if (result.didDocument.verificationMethod) {
-    expect(result.didDocument.verificationMethod).toHaveLength(2); // Should have both keys
-    expect(result.didDocument.verificationMethod[0]).toHaveProperty('id', '#key-1');
-    expect(result.didDocument.verificationMethod[1]).toHaveProperty('id', '#key-2');
+      expect(result.didDocument.verificationMethod).toHaveLength(2); // Should have both keys
+      expect(result.didDocument.verificationMethod[0]).toHaveProperty(
+        'id',
+        '#key-1',
+      );
+      expect(result.didDocument.verificationMethod[1]).toHaveProperty(
+        'id',
+        '#key-2',
+      );
     } else {
-        fail('Services should be defined.');
+      fail('Services should be defined.');
     }
   });
 });

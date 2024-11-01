@@ -19,7 +19,6 @@ describe('DidPeerMethod', () => {
     console.log('DID Document:');
     console.log(JSON.stringify(result.didDocument));
 
-
     // Assertions for method 4
     expect(result).toHaveProperty('did');
     expect(result).toHaveProperty('didShort');
@@ -34,15 +33,30 @@ describe('DidPeerMethod', () => {
     expect(result.didShort).toMatch(/^did:peer:4/); // Ensure the short DID also starts with 'did:peer:4'
 
     // Validate the didDocument structure
-    expect(result.didDocument).toHaveProperty('@context', expect.arrayContaining([
-      'https://www.w3.org/ns/did/v1', 
-      'https://w3id.org/security/suites/ed25519-2018/v1'
-    ]));
+    expect(result.didDocument).toHaveProperty(
+      '@context',
+      expect.arrayContaining([
+        'https://www.w3.org/ns/did/v1',
+        'https://w3id.org/security/suites/ed25519-2018/v1',
+      ]),
+    );
     expect(result.didDocument).toHaveProperty('verificationMethod');
     expect(result.didDocument.verificationMethod).toHaveLength(2); // Should have two verification methods
-    expect(result.didDocument.verificationMethod[0]).toHaveProperty('id', '#key-1');
-    expect(result.didDocument.verificationMethod[1]).toHaveProperty('id', '#key-2');
-    expect(result.didDocument.verificationMethod[0]).toHaveProperty('type', 'Ed25519VerificationKey2018');
-    expect(result.didDocument.verificationMethod[1]).toHaveProperty('type', 'Ed25519VerificationKey2018');
+    expect(result.didDocument.verificationMethod[0]).toHaveProperty(
+      'id',
+      '#key-1',
+    );
+    expect(result.didDocument.verificationMethod[1]).toHaveProperty(
+      'id',
+      '#key-2',
+    );
+    expect(result.didDocument.verificationMethod[0]).toHaveProperty(
+      'type',
+      'Ed25519VerificationKey2018',
+    );
+    expect(result.didDocument.verificationMethod[1]).toHaveProperty(
+      'type',
+      'Ed25519VerificationKey2018',
+    );
   });
 });
