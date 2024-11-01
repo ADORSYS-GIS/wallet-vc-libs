@@ -1,6 +1,12 @@
 import { DidKeyMethod } from './DidKeyMethod';
 import { DidPeerMethod } from './DidPeerMethod';
-import { DIDKeyPair, DIDKeyPairMethod1, DIDKeyPairMethod2, IDidMethod, DIDKeyPairMethod4 } from './IDidMethod';
+import {
+  DIDKeyPair,
+  DIDKeyPairMethod1,
+  DIDKeyPairMethod2,
+  IDidMethod,
+  DIDKeyPairMethod4,
+} from './IDidMethod';
 
 // Declare enum for the supported DID methods
 export enum DIDMethodName {
@@ -14,11 +20,20 @@ export enum PurposeCode {
   Verification = 'V',
   Capability_Invocation = 'I',
   Capability_Delegation = 'D',
-  Service = 'S'
+  Service = 'S',
 }
 
-export type DIDKeyPairVariants = DIDKeyPair | DIDKeyPairMethod1 | DIDKeyPairMethod2 | DIDKeyPairMethod4;
-export type PeerGenerationMethod = 'method0' | 'method1' | 'method2' | 'method3' | 'method4';
+export type DIDKeyPairVariants =
+  | DIDKeyPair
+  | DIDKeyPairMethod1
+  | DIDKeyPairMethod2
+  | DIDKeyPairMethod4;
+export type PeerGenerationMethod =
+  | 'method0'
+  | 'method1'
+  | 'method2'
+  | 'method3'
+  | 'method4';
 
 export class DidMethodFactory {
   static create(method: DIDMethodName): IDidMethod {
@@ -38,18 +53,23 @@ export class DidMethodFactory {
    * @param methodType - The specific generation method to use for the Peer method.
    * @returns A Promise that resolves to a DIDKeyPair.
    */
-  static async generateDid(method: DIDMethodName, methodType?: PeerGenerationMethod): Promise<DIDKeyPairVariants> {
+  static async generateDid(
+    method: DIDMethodName,
+    methodType?: PeerGenerationMethod,
+  ): Promise<DIDKeyPairVariants> {
     const didMethod = this.create(method);
 
     // Validate that methodType is only used with DIDMethodName.Peer
     if (method === DIDMethodName.Key && methodType) {
-      throw new Error(`methodType should not be specified for DIDMethodName.Key`);
+      throw new Error(
+        `methodType should not be specified for DIDMethodName.Key`,
+      );
     }
 
     if (method === DIDMethodName.Peer && !methodType) {
       throw new Error(`methodType must be specified for DIDMethodName.Peer`);
     }
-    
+
     // Call the appropriate generation method based on DID type
     if (method === DIDMethodName.Peer && methodType) {
       return (didMethod as DidPeerMethod).generate(methodType);

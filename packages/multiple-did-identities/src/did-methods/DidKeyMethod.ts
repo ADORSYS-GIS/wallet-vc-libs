@@ -11,7 +11,6 @@ export class DidKeyMethod implements IDidMethod {
   method = DIDMethodName.Key;
 
   async generate(): Promise<DIDKeyPair> {
-
     const keyPair = await generateKeyPairs(1);
     const key = keyPair[0];
 
@@ -19,7 +18,10 @@ export class DidKeyMethod implements IDidMethod {
     const ED25519_PUB_CODE = new Uint8Array([0xed, 0x01]);
 
     // Encode the public key using bs58 directly
-    const publicKeyBase58 = bs58.encode([...ED25519_PUB_CODE, ...key.rawPublicKey]);
+    const publicKeyBase58 = bs58.encode([
+      ...ED25519_PUB_CODE,
+      ...key.rawPublicKey,
+    ]);
 
     // Construct the DID:key identifier
     const did = `did:key:z${publicKeyBase58}`;

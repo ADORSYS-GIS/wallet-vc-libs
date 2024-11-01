@@ -26,6 +26,7 @@ export interface DidIdValue {
 export interface DidIdentity {
   did: string;
   method: DIDMethodName;
+  method_type?: string;
   createdAt: number;
 }
 
@@ -55,11 +56,10 @@ export interface DIDDocumentMethod2 {
 
 export interface VerificationMethod2 {
   id: string;
-  controller: string,
+  controller: string;
   type: string;
   publicKeyMultibase: string;
 }
-
 
 export interface VerificationMethod4 {
   id: string;
@@ -71,13 +71,13 @@ export interface VerificationMethod4 {
 export interface Service {
   id: string;
   type: string;
-  serviceEndpoint: ServicesEndpoint
+  serviceEndpoint: ServicesEndpoint;
 }
 
 export interface ServicesEndpoint {
   uri: string;
-  accept: string[];
-  routingKeys: string[];
+  accept?: string[];
+  routingKeys?: string[];
 }
 
 export interface KeyPurpose {
@@ -106,7 +106,7 @@ export interface DIDDocumentMethod4 {
 }
 
 export interface DIDKeyPairMethod4 extends Did {
-  didShort: string
+  didShort: string;
   didDocument: DIDDocumentMethod4;
   privateKey1: JWK;
   publicKey1: JWK;
