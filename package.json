@@ -19,16 +19,19 @@
     "packages/event-bus",
     "packages/contact-service",
     "packages/contact-exchange",
-    "packages/multiple-did-identities"
+    "packages/multiple-did-identities",
+    "packages/qr-scanner"
   ],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/node": "^22.8.0",
     "@typescript-eslint/eslint-plugin": "^8.7.0",
     "@typescript-eslint/parser": "^8.7.0",
     "eslint": "^8.0.0",
     "jsonc-eslint-parser": "^2.4.0",
     "prettier": "^3.3.3",
+    "rimraf": "^6.0.1",
     "typescript": "5.5.4"
   }
 }
