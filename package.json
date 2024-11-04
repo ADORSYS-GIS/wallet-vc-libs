@@ -20,7 +20,8 @@
     "packages/contact-service",
     "packages/contact-exchange",
     "packages/multiple-did-identities",
-    "packages/qr-scanner"
+    "packages/qr-scanner",
+    "packages/usePWA"
   ],
   "author": "",
   "license": "ISC",
