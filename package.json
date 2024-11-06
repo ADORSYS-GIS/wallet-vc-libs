@@ -18,17 +18,19 @@
     "packages/storage",
     "packages/event-bus",
     "packages/contact-service",
+    "packages/didcomm",
     "packages/contact-exchange",
-    "packages/multiple-did-identities",
-    "packages/qr-scanner"
+    "packages/qr-scanner",
+    "packages/multiple-did-identities"
   ],
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "@types/jest": "^29.5.14",
     "@types/node": "^22.8.0",
     "@typescript-eslint/eslint-plugin": "^8.7.0",
     "@typescript-eslint/parser": "^8.7.0",
-    "eslint": "^8.0.0",
+    "eslint": "^8.57.1",
     "jsonc-eslint-parser": "^2.4.0",
     "prettier": "^3.3.3",
     "rimraf": "^6.0.1",
