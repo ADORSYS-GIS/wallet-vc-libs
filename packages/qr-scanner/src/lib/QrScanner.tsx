@@ -9,7 +9,7 @@ export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
   const [error, setError] = useState<string | null>(null);
   const [isScanning, setIsScanning] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const timeoutRef = useRef<number | null>(null)
+  const timeoutRef = useRef<number | null>(null);
 
   const captureFrame = useCallback(() => {
     if (!canvasRef.current || !videoRef.current) return;
@@ -94,7 +94,8 @@ export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
           videoRef.current?.addEventListener('loadedmetadata', () => {
             // Set a timeout to prevent video flickering
             timeoutRef.current = window.setTimeout(() => {
-              if (videoRef.current) {  // Ensure videoRef.current still exists
+              if (videoRef.current) {
+                // Ensure videoRef.current still exists
                 videoRef.current.style.display = 'block';
                 videoRef.current.classList.add('ready');
                 videoRef.current.play();
