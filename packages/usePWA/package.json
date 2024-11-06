@@ -1,6 +1,6 @@
 {
   "name": "@adorsys-gis/usepwa",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "",
   "type": "commonjs",
   "main": "dist/src/index.js",
@@ -9,9 +9,7 @@
     "@iconify/icons-fluent": "^1.2.38",
     "@iconify/react": "^4.1.1",
     "next-pwa": "^5.6.0",
-    "react": "18.2.0",
     "react-barcode": "^1.5.3",
-    "react-dom": "18.2.0",
     "react-router-dom": "^6.21.2",
     "tslib": "^2.3.0"
   },
@@ -36,7 +34,13 @@
     "ts-node": "10.9.1",
     "typescript": "~5.2.2",
     "webpack": "^5.95.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
     "webpack-cli": "^5.1.4"
+  },
+  "peerDependencies": {
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
   },
   "scripts": {
     "test": "jest",
