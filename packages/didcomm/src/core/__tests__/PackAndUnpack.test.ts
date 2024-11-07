@@ -13,7 +13,7 @@ import {
   BOB_DID,
   BOB_DID_DOC,
   BOB_SECRETS,
-} from '../PackAndUnpackFixtures';
+} from './fixtures/PackAndUnpackFixtures';
 
 const MESSAGE_ID = '1234567890';
 const MESSAGE_TYP = 'application/didcomm-plain+json';
