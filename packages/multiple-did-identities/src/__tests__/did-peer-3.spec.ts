@@ -12,9 +12,6 @@ describe('DidPeerMethod', () => {
     // Generate method 3 DID
     const result: DIDKeyPairMethod2 = await didPeerMethod.generateMethod3();
 
-    console.log('DID for method 3:');
-    console.log(result.did);
-
     // Assertions for method 3
     expect(result).toHaveProperty('did');
     expect(result).toHaveProperty('didDocument');

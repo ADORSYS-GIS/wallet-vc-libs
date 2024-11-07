@@ -15,14 +15,6 @@ describe('DID Peer Method 1', () => {
     expect(result).toHaveProperty('publicKey');
     expect(result).toHaveProperty('genesisDocument');
 
-    console.log(result.did);
-
-    console.log(result.privateKey);
-
-    console.log(result.publicKey);
-
-    console.log(result.genesisDocument);
-
     // Check if DID starts with 'did:peer:0z'
     expect(result.did).toMatch(/^did:peer:1z/);
 

@@ -12,13 +12,6 @@ describe('DidPeerMethod', () => {
     // Generate method 4 key pair
     const result: DIDKeyPairMethod4 = await didPeerMethod.generateMethod4();
 
-    console.log('Long DID for method 4:');
-    console.log(result.did);
-    console.log('Short DID for method 4:');
-    console.log(result.didShort);
-    console.log('DID Document:');
-    console.log(JSON.stringify(result.didDocument));
-
     // Assertions for method 4
     expect(result).toHaveProperty('did');
     expect(result).toHaveProperty('didShort');
