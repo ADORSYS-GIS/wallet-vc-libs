@@ -1,0 +1,53 @@
+{
+  "name": "@adorsys-gis/usepwa",
+  "version": "1.0.1",
+  "description": "",
+  "type": "commonjs",
+  "main": "dist/src/index.js",
+  "typings": "dist/src/index.d.ts",
+  "dependencies": {
+    "@iconify/icons-fluent": "^1.2.38",
+    "@iconify/react": "^4.1.1",
+    "next-pwa": "^5.6.0",
+    "react-barcode": "^1.5.3",
+    "react-router-dom": "^6.21.2",
+    "tslib": "^2.3.0"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.14.5",
+    "@babel/preset-react": "^7.14.5",
+    "@testing-library/react": "14.0.0",
+    "@types/jest": "^29.4.0",
+    "@types/jsdom": "^21.1.6",
+    "@types/next-pwa": "^5.6.9",
+    "@types/node": "^18.16.9",
+    "@types/react": "^18.2.33",
+    "@types/react-dom": "^18.2.14",
+    "css-loader": "^7.1.2",
+    "identity-obj-proxy": "^3.0.0",
+    "mini-css-extract-plugin": "^2.9.1",
+    "react-refresh": "^0.10.0",
+    "rimraf": "^6.0.1",
+    "style-loader": "^4.0.0",
+    "ts-jest": "^29.1.0",
+    "ts-loader": "^9.5.1",
+    "ts-node": "10.9.1",
+    "typescript": "~5.2.2",
+    "webpack": "^5.95.0",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "webpack-cli": "^5.1.4"
+  },
+  "peerDependencies": {
+    "react": "18.2.0",
+    "react-dom": "18.2.0"
+  },
+  "scripts": {
+    "test": "jest",
+    "build": "rimraf dist && webpack --config webpack.config.js",
+    "lint": "eslint ./src --ext .ts"
+  },
+  "keywords": [],
+  "author": "adorsys",
+  "license": "ISC"
+}
