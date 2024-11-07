@@ -21,7 +21,8 @@
     "packages/didcomm",
     "packages/contact-exchange",
     "packages/qr-scanner",
-    "packages/multiple-did-identities"
+    "packages/multiple-did-identities",
+    "packages/message"
   ],
   "author": "",
   "license": "ISC",
