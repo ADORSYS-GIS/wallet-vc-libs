@@ -20,8 +20,10 @@
     "packages/contact-service",
     "packages/didcomm",
     "packages/contact-exchange",
+    "packages/multiple-did-identities",
     "packages/qr-scanner",
     "packages/multiple-did-identities",
+    "packages/usePWA",
     "packages/message"
   ],
   "author": "",
