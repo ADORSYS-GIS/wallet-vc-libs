@@ -1,0 +1,32 @@
+.tooltip {
+  position: relative;
+  width: 100%;
+}
+
+.tooltiptext {
+  visibility: visible;
+  background-color: rgba(0, 0, 0, 0.671);
+  text-align: center;
+  border-radius: 6px;
+  padding: 5px 8px;
+
+  position: absolute;
+  z-index: 1;
+  bottom: 10px;
+  left: 50%;
+  transform: translate(-50%, 0);
+}
+.tooltiptext span {
+  color: white;
+}
+
+.tooltiptext::after {
+  content: ' ';
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  margin-left: -5px;
+  border-width: 5px;
+  border-style: solid;
+  border-color: rgba(0, 0, 0, 0.671) transparent transparent transparent;
+}
