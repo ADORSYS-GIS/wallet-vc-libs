@@ -3,10 +3,10 @@ import {
   ServiceResponse,
   ServiceResponseStatus,
 } from '@adorsys-gis/status-service';
+import { v4 as uuidv4 } from 'uuid';
 import { Message } from '../../model/Message';
 import { MessageEventChannel } from '../../model/MessageEventChannel';
 import { MessageService } from '../MessageService';
-import { v4 as uuidv4 } from 'uuid';
 
 describe('MessageService', () => {
   let messageService: MessageService;
