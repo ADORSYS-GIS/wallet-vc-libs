@@ -39,6 +39,7 @@ export class DidPeerMethod implements IDidMethod {
    */
   async generate(
     methodType?: PeerGenerationMethod,
+    options?: string[]
   ): Promise<DIDKeyPairVariants> {
     switch (methodType) {
       case 'method0':
@@ -47,6 +48,8 @@ export class DidPeerMethod implements IDidMethod {
         return this.generateMethod1();
       case 'method2':
         return this.generateMethod2();
+      case 'method2WithMediatorRoutingKey':
+        return this.generateMethod2RoutingKey(options ?? []);
       case 'method3':
         return this.generateMethod3();
       case 'method4':
@@ -149,6 +152,89 @@ export class DidPeerMethod implements IDidMethod {
           uri: 'http://example.com/didcomm',
           accept: ['didcomm/v2'],
           routingKeys: [],
+        },
+      },
+    ];
+
+    const encodedServices: string[] = [];
+    // Iterate through each service, convert and encode
+    for (const svc of service) {
+      const abbreviatedService = convertServiceToAbbreviatedFormat(svc);
+      const jsonString = canonicalize(abbreviatedService);
+
+      // Encode each abbreviated service individually
+      const encodedService = `.${PurposeCode.Service}${base64UrlEncodeService(jsonString)}`;
+
+      // Add the encoded service to the array
+      encodedServices.push(encodedService);
+    }
+
+    // Concatenate all encoded services into a single string
+    const finalEncodedServices = encodedServices.join('');
+    const did = `did:peer:2${concatPurposeKeys}${finalEncodedServices}`;
+
+    // Define verification methods
+    const verificationMethod: VerificationMethod2[] = [
+      {
+        id: '#key-1',
+        controller: did,
+        type: 'Multikey',
+        publicKeyMultibase: publicKeyMultibaseV,
+      },
+      {
+        id: '#key-2',
+        controller: did,
+        type: 'Multikey',
+        publicKeyMultibase: publicKeyMultibaseE,
+      },
+    ];
+
+    // Build the DID document
+    const didDocument: DIDDocumentMethod2 = {
+      '@context': [
+        'https://www.w3.org/ns/did/v1',
+        'https://w3id.org/security/multikey/v1',
+      ],
+      id: did,
+      verificationMethod: verificationMethod,
+      service: service,
+    };
+
+    return {
+      did: did,
+      didDocument: didDocument,
+      privateKeyV: KeyV.privateKeyJwk,
+      publicKeyV: KeyV.publicKeyJwk,
+      privateKeyE: KeyE.privateKeyJwk,
+      publicKeyE: KeyE.publicKeyJwk,
+    };
+  }
+
+  // DID PEER METHOD 2 WITH ROUTING KEY INPUT (did:peer:2)-------RESOLVABLE
+  public async generateMethod2RoutingKey(mediatorRoutingKeys: string[]): Promise<DIDKeyPairMethod2> {
+    const keyPairs = await generateKeyPairs(2);
+    const KeyV = keyPairs[0];
+    const KeyE = keyPairs[1];
+
+    const ED25519_PUB_CODE = new Uint8Array([0xed, 0x01]);
+    const publicKeyMultibaseV = `z${bs58.encode([...ED25519_PUB_CODE, ...KeyV.rawPublicKey])}`;
+    const publicKeyMultibaseE = `z${bs58.encode([...ED25519_PUB_CODE, ...KeyE.rawPublicKey])}`;
+
+    const purposepublicKeyMultibaseV = `.${PurposeCode.Verification}${publicKeyMultibaseV}`;
+    const purposepublicKeyMultibaseE = `.${PurposeCode.Encryption}${publicKeyMultibaseE}`;
+
+    const keysArray = [purposepublicKeyMultibaseV, purposepublicKeyMultibaseE];
+    const concatPurposeKeys = concatenateKeyStrings(...keysArray);
+
+    // Define a service endpoint
+    const service: Service[] = [
+      {
+        id: '#didcommmessaging',
+        type: 'DIDCommMessaging',
+        serviceEndpoint: {
+          uri: 'http://example.com/didcomm', // mediator uri endpoint
+          accept: ['didcomm/v2'],
+          routingKeys: mediatorRoutingKeys, // use mediator provided routing keys
         },
       },
     ];

@@ -32,6 +32,7 @@ export type PeerGenerationMethod =
   | 'method0'
   | 'method1'
   | 'method2'
+  | 'method2WithMediatorRoutingKey'
   | 'method3'
   | 'method4';
 
@@ -56,6 +57,7 @@ export class DidMethodFactory {
   static async generateDid(
     method: DIDMethodName,
     methodType?: PeerGenerationMethod,
+    options?: string[]
   ): Promise<DIDKeyPairVariants> {
     const didMethod = this.create(method);
 
@@ -72,7 +74,7 @@ export class DidMethodFactory {
 
     // Call the appropriate generation method based on DID type
     if (method === DIDMethodName.Peer && methodType) {
-      return (didMethod as DidPeerMethod).generate(methodType);
+      return (didMethod as DidPeerMethod).generate(methodType, options);
     }
     return didMethod.generate();
   }
