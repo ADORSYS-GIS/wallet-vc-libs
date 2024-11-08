@@ -69,7 +69,7 @@ describe('DIDIdentityService', () => {
             id: '#key-1',
             controller: 'did:peer:2z1234567890',
             type: 'Multikey',
-            publicKeyMultibase: 'z...publicKeyMultibaseV', 
+            publicKeyMultibase: 'z...publicKeyMultibaseV',
           },
           {
             id: '#key-2',
@@ -157,7 +157,7 @@ describe('DIDIdentityService', () => {
             id: '#key-2',
             controller: 'did:peer:2z1234567890',
             type: 'Multikey',
-            publicKeyMultibase: 'z...publicKeyMultibaseE', 
+            publicKeyMultibase: 'z...publicKeyMultibaseE',
           },
         ],
         service: [
@@ -201,7 +201,11 @@ describe('DIDIdentityService', () => {
       .mockResolvedValueOnce(mockDIDPeer2);
 
     const createEvent = waitForEvent(DidEventChannel.CreateDidIdentity);
-    await didIdentityService.createDidIdentity(method, method_type, mediatorRoutingKeys);
+    await didIdentityService.createDidIdentity(
+      method,
+      method_type,
+      mediatorRoutingKeys,
+    );
 
     const createdDid = await createEvent;
 
