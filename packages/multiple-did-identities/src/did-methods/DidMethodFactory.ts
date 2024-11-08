@@ -57,7 +57,7 @@ export class DidMethodFactory {
   static async generateDid(
     method: DIDMethodName,
     methodType?: PeerGenerationMethod,
-    options?: string[]
+    options?: string[],
   ): Promise<DIDKeyPairVariants> {
     const didMethod = this.create(method);
 

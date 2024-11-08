@@ -39,7 +39,7 @@ export class DidPeerMethod implements IDidMethod {
    */
   async generate(
     methodType?: PeerGenerationMethod,
-    options?: string[]
+    options?: string[],
   ): Promise<DIDKeyPairVariants> {
     switch (methodType) {
       case 'method0':
@@ -211,7 +211,9 @@ export class DidPeerMethod implements IDidMethod {
   }
 
   // DID PEER METHOD 2 WITH ROUTING KEY INPUT (did:peer:2)-------RESOLVABLE
-  public async generateMethod2RoutingKey(mediatorRoutingKeys: string[]): Promise<DIDKeyPairMethod2> {
+  public async generateMethod2RoutingKey(
+    mediatorRoutingKeys: string[],
+  ): Promise<DIDKeyPairMethod2> {
     const keyPairs = await generateKeyPairs(2);
     const KeyV = keyPairs[0];
     const KeyE = keyPairs[1];
