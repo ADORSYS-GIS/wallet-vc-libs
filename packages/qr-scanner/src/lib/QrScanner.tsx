@@ -9,6 +9,7 @@ export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
   const [error, setError] = useState<string | null>(null);
   const [isScanning, setIsScanning] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const timeoutRef = useRef<number | null>(null);
 
   const captureFrame = useCallback(() => {
     if (!canvasRef.current || !videoRef.current) return;
@@ -90,12 +91,16 @@ export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
           videoRef.current.setAttribute('playsinline', 'true');
 
           // Ensure video element is visible and ready to play
-          videoRef.current.addEventListener('loadedmetadata', () => {
-            setTimeout(() => {
-              videoRef.current!.style.display = 'block';
-              videoRef.current!.classList.add('ready');
-              videoRef.current!.play();
-            }, 1000); // set a delay for stabilizing the video
+          videoRef.current?.addEventListener('loadedmetadata', () => {
+            // Set a timeout to prevent video flickering
+            timeoutRef.current = window.setTimeout(() => {
+              if (videoRef.current) {
+                // Ensure videoRef.current still exists
+                videoRef.current.style.display = 'block';
+                videoRef.current.classList.add('ready');
+                videoRef.current.play();
+              }
+            }, 1000);
           });
 
           setIsScanning(true);
@@ -111,7 +116,13 @@ export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
 
     startVideo();
 
+    // Cleanup function
     return () => {
+      // Clear the timeout if it exists
+      if (timeoutRef.current) {
+        clearTimeout(timeoutRef.current);
+      }
+      // Stop video stream if it exists
       if (videoRef.current && videoRef.current.srcObject) {
         (videoRef.current.srcObject as MediaStream)
           .getTracks()
