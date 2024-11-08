@@ -28,13 +28,15 @@ export type DIDKeyPairVariants =
   | DIDKeyPairMethod1
   | DIDKeyPairMethod2
   | DIDKeyPairMethod4;
-export type PeerGenerationMethod =
-  | 'method0'
-  | 'method1'
-  | 'method2'
-  | 'method2WithMediatorRoutingKey'
-  | 'method3'
-  | 'method4';
+
+export enum PeerGenerationMethod {
+  Method0 = 'method0',
+  Method1 = 'method1',
+  Method2 = 'method2',
+  Method3 = 'method3',
+  Method4 = 'method4',
+  Method2WithMediatorRoutingKey = 'method2WithMediatorRoutingKey',
+}
 
 export class DidMethodFactory {
   static create(method: DIDMethodName): IDidMethod {
@@ -57,7 +59,7 @@ export class DidMethodFactory {
   static async generateDid(
     method: DIDMethodName,
     methodType?: PeerGenerationMethod,
-    options?: string[],
+    mediatorRoutingKey?: string,
   ): Promise<DIDKeyPairVariants> {
     const didMethod = this.create(method);
 
@@ -74,7 +76,10 @@ export class DidMethodFactory {
 
     // Call the appropriate generation method based on DID type
     if (method === DIDMethodName.Peer && methodType) {
-      return (didMethod as DidPeerMethod).generate(methodType, options);
+      return (didMethod as DidPeerMethod).generate(
+        methodType,
+        mediatorRoutingKey,
+      );
     }
     return didMethod.generate();
   }

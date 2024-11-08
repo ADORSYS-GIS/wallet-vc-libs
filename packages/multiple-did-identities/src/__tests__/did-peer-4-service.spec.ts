@@ -6,7 +6,10 @@ import {
   ServiceResponseStatus,
 } from '@adorsys-gis/status-service';
 import { DidEventChannel } from '../utils/DidEventChannel';
-import { DIDMethodName } from '../did-methods/DidMethodFactory';
+import {
+  DIDMethodName,
+  PeerGenerationMethod,
+} from '../did-methods/DidMethodFactory';
 import {
   DidIdentity,
   DIDKeyPair,
@@ -54,7 +57,7 @@ describe('DIDIdentityService', () => {
 
   it('should create a DID identity with did:peer:4 and emit the event', async () => {
     const method = DIDMethodName.Peer;
-    const method_type = 'method4';
+    const method_type = PeerGenerationMethod.Method4;
 
     // Mock data representing the structure returned by DID Peer Method 4
     const mockDIDPeer4: DIDKeyPairMethod4 = {
@@ -128,7 +131,7 @@ describe('DIDIdentityService', () => {
 
   it('should delete a DID identity with did:peer:4 and emit the event', async () => {
     const method = DIDMethodName.Peer;
-    const method_type = 'method4';
+    const method_type = PeerGenerationMethod.Method4;
 
     // Mock data representing the structure returned by DID Peer Method 4
     const mockDIDPeer4: DIDKeyPairMethod4 = {
@@ -208,7 +211,7 @@ describe('DIDIdentityService', () => {
 
   it('should find a DID identity with did:peer:4 and emit the event', async () => {
     const method = DIDMethodName.Peer;
-    const method_type = 'method4';
+    const method_type = PeerGenerationMethod.Method4;
 
     // Mock data representing the structure returned by DID Peer Method 4
     const mockDIDPeer4: DIDKeyPairMethod4 = {
@@ -291,7 +294,7 @@ describe('DIDIdentityService', () => {
 
   it('should find all DID identities and emit the event', async () => {
     const method = DIDMethodName.Peer;
-    const method_type = 'method4';
+    const method_type = PeerGenerationMethod.Method4;
 
     // Mock data representing the structure returned by DID Peer Method 4
     const mockDIDPeer4: DIDKeyPairMethod4 = {

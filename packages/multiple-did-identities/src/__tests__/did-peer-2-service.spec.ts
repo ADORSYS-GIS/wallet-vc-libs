@@ -6,7 +6,10 @@ import {
   ServiceResponseStatus,
 } from '@adorsys-gis/status-service';
 import { DidEventChannel } from '../utils/DidEventChannel';
-import { DIDMethodName } from '../did-methods/DidMethodFactory';
+import {
+  DIDMethodName,
+  PeerGenerationMethod,
+} from '../did-methods/DidMethodFactory';
 import {
   DidIdentity,
   DIDKeyPair,
@@ -54,7 +57,7 @@ describe('DIDIdentityService', () => {
 
   it('should create a DID identity with did:peer:2 and emit the event', async () => {
     const method = DIDMethodName.Peer;
-    const method_type = 'method2';
+    const method_type = PeerGenerationMethod.Method2;
 
     const mockDIDPeer2: DIDKeyPairMethod2 = {
       did: 'did:peer:2z1234567890', // Use a DID format for peer:2
@@ -135,8 +138,8 @@ describe('DIDIdentityService', () => {
 
   it('should create a  valid DIDKeyPairMethod2 with mediator routing keys', async () => {
     const method = DIDMethodName.Peer;
-    const method_type = 'method2WithMediatorRoutingKey';
-    const mediatorRoutingKeys = ['routingKey1', 'routingKey2'];
+    const method_type = PeerGenerationMethod.Method2WithMediatorRoutingKey;
+    const mediatorRoutingKey = 'routingKey1';
 
     const mockDIDPeer2: DIDKeyPairMethod2 = {
       did: 'did:peer:2z1234567890', // Use a DID format for peer:2
@@ -165,9 +168,9 @@ describe('DIDIdentityService', () => {
             id: '#didcommmessaging',
             type: 'DIDCommMessaging',
             serviceEndpoint: {
-              uri: 'http://example.com/didcomm',
+              uri: mediatorRoutingKey,
               accept: ['didcomm/v2'],
-              routingKeys: mediatorRoutingKeys,
+              routingKeys: [],
             },
           },
         ],
@@ -204,7 +207,7 @@ describe('DIDIdentityService', () => {
     await didIdentityService.createDidIdentity(
       method,
       method_type,
-      mediatorRoutingKeys,
+      mediatorRoutingKey,
     );
 
     const createdDid = await createEvent;
@@ -221,7 +224,7 @@ describe('DIDIdentityService', () => {
 
   it('should delete a DID identity with did:peer:2 and emit the event', async () => {
     const method = DIDMethodName.Peer;
-    const method_type = 'method2';
+    const method_type = PeerGenerationMethod.Method2;
 
     const mockDIDPeer2: DIDKeyPairMethod2 = {
       did: 'did:peer:2z1234567890', // Use a DID format for peer:2
@@ -308,7 +311,7 @@ describe('DIDIdentityService', () => {
 
   it('should find a DID identity with did:peer:2 and emit the event', async () => {
     const method = DIDMethodName.Peer;
-    const method_type = 'method2';
+    const method_type = PeerGenerationMethod.Method2;
 
     const mockDIDPeer2: DIDKeyPairMethod2 = {
       did: 'did:peer:2z1234567890', // Use a DID format for peer:2
@@ -399,7 +402,7 @@ describe('DIDIdentityService', () => {
   it('should find all DID identities and emit the event', async () => {
     // MOCK DID PEER:2
     const method = DIDMethodName.Peer;
-    const method_type = 'method2';
+    const method_type = PeerGenerationMethod.Method2;
 
     const mockDIDPeer2: DIDKeyPairMethod2 = {
       did: 'did:peer:2z1234567890', // Use a DID format for peer:2

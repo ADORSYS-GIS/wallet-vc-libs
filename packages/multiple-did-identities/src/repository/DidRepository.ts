@@ -4,6 +4,7 @@ import { DidIdValue, DidIdentity } from '../did-methods/IDidMethod';
 import {
   DIDMethodName,
   DIDKeyPairVariants,
+  PeerGenerationMethod,
 } from '../did-methods/DidMethodFactory';
 
 interface DidSchema extends DBSchema {
@@ -46,15 +47,15 @@ export class DidRepository {
       const did = didDoc.did;
 
       if (did.startsWith('did:peer:0')) {
-        methodType = 'method0';
+        methodType = PeerGenerationMethod.Method0;
       } else if (did.startsWith('did:peer:1')) {
-        methodType = 'method1';
+        methodType = PeerGenerationMethod.Method1;
       } else if (did.startsWith('did:peer:2')) {
-        methodType = 'method2';
+        methodType = PeerGenerationMethod.Method2;
       } else if (did.startsWith('did:peer:3')) {
-        methodType = 'method3';
+        methodType = PeerGenerationMethod.Method3;
       } else if (did.startsWith('did:peer:4')) {
-        methodType = 'method4';
+        methodType = PeerGenerationMethod.Method4;
       } else {
         throw new Error('Unknown Method type');
       }

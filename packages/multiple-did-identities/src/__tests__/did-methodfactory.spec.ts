@@ -76,26 +76,26 @@ describe('DidMethodFactory', () => {
     });
 
     const peerMethods: PeerGenerationMethod[] = [
-      'method0',
-      'method1',
-      'method2',
-      'method2WithMediatorRoutingKey',
-      'method3',
-      'method4',
+      PeerGenerationMethod.Method0,
+      PeerGenerationMethod.Method1,
+      PeerGenerationMethod.Method2,
+      PeerGenerationMethod.Method2WithMediatorRoutingKey,
+      PeerGenerationMethod.Method3,
+      PeerGenerationMethod.Method4,
     ];
 
     peerMethods.forEach((methodType) => {
       it(`should generate a DID for peer method ${methodType}`, async () => {
         // If the method is 'method2WithMediatorRoutingKey', pass routing keys as options
-        const options =
+        const mediatorRoutingKey =
           methodType === 'method2WithMediatorRoutingKey'
-            ? ['routingKey1', 'routingKey2']
+            ? 'routingKey1'
             : undefined;
 
         const result = await DidMethodFactory.generateDid(
           DIDMethodName.Peer,
           methodType,
-          options,
+          mediatorRoutingKey,
         );
 
         // General assertion: check that 'did' is present

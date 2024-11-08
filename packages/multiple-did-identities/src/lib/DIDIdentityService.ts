@@ -27,7 +27,7 @@ export class DIDIdentityService {
   public async createDidIdentity(
     method: DIDMethodName,
     methodType?: PeerGenerationMethod,
-    options?: string[],
+    mediatorRoutingKey?: string,
   ): Promise<void> {
     const createDidIdentityChannel = DidEventChannel.CreateDidIdentity;
 
@@ -35,7 +35,7 @@ export class DIDIdentityService {
       const didDocument = await DidMethodFactory.generateDid(
         method,
         methodType,
-        options,
+        mediatorRoutingKey,
       );
 
       await this.didRepository.createDidId(didDocument, method);

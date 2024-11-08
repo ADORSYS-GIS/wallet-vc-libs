@@ -48,7 +48,7 @@ describe('DidPeerMethod', () => {
   });
 
   it('should generate a valid DIDKeyPairMethod2 with mediator routing keys', async () => {
-    const mediatorRoutingKeys = ['routingKey1', 'routingKey2'];
+    const mediatorRoutingKeys = 'routingKey1';
 
     // Generate the DID using the method with routing keys
     const result: DIDKeyPairMethod2 =
@@ -85,7 +85,7 @@ describe('DidPeerMethod', () => {
     if (result.didDocument.service) {
       expect(result.didDocument.service).toHaveLength(1); // Expecting one service
       expect(result.didDocument.service[0].id).toBe('#didcommmessaging');
-      expect(result.didDocument.service[0].serviceEndpoint.routingKeys).toEqual(
+      expect(result.didDocument.service[0].serviceEndpoint.uri).toEqual(
         mediatorRoutingKeys,
       );
     } else {

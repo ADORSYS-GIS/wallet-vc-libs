@@ -39,8 +39,10 @@ export class DidPeerMethod implements IDidMethod {
    */
   async generate(
     methodType?: PeerGenerationMethod,
-    options?: string[],
+    mediatorRoutingKey?: string,
   ): Promise<DIDKeyPairVariants> {
+    const finalmediatorRoutingKey = mediatorRoutingKey ?? '';
+
     switch (methodType) {
       case 'method0':
         return this.generateMethod0();
@@ -49,7 +51,7 @@ export class DidPeerMethod implements IDidMethod {
       case 'method2':
         return this.generateMethod2();
       case 'method2WithMediatorRoutingKey':
-        return this.generateMethod2RoutingKey(options ?? []);
+        return this.generateMethod2RoutingKey(finalmediatorRoutingKey);
       case 'method3':
         return this.generateMethod3();
       case 'method4':
@@ -212,7 +214,7 @@ export class DidPeerMethod implements IDidMethod {
 
   // DID PEER METHOD 2 WITH ROUTING KEY INPUT (did:peer:2)-------RESOLVABLE
   public async generateMethod2RoutingKey(
-    mediatorRoutingKeys: string[],
+    mediatorRoutingKey: string,
   ): Promise<DIDKeyPairMethod2> {
     const keyPairs = await generateKeyPairs(2);
     const KeyV = keyPairs[0];
@@ -234,9 +236,9 @@ export class DidPeerMethod implements IDidMethod {
         id: '#didcommmessaging',
         type: 'DIDCommMessaging',
         serviceEndpoint: {
-          uri: 'http://example.com/didcomm', // mediator uri endpoint
+          uri: mediatorRoutingKey,
           accept: ['didcomm/v2'],
-          routingKeys: mediatorRoutingKeys, // use mediator provided routing keys
+          routingKeys: [],
         },
       },
     ];

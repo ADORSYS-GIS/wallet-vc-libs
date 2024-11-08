@@ -19,14 +19,14 @@ describe('DidPeerMethod', () => {
   });
 
   it('should generate DIDKeyPair for method0', async () => {
-    const result = await didPeerMethod.generate('method0');
+    const result = await didPeerMethod.generate(PeerGenerationMethod.Method0);
     expect(result).toHaveProperty('did');
     expect(result).toHaveProperty('privateKey');
     expect(result).toHaveProperty('publicKey');
   });
 
   it('should generate DIDKeyPair for method1', async () => {
-    const result = await didPeerMethod.generate('method1');
+    const result = await didPeerMethod.generate(PeerGenerationMethod.Method1);
     expect(result).toHaveProperty('did');
     expect(result).toHaveProperty('privateKey');
     expect(result).toHaveProperty('publicKey');
@@ -34,7 +34,7 @@ describe('DidPeerMethod', () => {
   });
 
   it('should generate DIDKeyPair for method2', async () => {
-    const result = await didPeerMethod.generate('method2');
+    const result = await didPeerMethod.generate(PeerGenerationMethod.Method2);
     expect(result).toHaveProperty('did');
     expect(result).toHaveProperty('didDocument');
     expect(result).toHaveProperty('privateKeyV');
@@ -44,7 +44,7 @@ describe('DidPeerMethod', () => {
   });
 
   it('should generate DIDKeyPair for method3', async () => {
-    const result = await didPeerMethod.generate('method3');
+    const result = await didPeerMethod.generate(PeerGenerationMethod.Method3);
     expect(result).toHaveProperty('did');
     expect(result).toHaveProperty('didDocument');
     expect(result).toHaveProperty('privateKeyV');
@@ -54,7 +54,7 @@ describe('DidPeerMethod', () => {
   });
 
   it('should generate DIDKeyPair for method4', async () => {
-    const result = await didPeerMethod.generate('method4');
+    const result = await didPeerMethod.generate(PeerGenerationMethod.Method4);
     expect(result).toHaveProperty('did');
     expect(result).toHaveProperty('didShort');
     expect(result).toHaveProperty('didDocument');
