@@ -69,13 +69,13 @@ describe('DIDIdentityService', () => {
             id: '#key-1',
             controller: 'did:peer:2z1234567890',
             type: 'Multikey',
-            publicKeyMultibase: 'z...publicKeyMultibaseV', // Replace with appropriate mock data
+            publicKeyMultibase: 'z...publicKeyMultibaseV', 
           },
           {
             id: '#key-2',
             controller: 'did:peer:2z1234567890',
             type: 'Multikey',
-            publicKeyMultibase: 'z...publicKeyMultibaseE', // Replace with appropriate mock data
+            publicKeyMultibase: 'z...publicKeyMultibaseE',
           },
         ],
         service: [
@@ -133,6 +133,90 @@ describe('DIDIdentityService', () => {
     );
   });
 
+  it('should create a  valid DIDKeyPairMethod2 with mediator routing keys', async () => {
+    const method = DIDMethodName.Peer;
+    const method_type = 'method2WithMediatorRoutingKey';
+    const mediatorRoutingKeys = ['routingKey1', 'routingKey2'];
+
+    const mockDIDPeer2: DIDKeyPairMethod2 = {
+      did: 'did:peer:2z1234567890', // Use a DID format for peer:2
+      didDocument: {
+        '@context': [
+          'https://www.w3.org/ns/did/v1',
+          'https://w3id.org/security/multikey/v1',
+        ],
+        id: 'did:peer:2z1234567890',
+        verificationMethod: [
+          {
+            id: '#key-1',
+            controller: 'did:peer:2z1234567890',
+            type: 'Multikey',
+            publicKeyMultibase: 'z...publicKeyMultibaseV',
+          },
+          {
+            id: '#key-2',
+            controller: 'did:peer:2z1234567890',
+            type: 'Multikey',
+            publicKeyMultibase: 'z...publicKeyMultibaseE', 
+          },
+        ],
+        service: [
+          {
+            id: '#didcommmessaging',
+            type: 'DIDCommMessaging',
+            serviceEndpoint: {
+              uri: 'http://example.com/didcomm',
+              accept: ['didcomm/v2'],
+              routingKeys: mediatorRoutingKeys,
+            },
+          },
+        ],
+      },
+      privateKeyV: {
+        kty: 'OKP',
+        crv: 'Ed25519',
+        d: 'mockPrivateKeyV',
+        x: 'mockPublicKeyV',
+      },
+      publicKeyV: {
+        kty: 'OKP',
+        crv: 'Ed25519',
+        x: 'mockPublicKeyV',
+      },
+      privateKeyE: {
+        kty: 'OKP',
+        crv: 'Ed25519',
+        d: 'mockPrivateKeyE',
+        x: 'mockPublicKeyE',
+      },
+      publicKeyE: {
+        kty: 'OKP',
+        crv: 'Ed25519',
+        x: 'mockPublicKeyE',
+      },
+    };
+
+    jest
+      .spyOn(DidMethodFactory, 'generateDid')
+      .mockResolvedValueOnce(mockDIDPeer2);
+
+    const createEvent = waitForEvent(DidEventChannel.CreateDidIdentity);
+    await didIdentityService.createDidIdentity(method, method_type, mediatorRoutingKeys);
+
+    const createdDid = await createEvent;
+
+    console.log(JSON.stringify(mockDIDPeer2.didDocument))
+
+    expect(createdDid).toEqual(
+      expect.objectContaining({
+        status: ServiceResponseStatus.Success,
+        payload: expect.objectContaining({
+          did: mockDIDPeer2.did,
+        }),
+      }),
+    );
+  });
+
   it('should delete a DID identity with did:peer:2 and emit the event', async () => {
     const method = DIDMethodName.Peer;
     const method_type = 'method2';
@@ -150,13 +234,13 @@ describe('DIDIdentityService', () => {
             id: '#key-1',
             controller: 'did:peer:2z1234567890',
             type: 'Multikey',
-            publicKeyMultibase: 'z...publicKeyMultibaseV', // Replace with appropriate mock data
+            publicKeyMultibase: 'z...publicKeyMultibaseV',
           },
           {
             id: '#key-2',
             controller: 'did:peer:2z1234567890',
             type: 'Multikey',
-            publicKeyMultibase: 'z...publicKeyMultibaseE', // Replace with appropriate mock data
+            publicKeyMultibase: 'z...publicKeyMultibaseE',
           },
         ],
         service: [
@@ -237,13 +321,13 @@ describe('DIDIdentityService', () => {
             id: '#key-1',
             controller: 'did:peer:2z1234567890',
             type: 'Multikey',
-            publicKeyMultibase: 'z...publicKeyMultibaseV', // Replace with appropriate mock data
+            publicKeyMultibase: 'z...publicKeyMultibaseV',
           },
           {
             id: '#key-2',
             controller: 'did:peer:2z1234567890',
             type: 'Multikey',
-            publicKeyMultibase: 'z...publicKeyMultibaseE', // Replace with appropriate mock data
+            publicKeyMultibase: 'z...publicKeyMultibaseE',
           },
         ],
         service: [
@@ -328,13 +412,13 @@ describe('DIDIdentityService', () => {
             id: '#key-1',
             controller: 'did:peer:2z1234567890',
             type: 'Multikey',
-            publicKeyMultibase: 'z...publicKeyMultibaseV', // Replace with appropriate mock data
+            publicKeyMultibase: 'z...publicKeyMultibaseV',
           },
           {
             id: '#key-2',
             controller: 'did:peer:2z1234567890',
             type: 'Multikey',
-            publicKeyMultibase: 'z...publicKeyMultibaseE', // Replace with appropriate mock data
+            publicKeyMultibase: 'z...publicKeyMultibaseE',
           },
         ],
         service: [

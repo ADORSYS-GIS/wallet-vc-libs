@@ -79,15 +79,22 @@ describe('DidMethodFactory', () => {
       'method0',
       'method1',
       'method2',
+      'method2WithMediatorRoutingKey',
       'method3',
       'method4',
     ];
 
     peerMethods.forEach((methodType) => {
       it(`should generate a DID for peer method ${methodType}`, async () => {
+        // If the method is 'method2WithMediatorRoutingKey', pass routing keys as options
+        const options = methodType === 'method2WithMediatorRoutingKey'
+          ? ['routingKey1', 'routingKey2']
+          : undefined;
+
         const result = await DidMethodFactory.generateDid(
           DIDMethodName.Peer,
           methodType,
+          options
         );
 
         // General assertion: check that 'did' is present
@@ -131,6 +138,13 @@ describe('DidMethodFactory', () => {
             expect(result).toHaveProperty('publicKey2');
             break;
 
+          case 'method2WithMediatorRoutingKey':
+            expect(result).toHaveProperty('didDocument');
+            expect(result).toHaveProperty('privateKeyV');
+            expect(result).toHaveProperty('publicKeyV');
+            expect(result).toHaveProperty('privateKeyE');
+            expect(result).toHaveProperty('publicKeyE');
+            break;
           default:
             throw new Error(`Unknown method type: ${methodType}`);
         }
