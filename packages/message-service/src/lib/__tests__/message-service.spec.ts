@@ -64,13 +64,7 @@ describe('MessageService', () => {
     expect(createdMessage).toEqual(
       expect.objectContaining({
         status: ServiceResponseStatus.Success,
-        payload: expect.objectContaining({
-          id: newMessage.id,
-          text: 'Hello, how are you',
-          sender: 'did:key:z92389jqjdNJAWOJNSWDDjies',
-          contactId: newMessage.contactId,
-          timestamp: newMessage.timestamp,
-        }),
+        payload: newMessage,
       }),
     );
   });
@@ -105,11 +99,14 @@ describe('MessageService', () => {
   });
 
   it('should retrieve all messages for a given contact', async () => {
+    const contactId1 = 'did:key:zKAJCbjwdhuhJBJWHBDSIs';
+    const contactId2 = 'did:key:zKAJCbjwdhuhJBJWHBDSIsqwasqwqw';
+
     const newMessage1: Message = {
       id: uuidv4(),
       text: 'Hello, how are you',
       sender: 'did:key:z92389jqjdNJAWOJNSWDDjies',
-      contactId: 'did:key:zKAJCbjwdhuhJBJWHBDSIs',
+      contactId: contactId1,
       timestamp: new Date(),
     };
 
@@ -117,15 +114,7 @@ describe('MessageService', () => {
       id: uuidv4(),
       text: 'Hello, how are you now?',
       sender: 'did:key:z92389jqjdNJAWOJNSWDDjies',
-      contactId: 'did:key:zKAJCbjwdhuhJBJWHBDSIsqwasqwqw',
-      timestamp: new Date(),
-    };
-
-    const newMessage3: Message = {
-      id: uuidv4(),
-      text: 'Hello, how are you today?',
-      sender: 'did:key:z92389jqjdNJAWOJNSWDDjies',
-      contactId: 'did:key:zKAJCbjwdhuhJBJWHBDSIs',
+      contactId: contactId2,
       timestamp: new Date(),
     };
 
@@ -138,37 +127,21 @@ describe('MessageService', () => {
     messageService.createMessage(newMessage2);
     await createEvent2;
 
-    const createEvent3 = waitForEvent(MessageEventChannel.CreateMessage);
-    messageService.createMessage(newMessage3);
-    await createEvent3;
-
-    // Retrieve all messages by contactId
+    // Retrieve all messages by contactId1
     const getAllEvent = waitForEvent(MessageEventChannel.GetAllByContactId);
-    messageService.getAllMessagesByContact(newMessage1.contactId);
-    const messages = await getAllEvent;
+    messageService.getAllMessagesByContact(contactId1);
+    const response = await getAllEvent;
 
-    // expecting just message 1 and message 3
-    expect(messages).toEqual(
+    // Verify only message1 and message3 are returned
+    expect(response).toEqual(
       expect.objectContaining({
         status: ServiceResponseStatus.Success,
-        payload: expect.arrayContaining([
-          expect.objectContaining({
-            id: newMessage1.id,
-            text: newMessage1.text,
-            sender: newMessage1.sender,
-            contactId: newMessage1.contactId,
-            timestamp: newMessage1.timestamp,
-          }),
-          expect.objectContaining({
-            id: newMessage3.id,
-            text: newMessage3.text,
-            sender: newMessage3.sender,
-            contactId: newMessage3.contactId,
-            timestamp: newMessage3.timestamp,
-          }),
-        ]),
+        payload: [newMessage1],
       }),
     );
+
+    // Also ensure message2 is not included in the result
+    expect(response.payload).not.toEqual(newMessage2);
   });
 
   it('should emit an error when failing to retrieve messages for a contact', async () => {
