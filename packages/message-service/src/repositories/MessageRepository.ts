@@ -4,7 +4,7 @@ import { Message } from '../model/Message';
 
 interface MyDatabase extends DBSchema {
   messages: {
-    key: number;
+    key: string;
     value: Message;
     indexes: {
       'by-contact-id': string;
@@ -23,7 +23,6 @@ export class MessageRepository {
         if (!db.objectStoreNames.contains(objectStorename)) {
           const objectStore = db.createObjectStore(objectStorename, {
             keyPath: 'id',
-            autoIncrement: true,
           });
 
           // Create the index for the contactId field to allow efficient queries
