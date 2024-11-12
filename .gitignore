@@ -133,5 +133,5 @@ dist
 # mac
 .DS_Store
 
-#package-loxk for various libraries
+#package-lock for various libraries
 packages/*/package-lock.json
