@@ -5,3 +5,11 @@ export function base64UrlEncode(data: Uint8Array): string {
     .replace(/\//g, '_') // Replace '/' with '_'
     .replace(/=+$/, ''); // Remove trailing '='
 }
+
+export function base64UrlEncodeService(data: string): string {
+  return Buffer.from(data, 'utf-8')
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+}

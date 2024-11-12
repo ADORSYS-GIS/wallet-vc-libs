@@ -9,9 +9,6 @@ describe('DidKeyMethod', () => {
     // Check if the DID and key pair are generated
     expect(didKeyPair).toHaveProperty('did');
 
-    // Log the generated DID
-    console.log('Generated DID:', didKeyPair.did);
-
     // Validate that the DID is in the correct format
     expect(didKeyPair.did).toMatch(/^did:key:z[1-9A-HJ-NP-Za-km-z]+$/);
 
@@ -30,9 +27,5 @@ describe('DidKeyMethod', () => {
     expect(privateKey).toHaveProperty('d');
     expect(typeof privateKey.x).toBe('string');
     expect(typeof privateKey.d).toBe('string');
-
-    // Log the public and private JWK keys for further inspection
-    console.log('Public Key JWK:', JSON.stringify(publicKey, null, 2));
-    console.log('Private Key JWK:', JSON.stringify(privateKey, null, 2));
   });
 });
