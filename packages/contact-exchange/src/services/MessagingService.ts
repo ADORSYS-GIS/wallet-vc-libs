@@ -7,6 +7,7 @@ import {
 } from 'didcomm-node';
 import { v4 as uuidv4 } from 'uuid';
 import { MessageType, MessageTyp } from './Messages.types';
+import { validEncodedUrl } from '../tests/OOBTestFixtures';
 
 class MessagingServiceDIDResolver implements DIDResolver {
   knownDids: DIDDoc[];
@@ -45,7 +46,7 @@ export async function sendContactRequest(
   receiverDid: string,
 ): Promise<string> {
   const messageBody = {
-    type: 'contact-request',
+    type: validEncodedUrl,
     from: senderDid,
   };
 
@@ -85,8 +86,10 @@ export async function handleContactRequest(
 
   const messageBody = unpackedMessage.as_value().body;
 
-  if (messageBody.type === 'contact-request') {
+  if (messageBody.type === validEncodedUrl) {
     console.log(`Received contact request from ${messageBody.from}`);
+  } else if (messageBody.type === MessageType.RoutingForward) {
+    console.log(`Received routing forward from ${messageBody.from}`);
   }
 }
 
