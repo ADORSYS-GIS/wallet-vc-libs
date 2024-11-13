@@ -100,7 +100,7 @@ describe('MessageService', () => {
 
   it('should retrieve all messages for a given contact', async () => {
     const contactId1 = 'did:key:zKAJCbjwdhuhJBJWHBDSIs';
-    const contactId2 = 'did:key:zKAJCbjwdhuhJBJWHBDSIsqwasqwqw';
+    const contactId2 = 'did:key:zKAJCbjwdhuhJBJWHBDSej';
 
     const newMessage1: Message = {
       id: uuidv4(),
@@ -132,7 +132,7 @@ describe('MessageService', () => {
     messageService.getAllMessagesByContact(contactId1);
     const response = await getAllEvent;
 
-    // Verify only message1 and message3 are returned
+    // Verify only message1 is returned
     expect(response).toEqual(
       expect.objectContaining({
         status: ServiceResponseStatus.Success,
