@@ -1,6 +1,7 @@
 import {
   DidMethodFactory,
   DIDMethodName,
+  PeerGenerationMethod,
 } from '../did-methods/DidMethodFactory';
 import { DidRepository } from '../repository/DidRepository';
 import { EventEmitter } from 'eventemitter3';
@@ -23,11 +24,20 @@ export class DIDIdentityService {
    *
    * @param method - The DID method to use ('key' or 'peer').
    */
-  public async createDidIdentity(method: DIDMethodName): Promise<void> {
+  public async createDidIdentity(
+    method: DIDMethodName,
+    methodType?: PeerGenerationMethod,
+    mediatorRoutingKey?: string,
+  ): Promise<void> {
     const createDidIdentityChannel = DidEventChannel.CreateDidIdentity;
 
     try {
-      const didDocument = await DidMethodFactory.generateDid(method);
+      const didDocument = await DidMethodFactory.generateDid(
+        method,
+        methodType,
+        mediatorRoutingKey,
+      );
+
       await this.didRepository.createDidId(didDocument, method);
 
       const response: ServiceResponse<{ did: string }> = {
@@ -80,13 +90,26 @@ export class DIDIdentityService {
     try {
       const didRecord = await this.didRepository.getADidId(did);
 
-      const response: ServiceResponse<{
-        did: string;
-        method: string;
-        createdAt: number;
-      }> = {
+      const isDidPeer = didRecord.did.startsWith('did:peer');
+
+      // Define response payload with conditional structure
+      const responsePayload = isDidPeer
+        ? {
+            did: didRecord.did,
+            method: didRecord.method,
+            method_type: didRecord.method_type,
+            createdAt: didRecord.createdAt,
+          }
+        : {
+            did: didRecord.did,
+            method: didRecord.method,
+            createdAt: didRecord.createdAt,
+          };
+
+      // Create the response
+      const response: ServiceResponse<typeof responsePayload> = {
         status: ServiceResponseStatus.Success,
-        payload: didRecord!,
+        payload: responsePayload,
       };
 
       this.eventBus.emit(findDidIdentityChannel, response);
@@ -105,11 +128,29 @@ export class DIDIdentityService {
     try {
       const didRecords = await this.didRepository.getAllDidIds();
 
-      const response: ServiceResponse<
-        { did: string; method: string; createdAt: number }[]
-      > = {
+      // Process each record to conditionally include methodType
+      const processedRecords = didRecords.map((record) => {
+        // Determine if the DID is of type 'peer'
+        const isDidPeer = record.did.startsWith('did:peer');
+
+        return isDidPeer
+          ? {
+              did: record.did,
+              method: record.method,
+              method_type: record.method_type,
+              createdAt: record.createdAt,
+            }
+          : {
+              did: record.did,
+              method: record.method,
+              createdAt: record.createdAt,
+            };
+      });
+
+      // Construct the response
+      const response: ServiceResponse<typeof processedRecords> = {
         status: ServiceResponseStatus.Success,
-        payload: didRecords,
+        payload: processedRecords,
       };
 
       this.eventBus.emit(findAllDidIdentitiesChannel, response);

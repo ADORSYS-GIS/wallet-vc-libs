@@ -1,0 +1,5 @@
+{
+  "name": "message-service",
+  "sourceRoot": "packages/message/src",
+  "projectType": "library"
+}
