@@ -26,7 +26,9 @@ export class MessageRepository {
           });
 
           // Create the index for the contactId field to allow efficient queries
-          objectStore.createIndex('by-contact-id', 'contactId', {unique: false});
+          objectStore.createIndex('by-contact-id', 'contactId', {
+            unique: false,
+          });
         }
       },
     });
