@@ -1,1 +1,97 @@
-init
+This document outlines the communication between frontend and the service layer. The frontend calls methods inside the service layer and the service layer replies using events.
+
+# Index
+
+- [Service layer description](#Service-Layer-Description)
+- [Code examples](#Code-examples)
+- [Alice registers with mediator](#Alice-registers-with-mediator)
+- [Bob adds contact](#Bob-adds-contact)
+- [Bob sends a message routed via mediator](#Bob-sends-router-message)
+- [Alice checks status requests](#Alice-checks-messages)
+- [Other event channels](#Other-events)
+
+
+
+# Service layer description
+
+The service layer aims to organize the services. A service in this context would be the resolution of a credential offer, a request for a credential issuance or an event to interact with the wallet such as the deletion of a credential.
+
+![Event architecture](./event-architecture.png 'Event architecture')
+
+Benefits of this architecture:
+
+- **Improved security by decoupling components.** The frontend layer doesn't has access to the business logic, ensuring a clear separation between different parts of the system for improved security.
+
+- **Flexibility.** We could integrate different frontends into the engine, allowing for a versatile and adaptable architecture that can accommodate various user interfaces or requirements.
+
+- **Performance and scalability.** Asynchronicity is at the core of all communication, which means the system can handle requests without waiting for responses. This approach improves the overall performance and scalability of the system.
+
+# Code examples
+
+On the service layer side, there is an instantiation of event methods here:
+
+- [OID4VCIService.ts](https://github.com/adorsys/eudiw-app/blob/86ef72c949f0a7d00011349051fdb8d58d3f22e8/libs/oid4vc/src/lib/OID4VCIService.ts#L24)
+
+- [OID4VCService.ts](https://github.com/adorsys/eudiw-app/blob/86ef72c949f0a7d00011349051fdb8d58d3f22e8/libs/oid4vc/src/lib/OID4VCService.ts#L10)
+
+- [OID4VPService.ts](https://github.com/adorsys/eudiw-app/blob/86ef72c949f0a7d00011349051fdb8d58d3f22e8/libs/oid4vc/src/lib/OID4VPService.ts#L14)
+
+On the front end layer, an example interacting with the method: OID4VCIService.retrieveCredentialHeaders() can be found here:
+
+- [Credentials.tsx](https://github.com/adorsys/eudiw-app/blob/86ef72c949f0a7d00011349051fdb8d58d3f22e8/apps/wallet-react/src/pages/credentials/Credentials.tsx#L29)
+
+# Alice-registers-with-mediator
+
+This flow currently starts with the scan of a QR code and it is composed of one call:
+
+- [1. Process mediator OOB](#ProcessMediatorOOB)
+- [2. Request credential issuance](#requestCredentialIssuance)
+
+## ProcessMediatorOOB
+
+The frontend will send the credential offer string resulting from the QR code scan. The service layer will reply with an acknoledgment or an error. 
+
+![QR Scan](./qr-scan.png 'QR Scan')
+
+### Example input:
+
+```json
+{
+    "oob": "https://mediator.rootsid.cloud?_oob=eyJ0eXBlIjoiaHR0cHM6Ly9kaWRjb21tLm9yZy9vdXQtb2YtYmFuZC8yLjAvaW52aXRhdGlvbiIsImlkIjoiNDM3MmIxODctMDk5Zi00MjYxLWFlZTctZjQwZWM5ZTg3Zjg3IiwiZnJvbSI6ImRpZDpwZWVyOjIuRXo2TFNtczU1NVloRnRobjFXVjhjaURCcFptODZoSzl0cDgzV29qSlVteFBHazFoWi5WejZNa21kQmpNeUI0VFM1VWJiUXc1NHN6bTh5dk1NZjFmdEdWMnNRVllBeGFlV2hFLlNleUpwWkNJNkltNWxkeTFwWkNJc0luUWlPaUprYlNJc0luTWlPaUpvZEhSd2N6b3ZMMjFsWkdsaGRHOXlMbkp2YjNSemFXUXVZMnh2ZFdRaUxDSmhJanBiSW1ScFpHTnZiVzB2ZGpJaVhYMCIsImJvZHkiOnsiZ29hbF9jb2RlIjoicmVxdWVzdC1tZWRpYXRlIiwiZ29hbCI6IlJlcXVlc3RNZWRpYXRlIiwibGFiZWwiOiJNZWRpYXRvciIsImFjY2VwdCI6WyJkaWRjb21tL3YyIl19fQ"
+}
+```
+
+### Example response:
+
+```json
+{
+  {
+  "status": "false",
+  "message": "Error, format not valid",
+}
+```
+
+```json
+{
+  {
+  "status": "true",
+  "message": "Success",
+}
+```
+
+### Event channel name:
+
+```bash
+ProcessMediatorOOB
+```
+
+
+# Others
+
+(... to come)
+
+# Other events
+
+There are also other events happening inside the app, like the retrieval of already stored credentials, deletion of them, etc...
+
+A complete description of these calls can be found [here.](./other-events/other-events.md)
