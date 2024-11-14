@@ -8,12 +8,12 @@ interface MyDatabase extends DBSchema {
     value: Message;
     indexes: {
       'by-contact-id': string;
+      'by-id-contact-id': [string, string];
     };
   };
 }
 
 const objectStorename = 'messages';
-
 export class MessageRepository {
   private storage: StorageFactory<MyDatabase>;
 
@@ -25,9 +25,14 @@ export class MessageRepository {
             keyPath: 'id',
           });
 
-          // Create the index for the contactId field to allow efficient queries
+          // Add index for `contactId` for efficient querying
           objectStore.createIndex('by-contact-id', 'contactId', {
             unique: false,
+          });
+
+          // Composite index for unique constraint on `[id, contactId]`
+          objectStore.createIndex('by-id-contact-id', ['id', 'contactId'], {
+            unique: true,
           });
         }
       },

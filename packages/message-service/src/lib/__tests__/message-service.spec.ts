@@ -118,6 +118,22 @@ describe('MessageService', () => {
       timestamp: new Date(),
     };
 
+    const newMessage3: Message = {
+      id: uuidv4(),
+      text: 'Are you there?',
+      sender: 'did:key:z92389jqjdNJAWOJNSWDDjies',
+      contactId: contactId1,
+      timestamp: new Date(),
+    };
+
+    const newMessage4: Message = {
+      id: uuidv4(),
+      text: 'Are you there? Hello....',
+      sender: 'did:key:z92389jqjdNJAWOJNSWDDjies',
+      contactId: contactId1,
+      timestamp: new Date(),
+    };
+
     // Create messages
     const createEvent1 = waitForEvent(MessageEventChannel.CreateMessage);
     messageService.createMessage(newMessage1);
@@ -127,21 +143,33 @@ describe('MessageService', () => {
     messageService.createMessage(newMessage2);
     await createEvent2;
 
+    const createEvent3 = waitForEvent(MessageEventChannel.CreateMessage);
+    messageService.createMessage(newMessage3);
+    await createEvent3;
+
+    const createEvent4 = waitForEvent(MessageEventChannel.CreateMessage);
+    messageService.createMessage(newMessage4);
+    await createEvent4;
+
     // Retrieve all messages by contactId1
     const getAllEvent = waitForEvent(MessageEventChannel.GetAllByContactId);
     messageService.getAllMessagesByContact(contactId1);
     const response = await getAllEvent;
 
-    // Verify only message1 is returned
+    // Verify only messages with contactId1 are returned
     expect(response).toEqual(
       expect.objectContaining({
         status: ServiceResponseStatus.Success,
-        payload: [newMessage1],
+        payload: expect.arrayContaining([
+          newMessage1,
+          newMessage3,
+          newMessage4,
+        ]),
       }),
     );
 
     // Also ensure message2 is not included in the result
-    expect(response.payload).not.toEqual(newMessage2);
+    expect(response.payload).not.toEqual(expect.arrayContaining([newMessage2]));
   });
 
   it('should emit an error when failing to retrieve messages for a contact', async () => {
