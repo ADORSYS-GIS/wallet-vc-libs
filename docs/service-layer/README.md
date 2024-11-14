@@ -6,11 +6,9 @@ This document outlines the communication between frontend and the service layer.
 - [Code examples](#Code-examples)
 - [Alice registers with mediator](#Alice-registers-with-mediator)
 - [Bob adds contact](#Bob-adds-contact)
-- [Bob sends a message routed via mediator](#Bob-sends-router-message)
+- [Bob sends a message routed via mediator](#Bob-sends-a-message-routed-via-mediator)
 - [Alice checks status requests](#Alice-checks-messages)
 - [Other event channels](#Other-events)
-
-
 
 # Service layer description
 
@@ -49,7 +47,7 @@ This flow currently starts with the scan of a QR code and it is composed of one 
 
 ## ProcessMediatorOOB
 
-The frontend will send the credential offer string resulting from the QR code scan. The service layer will reply with an acknoledgment or an error. 
+The frontend will send the credential offer string resulting from the QR code scan. The service layer will reply with an acknoledgment or an error.
 
 ![QR Scan](./qr-scan.png 'QR Scan')
 
@@ -57,7 +55,7 @@ The frontend will send the credential offer string resulting from the QR code sc
 
 ```json
 {
-    "oob": "https://mediator.rootsid.cloud?_oob=eyJ0eXBlIjoiaHR0cHM6Ly9kaWRjb21tLm9yZy9vdXQtb2YtYmFuZC8yLjAvaW52aXRhdGlvbiIsImlkIjoiNDM3MmIxODctMDk5Zi00MjYxLWFlZTctZjQwZWM5ZTg3Zjg3IiwiZnJvbSI6ImRpZDpwZWVyOjIuRXo2TFNtczU1NVloRnRobjFXVjhjaURCcFptODZoSzl0cDgzV29qSlVteFBHazFoWi5WejZNa21kQmpNeUI0VFM1VWJiUXc1NHN6bTh5dk1NZjFmdEdWMnNRVllBeGFlV2hFLlNleUpwWkNJNkltNWxkeTFwWkNJc0luUWlPaUprYlNJc0luTWlPaUpvZEhSd2N6b3ZMMjFsWkdsaGRHOXlMbkp2YjNSemFXUXVZMnh2ZFdRaUxDSmhJanBiSW1ScFpHTnZiVzB2ZGpJaVhYMCIsImJvZHkiOnsiZ29hbF9jb2RlIjoicmVxdWVzdC1tZWRpYXRlIiwiZ29hbCI6IlJlcXVlc3RNZWRpYXRlIiwibGFiZWwiOiJNZWRpYXRvciIsImFjY2VwdCI6WyJkaWRjb21tL3YyIl19fQ"
+  "oob": "https://mediator.rootsid.cloud?_oob=eyJ0eXBlIjoiaHR0cHM6Ly9kaWRjb21tLm9yZy9vdXQtb2YtYmFuZC8yLjAvaW52aXRhdGlvbiIsImlkIjoiNDM3MmIxODctMDk5Zi00MjYxLWFlZTctZjQwZWM5ZTg3Zjg3IiwiZnJvbSI6ImRpZDpwZWVyOjIuRXo2TFNtczU1NVloRnRobjFXVjhjaURCcFptODZoSzl0cDgzV29qSlVteFBHazFoWi5WejZNa21kQmpNeUI0VFM1VWJiUXc1NHN6bTh5dk1NZjFmdEdWMnNRVllBeGFlV2hFLlNleUpwWkNJNkltNWxkeTFwWkNJc0luUWlPaUprYlNJc0luTWlPaUpvZEhSd2N6b3ZMMjFsWkdsaGRHOXlMbkp2YjNSemFXUXVZMnh2ZFdRaUxDSmhJanBiSW1ScFpHTnZiVzB2ZGpJaVhYMCIsImJvZHkiOnsiZ29hbF9jb2RlIjoicmVxdWVzdC1tZWRpYXRlIiwiZ29hbCI6IlJlcXVlc3RNZWRpYXRlIiwibGFiZWwiOiJNZWRpYXRvciIsImFjY2VwdCI6WyJkaWRjb21tL3YyIl19fQ"
 }
 ```
 
@@ -85,13 +83,125 @@ The frontend will send the credential offer string resulting from the QR code sc
 ProcessMediatorOOB
 ```
 
+## Bob adds contact
 
-# Others
+The frontend will send the did:peer from a QR code scan or a string. The service layer will reply with an acknoledgment or an error.
 
-(... to come)
+![QR Scan](./qr-scan.png 'QR Scan')
+
+### Example input:
+
+```json
+{
+  "peer_did": "did:peer:2.Ez6LSiopL5aJjRbTu8ZB8uinhodhP7GiSix9DFG5rr2Xp93mg.Vz6MkrnJCtTmSuhoVXUSS8CxZkesWuwHaeHbyp7NT3Z3c9ZoA"
+}
+```
+
+### Example response:
+
+```json
+{
+  {
+  "status": "false",
+  "message": "Error, format not valid",
+}
+```
+
+```json
+{
+  {
+  "status": "true",
+  "message": "Success",
+}
+```
+
+### Event channel name:
+
+```bash
+StoreContact
+```
+
+## Bob sends a message routed via mediator
+
+The frontend will send the did:peer and the content from the message. The service layer will reply with an acknoledgment or an error.
+
+### Example input:
+
+```json
+{
+  "peer_did": "did:peer:2.Ez6LSiopL5aJjRbTu8ZB8uinhodhP7GiSix9DFG5rr2Xp93mg.Vz6MkrnJCtTmSuhoVXUSS8CxZkesWuwHaeHbyp7NT3Z3c9ZoA",
+  "message": "Hey bob, hope you are doing fine. I miss you."
+}
+```
+
+### Example response:
+
+```json
+{
+  {
+  "status": "false",
+  "message": "Error, {}",
+}
+```
+
+```json
+{
+  {
+  "status": "true",
+  "message": "Success",
+}
+```
+
+### Event channel name:
+
+```bash
+RouteForwardMessages
+```
+
+## Alice checks status requests
+
+The frontend will check for new messages. Following an email like structure, the call will be triggered by the FE and not by an indepedneted job on the BE. Reasons:
+
+User-Driven Polling: In an email-like architecture, checking for new messages is often based on the user's activity—such as opening the chat app or manually refreshing. It’s efficient to trigger the status-request call only when the client is actively requesting it, rather than having a backend job that checks continuously for every user.
+
+Reduced Server Load: If a backend job is set up to check for new messages frequently, it could increase server load. Frontend-triggered requests help limit the number of status checks to just what’s necessary.
+
+Real-Time Experience: If you want to add real-time message notifications, a combination of frontend-triggered status-request checks and possibly WebSocket-based updates would allow for a more dynamic experience.
+
+### Example input:
+
+```json
+{
+  "trigger": "true"
+}
+```
+
+### Example response:
+
+```json
+{
+  {
+  "status": "false",
+  "message": "Error, {}",
+}
+```
+
+```json
+{
+  {
+  "status": "true",
+  "message": "Success",
+}
+```
+
+### Event channel name:
+
+```bash
+ReceiveMessages
+```
 
 # Other events
 
-There are also other events happening inside the app, like the retrieval of already stored credentials, deletion of them, etc...
+There are also other events happening inside the app, like the retrieval of already messages, deletion of them, etc...
 
-A complete description of these calls can be found [here.](./other-events/other-events.md)
+A complete description of these calls can be found [here.](./other-events.md)
