@@ -134,6 +134,14 @@ describe('MessageService', () => {
       timestamp: new Date(),
     };
 
+    const newMessage5: Message = {
+      id: uuidv4(),
+      text: 'Are you there? Hello....',
+      sender: 'did:key:z92389jqjdNJAWOJNSWDDjies',
+      contactId: contactId1,
+      timestamp: new Date(),
+    };
+
     // Create messages
     const createEvent1 = waitForEvent(MessageEventChannel.CreateMessage);
     messageService.createMessage(newMessage1);
@@ -151,6 +159,10 @@ describe('MessageService', () => {
     messageService.createMessage(newMessage4);
     await createEvent4;
 
+    const createEvent5 = waitForEvent(MessageEventChannel.CreateMessage);
+    messageService.createMessage(newMessage5);
+    await createEvent5;
+
     // Retrieve all messages by contactId1
     const getAllEvent = waitForEvent(MessageEventChannel.GetAllByContactId);
     messageService.getAllMessagesByContact(contactId1);
@@ -164,6 +176,7 @@ describe('MessageService', () => {
           newMessage1,
           newMessage3,
           newMessage4,
+          newMessage5,
         ]),
       }),
     );
