@@ -13,10 +13,10 @@ This event will bring new messages to the FE, which will be stored in the local 
 ## Example logic
 
 ```javascript
- if (cachedMessages.length > maxMessages) {
-        const prunedMessages = cachedMessages.slice(-maxMessages);
-        localStorage.setItem(key, JSON.stringify(prunedMessages));
-    }
+if (cachedMessages.length > maxMessages) {
+  const prunedMessages = cachedMessages.slice(-maxMessages);
+  localStorage.setItem(key, JSON.stringify(prunedMessages));
+}
 ```
 
 ## Example input:
@@ -65,7 +65,7 @@ This event will delete specific messages.
 
 ```javascript
 DeleteMessages(did, id);
-DeleteMessages("did:peer", 3);
+DeleteMessages('did:peer', 3);
 ```
 
 ## Example response:
@@ -97,7 +97,7 @@ This event will retrieve the DID where the mediator will receive messages for th
 ## Example input:
 
 ```javascript
-RetrieveDIDWithMediator()
+RetrieveDIDWithMediator();
 ```
 
 ## Example response:
@@ -130,7 +130,9 @@ This event will delete a registered contact.
 ## Example input:
 
 ```javascript
-DeleteContact("did:peer:2.Ez6LSiopL5aJjRbTu8ZB8uinhodhP7GiSix9DFG5rr2Xp93mg.Vz6MkrnJCtTmSuhoVXUSS8CxZkesWuwHaeHbyp7NT3Z3c9ZoA")
+DeleteContact(
+  'did:peer:2.Ez6LSiopL5aJjRbTu8ZB8uinhodhP7GiSix9DFG5rr2Xp93mg.Vz6MkrnJCtTmSuhoVXUSS8CxZkesWuwHaeHbyp7NT3Z3c9ZoA',
+);
 ```
 
 ## Example response:
@@ -162,7 +164,9 @@ This event will add a new contact.
 ## Example input:
 
 ```javascript
-AddContact("did:peer:2.Ez6LSiopL5aJjRbTu8ZB8uinhodhP7GiSix9DFG5rr2Xp93mg.Vz6MkrnJCtTmSuhoVXUSS8CxZkesWuwHaeHbyp7NT3Z3c9ZoA")
+AddContact(
+  'did:peer:2.Ez6LSiopL5aJjRbTu8ZB8uinhodhP7GiSix9DFG5rr2Xp93mg.Vz6MkrnJCtTmSuhoVXUSS8CxZkesWuwHaeHbyp7NT3Z3c9ZoA',
+);
 ```
 
 ## Example response:
