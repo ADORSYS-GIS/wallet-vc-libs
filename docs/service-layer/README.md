@@ -42,12 +42,11 @@ On the front end layer, an example interacting with the method: OID4VCIService.r
 
 This flow currently starts with the scan of a QR code and it is composed of one call:
 
-The backend will be in charge of the calls to the mediator and will only notify the frontend once the mediation coordination has been successful or it has failed. 
+The backend will be in charge of the calls to the mediator and will only notify the frontend once the mediation coordination has been successful or it has failed.
 
 ## ProcessMediatorOOB
 
 The frontend will send the credential offer string resulting from the QR code scan. The service layer will reply with an acknoledgment or an error.
-
 
 ### Example input:
 
@@ -60,16 +59,16 @@ The frontend will send the credential offer string resulting from the QR code sc
 ### Example response:
 
 ```json
-  {
+{
   "status": "false",
-  "message": "Error, format not valid",
+  "message": "Error, format not valid"
 }
 ```
 
 ```json
-  {
+{
   "status": "true",
-  "message": "Success",
+  "message": "Success"
 }
 ```
 
@@ -93,16 +92,16 @@ StoreContact("did:peer:2.Ez6LSiopL5aJjRbTu8ZB8uinhodhP7GiSix9DFG5rr2Xp93mg.Vz6Mk
 ### Example response:
 
 ```json
-  {
+{
   "status": "false",
-  "message": "Error, format not valid",
+  "message": "Error, format not valid"
 }
 ```
 
 ```json
-  {
+{
   "status": "true",
-  "message": "Success",
+  "message": "Success"
 }
 ```
 
@@ -127,16 +126,16 @@ RouteForwardMessages("did:peer:2.Ez6LSiopL5aJjRbTu8ZB8uinhodhP7GiSix9DFG5rr2Xp93
 ### Example response:
 
 ```json
-  {
+{
   "status": "false",
-  "message": "Error, {}",
+  "message": "Error, {}"
 }
 ```
 
 ```json
-  {
+{
   "status": "true",
-  "message": "Success",
+  "message": "Success"
 }
 ```
 
@@ -161,21 +160,22 @@ Real-Time Experience: If you want to add real-time message notifications, a comb
 ```json
 void
 ```
+
 This method receives no input.
 
 ### Example response:
 
 ```json
-  {
+{
   "status": "false",
-  "message": "Error, {}",
+  "message": "Error, {}"
 }
 ```
 
 ```json
-  {
+{
   "status": "true",
-  "message": "Success",
+  "message": "Success"
 }
 ```
 

@@ -6,11 +6,9 @@
 - [Delete Contact](#Delete-Contact)
 - [Register Contact](#Register-Contact)
 
-
-
 # Retrieve New Messages
 
-This event will bring new messages to the FE, which will be stored in the local storage. There will be a limit on cached messages. The limit will be per conversation. Once there are new messages that exceed the pile, we will delete old ones.  
+This event will bring new messages to the FE, which will be stored in the local storage. There will be a limit on cached messages. The limit will be per conversation. Once there are new messages that exceed the pile, we will delete old ones.
 
 ## Example logic
 
@@ -20,6 +18,7 @@ This event will bring new messages to the FE, which will be stored in the local 
         localStorage.setItem(key, JSON.stringify(prunedMessages));
     }
 ```
+
 ## Example input:
 
 ```json
@@ -66,8 +65,8 @@ RetrieveMessages
 
 This event will delete specific messages.
 
-
 ## Example input:
+
 ```json
 DeleteMessages(did, id);
 DeleteMessages("did:peer", 3);
@@ -76,16 +75,16 @@ DeleteMessages("did:peer", 3);
 ## Example response:
 
 ```json
-  {
+{
   "status": "false",
-  "message": "Error, format not valid",
+  "message": "Error, format not valid"
 }
 ```
 
 ```json
-  {
+{
   "status": "true",
-  "message": "Success",
+  "message": "Success"
 }
 ```
 
@@ -99,8 +98,8 @@ DeleteMessages
 
 This event will retrieve the DID where the mediator will receive messages for the user.
 
-
 ## Example input:
+
 ```json
 RetrieveDIDWithMediator()
 ```
@@ -111,14 +110,14 @@ RetrieveDIDWithMediator()
 {
   "did_for_mediation": "did:peer:2.Ez6LSiopL5aJjRbTu8ZB8uinhodhP7GiSix9DFG5rr2Xp93mg.Vz6MkrnJCtTmSuhoVXUSS8CxZkesWuwHaeHbyp7NT3Z3c9ZoA",
   "status": "true",
-  "message": "Success",
+  "message": "Success"
 }
 ```
 
 ```json
-  {
+{
   "status": "false",
-  "message": "error",
+  "message": "error"
 }
 ```
 
@@ -132,8 +131,8 @@ RetrieveDIDWithMediator
 
 This event will delete a registered contact.
 
-
 ## Example input:
+
 ```json
 DeleteContact("did:peer:2.Ez6LSiopL5aJjRbTu8ZB8uinhodhP7GiSix9DFG5rr2Xp93mg.Vz6MkrnJCtTmSuhoVXUSS8CxZkesWuwHaeHbyp7NT3Z3c9ZoA")
 ```
@@ -143,14 +142,14 @@ DeleteContact("did:peer:2.Ez6LSiopL5aJjRbTu8ZB8uinhodhP7GiSix9DFG5rr2Xp93mg.Vz6M
 ```json
 {
   "status": "true",
-  "message": "Success",
+  "message": "Success"
 }
 ```
 
 ```json
-  {
+{
   "status": "false",
-  "message": "error",
+  "message": "error"
 }
 ```
 
@@ -159,12 +158,13 @@ DeleteContact("did:peer:2.Ez6LSiopL5aJjRbTu8ZB8uinhodhP7GiSix9DFG5rr2Xp93mg.Vz6M
 ```bash
 DeleteContact
 ```
+
 # Register contact
 
 This event will add a new contact.
 
-
 ## Example input:
+
 ```json
 AddContact("did:peer:2.Ez6LSiopL5aJjRbTu8ZB8uinhodhP7GiSix9DFG5rr2Xp93mg.Vz6MkrnJCtTmSuhoVXUSS8CxZkesWuwHaeHbyp7NT3Z3c9ZoA")
 ```
@@ -174,14 +174,14 @@ AddContact("did:peer:2.Ez6LSiopL5aJjRbTu8ZB8uinhodhP7GiSix9DFG5rr2Xp93mg.Vz6Mkrn
 ```json
 {
   "status": "true",
-  "message": "Success",
+  "message": "Success"
 }
 ```
 
 ```json
-  {
+{
   "status": "false",
-  "message": "error",
+  "message": "error"
 }
 ```
 
