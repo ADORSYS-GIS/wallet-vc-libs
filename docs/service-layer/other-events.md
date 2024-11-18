@@ -12,7 +12,7 @@ This event will bring new messages to the FE, which will be stored in the local 
 
 ## Example logic
 
-```json
+```javascript
  if (cachedMessages.length > maxMessages) {
         const prunedMessages = cachedMessages.slice(-maxMessages);
         localStorage.setItem(key, JSON.stringify(prunedMessages));
@@ -67,7 +67,7 @@ This event will delete specific messages.
 
 ## Example input:
 
-```json
+```javascript
 DeleteMessages(did, id);
 DeleteMessages("did:peer", 3);
 ```
@@ -100,7 +100,7 @@ This event will retrieve the DID where the mediator will receive messages for th
 
 ## Example input:
 
-```json
+```javascript
 RetrieveDIDWithMediator()
 ```
 
@@ -133,7 +133,7 @@ This event will delete a registered contact.
 
 ## Example input:
 
-```json
+```javascript
 DeleteContact("did:peer:2.Ez6LSiopL5aJjRbTu8ZB8uinhodhP7GiSix9DFG5rr2Xp93mg.Vz6MkrnJCtTmSuhoVXUSS8CxZkesWuwHaeHbyp7NT3Z3c9ZoA")
 ```
 
@@ -165,7 +165,7 @@ This event will add a new contact.
 
 ## Example input:
 
-```json
+```javascript
 AddContact("did:peer:2.Ez6LSiopL5aJjRbTu8ZB8uinhodhP7GiSix9DFG5rr2Xp93mg.Vz6MkrnJCtTmSuhoVXUSS8CxZkesWuwHaeHbyp7NT3Z3c9ZoA")
 ```
 
