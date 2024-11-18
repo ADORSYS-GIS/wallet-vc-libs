@@ -157,10 +157,6 @@ Real-Time Experience: If you want to add real-time message notifications, a comb
 
 ### Example input:
 
-```json
-void
-```
-
 This method receives no input.
 
 ### Example response:

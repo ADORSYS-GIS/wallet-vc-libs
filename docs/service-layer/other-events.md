@@ -21,10 +21,6 @@ This event will bring new messages to the FE, which will be stored in the local 
 
 ## Example input:
 
-```json
-void
-```
-
 This method receives no input.
 
 ## Example response:
