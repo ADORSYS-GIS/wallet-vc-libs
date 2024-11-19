@@ -21,7 +21,9 @@ if (cachedMessages.length > maxMessages) {
 
 ## Example input:
 
-This method receives no input.
+```javascript
+RetrieveMessages();
+```
 
 ## Example response:
 
@@ -64,8 +66,8 @@ This event will delete specific messages.
 ## Example input:
 
 ```javascript
-DeleteMessages(did, id);
-DeleteMessages('did:peer', 3);
+DeleteMessages(messageId);
+DeleteMessages(3);
 ```
 
 ## Example response:

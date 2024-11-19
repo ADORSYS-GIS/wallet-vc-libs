@@ -3,7 +3,6 @@ This document outlines the communication between the frontend and the service la
 # Index
 
 - [Service layer overview](#Service-Layer-Overview)
-- [Event code examples](#Event-Code-examples)
 - [Alice registers with mediator](#Alice-registers-with-mediator)
 - [Bob adds contact](#Bob-adds-contact)
 - [Bob sends a message routed via mediator](#Bob-sends-a-message-routed-via-mediator)
@@ -12,7 +11,7 @@ This document outlines the communication between the frontend and the service la
 
 # Service layer overview
 
-The service layer aims to organize the services. A service in this context would be the resolution of a credential offer, a request for a credential issuance or an event to interact with the wallet such as the deletion of a credential.
+The service layer aims to organize asynchronous methods and events. A service in this context would be the mediator coordination dance, adding a new contact or sending a didcomm message.
 
 ![Event Architecture](./event-architecture.png 'Event architecture')
 
@@ -23,20 +22,6 @@ Benefits of this architecture:
 - **Flexibility.** We could integrate different frontends into the engine, allowing for a versatile and adaptable architecture that can accommodate various user interfaces or requirements.
 
 - **Performance and scalability.** Asynchronicity is at the core of all communication, which means the system can handle requests without waiting for responses. This approach improves the overall performance and scalability of the system.
-
-# Event code examples
-
-On the service layer side, there is an instantiation of event methods here:
-
-- [OID4VCIService.ts](https://github.com/adorsys/eudiw-app/blob/86ef72c949f0a7d00011349051fdb8d58d3f22e8/libs/oid4vc/src/lib/OID4VCIService.ts#L24)
-
-- [OID4VCService.ts](https://github.com/adorsys/eudiw-app/blob/86ef72c949f0a7d00011349051fdb8d58d3f22e8/libs/oid4vc/src/lib/OID4VCService.ts#L10)
-
-- [OID4VPService.ts](https://github.com/adorsys/eudiw-app/blob/86ef72c949f0a7d00011349051fdb8d58d3f22e8/libs/oid4vc/src/lib/OID4VPService.ts#L14)
-
-On the front end layer, an example interacting with the method: OID4VCIService.retrieveCredentialHeaders() can be found here:
-
-- [Credentials.tsx](https://github.com/adorsys/eudiw-app/blob/86ef72c949f0a7d00011349051fdb8d58d3f22e8/apps/wallet-react/src/pages/credentials/Credentials.tsx#L29)
 
 # Alice registers with mediator
 
@@ -161,7 +146,9 @@ Real-Time Experience: If you want to add real-time message notifications, a comb
 
 ### Example input:
 
-This method receives no input.
+```javascript
+ReceiveMessages();
+```
 
 ### Example response:
 
