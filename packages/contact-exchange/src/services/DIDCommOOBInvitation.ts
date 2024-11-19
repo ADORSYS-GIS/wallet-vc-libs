@@ -32,10 +32,10 @@ export enum MessageType {
   MediationResponse = 'https://didcomm.org/coordinate-mediation/2.0/response',
   KeylistUpdate = 'https://didcomm.org/coordinate-mediation/2.0/keylist-update',
   ContactRequest = 'contact-request',
-  }
-  
-  export enum MessageTyp {
-    Didcomm = 'application/didcomm-plain+json',
-  }
+}
+
+export enum MessageTyp {
+  Didcomm = 'application/didcomm-plain+json',
+}
 
 export { DIDCommMessage, OutOfBandInvitation };

@@ -9,6 +9,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { MessageTyp, MessageType } from './DIDCommOOBInvitation';
 import axios from 'axios';
 import { validEncodedUrl } from '../tests/OOBTestFixtures';
+import { parseOOBInvitation } from './OOBParser';
 
 // Mock DID Resolver
 class MediatorServiceDIDResolver implements DIDResolver {
@@ -39,6 +40,12 @@ class MediatorServiceSecretsResolver implements SecretsResolver {
       this.knownSecrets.some((secret) => secret.id === id),
     );
   }
+}
+
+export async function processMediatorOOB(oob: string){
+  const invitation = parseOOBInvitation(oob);
+  console.log(invitation);
+  return true;
 }
 
 // This function retrieves the Out-of-Band (OOB) URL from the Mediator.
