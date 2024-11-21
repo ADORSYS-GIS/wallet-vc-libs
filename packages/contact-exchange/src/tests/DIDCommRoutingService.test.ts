@@ -1,7 +1,7 @@
 // import { DIDDoc, DIDResolver, Secret, SecretsResolver } from "didcomm-node";
 // import { processMediatorOOB } from "../services/DIDCommRoutingService";
 
-import PeerDIDResolver from 'didcomm-messaging-clients-utilities/libs/did-resolver-lib/src/resolver';
+import { PeerDIDResolver } from 'did-resolver-lib';
 
 describe('DIDCommRoutingService', () => {
     it('should do the mediator coordination dance from an OOB', async () => {

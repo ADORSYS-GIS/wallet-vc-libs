@@ -23,7 +23,7 @@
   "description": "",
   "dependencies": {
     "axios": "^1.7.7",
-    "didcomm-messaging-clients-utilities": "github:adorsys/didcomm-messaging-clients-utilities",
+    "did-resolver-lib": "https://gitpkg.vercel.app/adorsys/didcomm-messaging-clients-utilities/libs/did-resolver-lib?main",
     "didcomm-node": "^0.4.1"
   }
 }
