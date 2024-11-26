@@ -6,7 +6,7 @@
 - [Delete Contact](#Delete-Contact)
 - [Register Contact](#Register-Contact)
 
-# Retrieve New Messages
+# Retrieve Messages
 
 The retrieval of messages has the following calls:
 
@@ -175,13 +175,6 @@ RetrieveMessagesPaginated
 # Delete Messages
 
 This event will delete specific messages.
-
-## Example input:
-
-```javascript
-DeleteMessages(did, id);
-DeleteMessages('did:peer', 3);
-```
 
 ## Example input:
 
