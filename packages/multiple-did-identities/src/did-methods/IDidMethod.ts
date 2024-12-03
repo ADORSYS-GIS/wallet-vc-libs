@@ -39,12 +39,21 @@ export interface GenesisDocument {
   verificationMethod: VerificationMethod2[];
 }
 
-export interface DIDKeyPairMethod2 extends Did {
-  didDocument: DIDDocumentMethod2;
-  privateKeyV: JWK;
-  publicKeyV: JWK;
-  privateKeyE: JWK;
-  publicKeyE: JWK;
+export interface DIDKeyPairMethod2 {
+  did: string;
+  didDocument: object;
+  keys: {
+    authentication: {
+      id: string;
+      privateKeyJwk: object;
+      publicKeyMultibase: string; // Add this property
+    };
+    agreement: {
+      id: string;
+      privateKeyJwk: object;
+      publicKeyMultibase: string; // Add this property
+    };
+  };
 }
 
 export interface DIDDocumentMethod2 {
