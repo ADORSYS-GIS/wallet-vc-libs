@@ -105,8 +105,15 @@ export async function processMediatorOOB(oob: string) {
     
     console.log('Secrets Resolver:', JSON.stringify(secretsResolver, null, 2));
 
+    // Hardcoded value for testing
+    const hardcodedValue = "SeyJ0IjoiZG0iLCJzIjp7InVyaSI6Imh0dHA6Ly9leGFtcGxlLmNvbS9kaWRjb21tIiwiYWNjZXB0IjpbImRpZGNvbW0vdjIiXSwicm91dGluZ0tleXMiOlsiZGlkOmV4YW1wbGU6MTIzNDU2Nzg5YWJjZGVmZ2hpI2tleS0xIl19fQ";
+
+    // Replace the last part
+    const updatedDidTo = didTo.split('.').slice(0, -1).concat(hardcodedValue).join('.'); 
+    console.log('updatedDidTo:', updatedDidTo);
+
     const packedRequest = await mediationRequest.pack_encrypted(
-      didTo,
+      updatedDidTo,
       didPeer.did,
       didPeer.did,
       resolver,
