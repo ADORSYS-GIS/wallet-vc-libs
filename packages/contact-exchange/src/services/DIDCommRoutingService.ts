@@ -10,9 +10,16 @@ import { v4 as uuidv4 } from 'uuid';
 import axios from 'axios';
 import { parseOOBInvitation } from './OOBParser';
 import { MessageTyp, MessageType } from './DIDCommOOBInvitation';
-import { DIDKeyPairMethod2 } from '@adorsys-gis/multiple-did-identities/dist/src/did-methods/IDidMethod';
-import { DidPeerMethod } from '@adorsys-gis/multiple-did-identities/dist/src/did-methods/DidPeerMethod';
+import { DIDKeyPairMethod2 } from '@adorsys-gis/multiple-did-identities/src/did-methods/IDidMethod';
+import { DidPeerMethod } from '@adorsys-gis/multiple-did-identities/src/did-methods/DidPeerMethod';
 import { PeerDIDResolver } from 'did-resolver-lib';
+
+
+
+
+
+
+
 
 class DidcommSecretsResolver implements SecretsResolver {
   knownSecrets: Secret[];
@@ -22,10 +29,12 @@ class DidcommSecretsResolver implements SecretsResolver {
   }
 
   async get_secret(secretId: string): Promise<Secret | null> {
+    console.log("Looking for secret with ID get_secret:", secretId);
     return this.knownSecrets.find((secret) => secret.id === secretId) || null;
   }
 
   async find_secrets(secretIds: string[]): Promise<string[]> {
+    console.log("Looking for secret with ID find_secrets:", secretIds);
     return secretIds.filter((id) =>
       this.knownSecrets.find((secret) => secret.id === id),
     );
@@ -35,7 +44,24 @@ class DidcommSecretsResolver implements SecretsResolver {
 function createSecretsResolver(knownSecrets: Secret[]): DidcommSecretsResolver {
   return new DidcommSecretsResolver(knownSecrets);
 }
+export interface PrivateKeyJWK {
+  id: string;
+  type: 'JsonWebKey2020';
+  privateKeyJwk: {
+    crv: string; // Curve, e.g., 'P-384', 'X25519'
+    d: string;   // Private key in Base64URL
+    kty: string; // Key type, e.g., 'EC', 'OKP'
+    x: string;   // Public key coordinate x
+    y?: string;  // Public key coordinate y (optional for some curves)
+  };
+}
 
+function updateIdWithDid(secrets: PrivateKeyJWK[], did: string): PrivateKeyJWK[] {
+  return secrets.map(secret => ({
+    ...secret,
+    id: `${did}${secret.id}` // Concatenate DID with the existing id
+  }));
+}
 // Function to process OOB invitation
 export async function processMediatorOOB(oob: string) {
   try {
@@ -50,8 +76,8 @@ export async function processMediatorOOB(oob: string) {
 
     // Step 2 - Create did
     const didPeerMethod = new DidPeerMethod();
-    const didPeer: DIDKeyPairMethod2 = await didPeerMethod.generateMethod2();
-    console.log('result:', JSON.stringify(didPeer, null, 2));
+    const didPeer = await didPeerMethod.generateMethod2();
+    console.log('DID From:', JSON.stringify(didPeer, null, 2));
 
     // Step 3 - Prepare Mediation Request
     const mediationRequest = new Message({
@@ -67,27 +93,16 @@ export async function processMediatorOOB(oob: string) {
     // Step 4 - Pack mediation request
     const resolver = new PeerDIDResolver();
 
-    const knownSecrets: Secret[] = [];
-    didPeer.didDocument?.verificationMethod?.forEach((method) => {
-      const privateKeyJwk =
-        method.id === '#key-1'
-          ? didPeer.privateKeyV
-          : method.id === '#key-2'
-            ? didPeer.privateKeyE
-            : undefined;
-
-      if (privateKeyJwk) {
-        knownSecrets.push({
-          id: `${didPeer.did}${method.id}`,
-          type: method.type as SecretType,
-          privateKeyJwk,
-        });
-      }
-    });
-
     // Use the knownSecrets array with the secrets resolver
-    const secretsResolver = createSecretsResolver(knownSecrets);
+    let secrets = [];
+    secrets.push(didPeer.privateKeyE); // Push the first object
+    secrets.push(didPeer.privateKeyV); // Push the second object
 
+    secrets =  updateIdWithDid(secrets, didPeer.did);
+
+    const secretsResolver = createSecretsResolver(secrets); // Use the combined secrets
+
+    
     console.log('Secrets Resolver:', JSON.stringify(secretsResolver, null, 2));
 
     const packedRequest = await mediationRequest.pack_encrypted(

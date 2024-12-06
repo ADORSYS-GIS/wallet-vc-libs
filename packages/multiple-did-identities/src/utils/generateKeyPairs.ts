@@ -25,7 +25,7 @@ export const generateKeyPairsED25519 = async (numKeys: number) => {
 
     // Create the JWK representation
     const privateKeyJwk: PrivateKeyJWK = {
-      id: `#key-1'`,
+      id: `#key-1`,
       type: 'JsonWebKey2020',
       privateKeyJwk: {
       kty: 'OKP',
@@ -70,7 +70,7 @@ export const generateKeyPairsX25519 = async (numKeys: number) => {
 
     // Create the JWK representation
     const privateKeyJwk: PrivateKeyJWK = {
-      id: `#key-2'`,
+      id: `#key-2`,
       type: 'JsonWebKey2020',
       privateKeyJwk: {
       kty: 'OKP',

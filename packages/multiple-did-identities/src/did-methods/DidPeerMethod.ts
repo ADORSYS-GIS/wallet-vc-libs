@@ -134,6 +134,7 @@ export class DidPeerMethod implements IDidMethod {
     // const keyPairs = await generateKeyPairs(2);
     const KeyV = (await generateKeyPairsED25519(1))[0];
     const KeyE = (await generateKeyPairsX25519(1))[0];
+    console.log('here!');
 
     const ED25519_PUB_CODE = new Uint8Array([0xed, 0x01]);
     const publicKeyMultibaseV = `z${bs58.encode([...ED25519_PUB_CODE, ...KeyV.rawPublicKey])}`;
