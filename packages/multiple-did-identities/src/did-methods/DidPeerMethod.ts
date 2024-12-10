@@ -4,7 +4,11 @@ import { canonicalize } from 'json-canonicalize';
 import { base64UrlEncodeService } from '../utils/base64UrlEncode';
 import { concatenateKeyStrings } from '../utils/concatenateKeyStrings';
 import { convertServiceToAbbreviatedFormat } from '../utils/convertServiceToAbbreviatedFormat';
-import { generateKeyPairs } from '../utils/generateKeyPairs';
+import {
+  generateKeyPairs,
+  generateKeyPairsED25519,
+  generateKeyPairsX25519,
+} from '../utils/generateKeyPairs';
 import {
   DIDKeyPairVariants,
   DIDMethodName,
@@ -131,13 +135,14 @@ export class DidPeerMethod implements IDidMethod {
 
   // DID PEER METHOD 2 (did:peer:2)-------RESOLVABLE
   public async generateMethod2(): Promise<DIDKeyPairMethod2> {
-    const keyPairs = await generateKeyPairs(2);
-    const KeyV = keyPairs[0];
-    const KeyE = keyPairs[1];
+    const KeyV = (await generateKeyPairsED25519(1))[0];
+    const KeyE = (await generateKeyPairsX25519(1))[0];
 
     const ED25519_PUB_CODE = new Uint8Array([0xed, 0x01]);
+    const X25519_PUB_CODE = new Uint8Array([0xec, 0x01]);
+
     const publicKeyMultibaseV = `z${bs58.encode([...ED25519_PUB_CODE, ...KeyV.rawPublicKey])}`;
-    const publicKeyMultibaseE = `z${bs58.encode([...ED25519_PUB_CODE, ...KeyE.rawPublicKey])}`;
+    const publicKeyMultibaseE = `z${bs58.encode([...X25519_PUB_CODE, ...KeyE.rawPublicKey])}`;
 
     const purposepublicKeyMultibaseV = `.${PurposeCode.Verification}${publicKeyMultibaseV}`;
     const purposepublicKeyMultibaseE = `.${PurposeCode.Encryption}${publicKeyMultibaseE}`;
@@ -216,13 +221,14 @@ export class DidPeerMethod implements IDidMethod {
   public async generateMethod2RoutingKey(
     mediatorRoutingKey: string,
   ): Promise<DIDKeyPairMethod2> {
-    const keyPairs = await generateKeyPairs(2);
-    const KeyV = keyPairs[0];
-    const KeyE = keyPairs[1];
+    const KeyV = (await generateKeyPairsED25519(1))[0];
+    const KeyE = (await generateKeyPairsX25519(1))[0];
 
     const ED25519_PUB_CODE = new Uint8Array([0xed, 0x01]);
+    const X25519_PUB_CODE = new Uint8Array([0xec, 0x01]);
+
     const publicKeyMultibaseV = `z${bs58.encode([...ED25519_PUB_CODE, ...KeyV.rawPublicKey])}`;
-    const publicKeyMultibaseE = `z${bs58.encode([...ED25519_PUB_CODE, ...KeyE.rawPublicKey])}`;
+    const publicKeyMultibaseE = `z${bs58.encode([...X25519_PUB_CODE, ...KeyE.rawPublicKey])}`;
 
     const purposepublicKeyMultibaseV = `.${PurposeCode.Verification}${publicKeyMultibaseV}`;
     const purposepublicKeyMultibaseE = `.${PurposeCode.Encryption}${publicKeyMultibaseE}`;

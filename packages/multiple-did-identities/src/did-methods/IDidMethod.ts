@@ -41,9 +41,9 @@ export interface GenesisDocument {
 
 export interface DIDKeyPairMethod2 extends Did {
   didDocument: DIDDocumentMethod2;
-  privateKeyV: JWK;
+  privateKeyV: PrivateKeyJWK;
   publicKeyV: JWK;
-  privateKeyE: JWK;
+  privateKeyE: PrivateKeyJWK;
   publicKeyE: JWK;
 }
 
@@ -119,4 +119,16 @@ export interface JWKKeys {
   crv: string;
   x: string;
   d?: string;
+}
+
+export interface PrivateKeyJWK {
+  id: string;
+  type: string;
+  privateKeyJwk: {
+    crv: string;
+    d: string;
+    kty: string;
+    x: string;
+    y?: string;
+  };
 }

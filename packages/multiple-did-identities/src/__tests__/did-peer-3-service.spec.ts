@@ -95,10 +95,14 @@ describe('DIDIdentityService', () => {
         ],
       },
       privateKeyV: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        d: 'mockPrivateKeyV',
-        x: 'mockPublicKeyV',
+        id: `#key-1`,
+        type: 'JsonWebKey2020',
+        privateKeyJwk: {
+          kty: 'OKP',
+          crv: 'Ed25519',
+          d: 'mockPrivateKeyV',
+          x: 'mockPublicKeyV',
+        },
       },
       publicKeyV: {
         kty: 'OKP',
@@ -106,14 +110,18 @@ describe('DIDIdentityService', () => {
         x: 'mockPublicKeyV',
       },
       privateKeyE: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        d: 'mockPrivateKeyE',
-        x: 'mockPublicKeyE',
+        id: `#key-2`,
+        type: 'JsonWebKey2020',
+        privateKeyJwk: {
+          kty: 'OKP',
+          crv: 'X25519',
+          d: 'mockPrivateKeyE',
+          x: 'mockPublicKeyE',
+        },
       },
       publicKeyE: {
         kty: 'OKP',
-        crv: 'Ed25519',
+        crv: 'X25519',
         x: 'mockPublicKeyE',
       },
     };
@@ -175,10 +183,14 @@ describe('DIDIdentityService', () => {
         ],
       },
       privateKeyV: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        d: 'mockPrivateKeyV',
-        x: 'mockPublicKeyV',
+        id: `#key-1`,
+        type: 'JsonWebKey2020',
+        privateKeyJwk: {
+          kty: 'OKP',
+          crv: 'Ed25519',
+          d: 'mockPrivateKeyV',
+          x: 'mockPublicKeyV',
+        },
       },
       publicKeyV: {
         kty: 'OKP',
@@ -186,14 +198,18 @@ describe('DIDIdentityService', () => {
         x: 'mockPublicKeyV',
       },
       privateKeyE: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        d: 'mockPrivateKeyE',
-        x: 'mockPublicKeyE',
+        id: `#key-2`,
+        type: 'JsonWebKey2020',
+        privateKeyJwk: {
+          kty: 'OKP',
+          crv: 'X25519',
+          d: 'mockPrivateKeyE',
+          x: 'mockPublicKeyE',
+        },
       },
       publicKeyE: {
         kty: 'OKP',
-        crv: 'Ed25519',
+        crv: 'X25519',
         x: 'mockPublicKeyE',
       },
     };
@@ -262,10 +278,14 @@ describe('DIDIdentityService', () => {
         ],
       },
       privateKeyV: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        d: 'mockPrivateKeyV',
-        x: 'mockPublicKeyV',
+        id: `#key-1`,
+        type: 'JsonWebKey2020',
+        privateKeyJwk: {
+          kty: 'OKP',
+          crv: 'Ed25519',
+          d: 'mockPrivateKeyV',
+          x: 'mockPublicKeyV',
+        },
       },
       publicKeyV: {
         kty: 'OKP',
@@ -273,14 +293,18 @@ describe('DIDIdentityService', () => {
         x: 'mockPublicKeyV',
       },
       privateKeyE: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        d: 'mockPrivateKeyE',
-        x: 'mockPublicKeyE',
+        id: `#key-2`,
+        type: 'JsonWebKey2020',
+        privateKeyJwk: {
+          kty: 'OKP',
+          crv: 'X25519',
+          d: 'mockPrivateKeyE',
+          x: 'mockPublicKeyE',
+        },
       },
       publicKeyE: {
         kty: 'OKP',
-        crv: 'Ed25519',
+        crv: 'X25519',
         x: 'mockPublicKeyE',
       },
     };
@@ -353,10 +377,14 @@ describe('DIDIdentityService', () => {
         ],
       },
       privateKeyV: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        d: 'mockPrivateKeyV',
-        x: 'mockPublicKeyV',
+        id: `#key-1`,
+        type: 'JsonWebKey2020',
+        privateKeyJwk: {
+          kty: 'OKP',
+          crv: 'Ed25519',
+          d: 'mockPrivateKeyV',
+          x: 'mockPublicKeyV',
+        },
       },
       publicKeyV: {
         kty: 'OKP',
@@ -364,14 +392,18 @@ describe('DIDIdentityService', () => {
         x: 'mockPublicKeyV',
       },
       privateKeyE: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        d: 'mockPrivateKeyE',
-        x: 'mockPublicKeyE',
+        id: `#key-2`,
+        type: 'JsonWebKey2020',
+        privateKeyJwk: {
+          kty: 'OKP',
+          crv: 'X25519',
+          d: 'mockPrivateKeyE',
+          x: 'mockPublicKeyE',
+        },
       },
       publicKeyE: {
         kty: 'OKP',
-        crv: 'Ed25519',
+        crv: 'X25519',
         x: 'mockPublicKeyE',
       },
     };
