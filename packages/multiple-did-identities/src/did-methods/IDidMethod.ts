@@ -41,10 +41,22 @@ export interface GenesisDocument {
 
 export interface DIDKeyPairMethod2 extends Did {
   didDocument: DIDDocumentMethod2;
-  privateKeyV: JWK;
+  privateKeyV: PrivateKeyJWK;
   publicKeyV: JWK;
-  privateKeyE: JWK;
+  privateKeyE: PrivateKeyJWK;
   publicKeyE: JWK;
+}
+
+export interface PrivateKeyJWK {
+  id: string;
+  type: 'JsonWebKey2020';
+  privateKeyJwk: {
+    crv: string; // Curve, e.g., 'P-384', 'X25519'
+    d: string;   // Private key in Base64URL
+    kty: string; // Key type, e.g., 'EC', 'OKP'
+    x: string;   // Public key coordinate x
+    y?: string;  // Public key coordinate y (optional for some curves)
+  };
 }
 
 export interface DIDDocumentMethod2 {

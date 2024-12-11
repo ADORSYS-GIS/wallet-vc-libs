@@ -79,6 +79,7 @@ describe('DIDComm message pack and unpack', () => {
       expires_time: 1516385931,
       body: MESSAGE_BODY,
     });
+    console.log(JSON.stringify(secretsResolver));
 
     // Pack and encrypt the message
     const [encryptedMsg, encryptMetadata] = await msg.pack_encrypted(

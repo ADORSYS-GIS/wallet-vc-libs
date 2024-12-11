@@ -1,9 +1,9 @@
 import { parseOOBInvitation } from '../services/OOBParser';
 import { processOOBInvitation } from '../services/ProcessOOBInvitation';
 import {
-  validOutOfBandInvitation,
-  validEncodedUrl,
   invalidEncodedUrl,
+  validEncodedUrl,
+  validOutOfBandInvitation,
 } from './OOBTestFixtures';
 
 beforeEach(() => {

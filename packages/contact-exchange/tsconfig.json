@@ -2,10 +2,13 @@
   "extends": "../../tsconfig.base.json",
   "compilerOptions": {
     "module": "commonjs",
-    "rootDir": "."
+    "rootDir": "./"
   },
   "files": [],
-  "include": [],
+  "include": [
+    "packages/contact-exchange/**/*",
+    "packages/multiple-did-identities/**/*"
+  ],
   "references": [
     {
       "path": "./tsconfig.lib.json"

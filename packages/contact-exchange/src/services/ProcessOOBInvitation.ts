@@ -1,5 +1,5 @@
 // processOOBInvitation.ts
-import { OutOfBandInvitation, DIDCommMessage } from './DIDCommOOBInvitation';
+import { DIDCommMessage, OutOfBandInvitation } from './DIDCommOOBInvitation';
 import { parseOOBInvitation } from './OOBParser';
 
 /**

@@ -1,5 +1,5 @@
-import { parseOOBInvitation } from '../services/OOBParser';
 import { OutOfBandInvitation } from '../services/DIDCommOOBInvitation';
+import { parseOOBInvitation } from '../services/OOBParser';
 import { validEncodedUrl, validOutOfBandInvitation } from './OOBTestFixtures';
 
 beforeEach(() => {
