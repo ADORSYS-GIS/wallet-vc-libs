@@ -15,7 +15,5 @@ module.exports = {
   coverageDirectory: '../../coverage/libs/contact-exchange',
 
   // Specify which node_modules to transform
-  transformIgnorePatterns: [
-    'node_modules/(?!did-resolver-lib)/'
-  ],
+  transformIgnorePatterns: ['node_modules/(?!did-resolver-lib)/'],
 };
