@@ -1,12 +1,10 @@
-import { EventEmitter } from 'eventemitter3';
-import { DIDIdentityService } from '../lib/DIDIdentityService';
-import { DidMethodFactory } from '../did-methods/DidMethodFactory';
 import {
   ServiceResponse,
   ServiceResponseStatus,
 } from '@adorsys-gis/status-service';
-import { DidEventChannel } from '../utils/DidEventChannel';
+import { EventEmitter } from 'eventemitter3';
 import {
+  DidMethodFactory,
   DIDMethodName,
   PeerGenerationMethod,
 } from '../did-methods/DidMethodFactory';
@@ -15,6 +13,8 @@ import {
   DIDKeyPair,
   DIDKeyPairMethod2,
 } from '../did-methods/IDidMethod';
+import { DIDIdentityService } from '../lib/DIDIdentityService';
+import { DidEventChannel } from '../utils/DidEventChannel';
 
 describe('DIDIdentityService', () => {
   let didIdentityService: DIDIdentityService;
@@ -82,12 +82,8 @@ describe('DIDIdentityService', () => {
             publicKeyMultibase: 'z...publicKeyMultibaseE',
           },
         ],
-        authentication: [
-          `#key-1`,
-        ],
-        keyAgreement: [
-          `#key-2`,
-        ],
+        authentication: [`#key-1`],
+        keyAgreement: [`#key-2`],
         service: [
           {
             id: '#didcommmessaging',
@@ -176,12 +172,8 @@ describe('DIDIdentityService', () => {
             publicKeyMultibase: 'z...publicKeyMultibaseE',
           },
         ],
-        authentication: [
-          `#key-1`,
-        ],
-        keyAgreement: [
-          `#key-2`,
-        ],
+        authentication: [`#key-1`],
+        keyAgreement: [`#key-2`],
         service: [
           {
             id: '#didcommmessaging',
@@ -277,12 +269,8 @@ describe('DIDIdentityService', () => {
             publicKeyMultibase: 'z...publicKeyMultibaseE',
           },
         ],
-        authentication: [
-          `#key-1`,
-        ],
-        keyAgreement: [
-          `#key-2`,
-        ],
+        authentication: [`#key-1`],
+        keyAgreement: [`#key-2`],
         service: [
           {
             id: '#didcommmessaging',
@@ -382,12 +370,8 @@ describe('DIDIdentityService', () => {
             publicKeyMultibase: 'z...publicKeyMultibaseE',
           },
         ],
-        authentication: [
-          `#key-1`,
-        ],
-        keyAgreement: [
-          `#key-2`,
-        ],
+        authentication: [`#key-1`],
+        keyAgreement: [`#key-2`],
         service: [
           {
             id: '#didcommmessaging',
