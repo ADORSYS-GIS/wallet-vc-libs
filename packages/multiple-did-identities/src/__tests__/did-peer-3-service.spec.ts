@@ -1,12 +1,10 @@
-import { EventEmitter } from 'eventemitter3';
-import { DIDIdentityService } from '../lib/DIDIdentityService';
-import { DidMethodFactory } from '../did-methods/DidMethodFactory';
 import {
   ServiceResponse,
   ServiceResponseStatus,
 } from '@adorsys-gis/status-service';
-import { DidEventChannel } from '../utils/DidEventChannel';
+import { EventEmitter } from 'eventemitter3';
 import {
+  DidMethodFactory,
   DIDMethodName,
   PeerGenerationMethod,
 } from '../did-methods/DidMethodFactory';
@@ -15,6 +13,8 @@ import {
   DIDKeyPair,
   DIDKeyPairMethod2,
 } from '../did-methods/IDidMethod';
+import { DIDIdentityService } from '../lib/DIDIdentityService';
+import { DidEventChannel } from '../utils/DidEventChannel';
 
 describe('DIDIdentityService', () => {
   let didIdentityService: DIDIdentityService;
@@ -82,6 +82,8 @@ describe('DIDIdentityService', () => {
             publicKeyMultibase: 'z...publicKeyMultibaseE',
           },
         ],
+        authentication: [`#key-1`],
+        keyAgreement: [`#key-2`],
         service: [
           {
             id: '#didcommmessaging',
@@ -95,10 +97,14 @@ describe('DIDIdentityService', () => {
         ],
       },
       privateKeyV: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        d: 'mockPrivateKeyV',
-        x: 'mockPublicKeyV',
+        id: `#key-1`,
+        type: 'JsonWebKey2020',
+        privateKeyJwk: {
+          kty: 'OKP',
+          crv: 'Ed25519',
+          d: 'mockPrivateKeyV',
+          x: 'mockPublicKeyV',
+        },
       },
       publicKeyV: {
         kty: 'OKP',
@@ -106,14 +112,18 @@ describe('DIDIdentityService', () => {
         x: 'mockPublicKeyV',
       },
       privateKeyE: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        d: 'mockPrivateKeyE',
-        x: 'mockPublicKeyE',
+        id: `#key-2`,
+        type: 'JsonWebKey2020',
+        privateKeyJwk: {
+          kty: 'OKP',
+          crv: 'X25519',
+          d: 'mockPrivateKeyE',
+          x: 'mockPublicKeyE',
+        },
       },
       publicKeyE: {
         kty: 'OKP',
-        crv: 'Ed25519',
+        crv: 'X25519',
         x: 'mockPublicKeyE',
       },
     };
@@ -162,6 +172,8 @@ describe('DIDIdentityService', () => {
             publicKeyMultibase: 'z...publicKeyMultibaseE',
           },
         ],
+        authentication: [`#key-1`],
+        keyAgreement: [`#key-2`],
         service: [
           {
             id: '#didcommmessaging',
@@ -175,10 +187,14 @@ describe('DIDIdentityService', () => {
         ],
       },
       privateKeyV: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        d: 'mockPrivateKeyV',
-        x: 'mockPublicKeyV',
+        id: `#key-1`,
+        type: 'JsonWebKey2020',
+        privateKeyJwk: {
+          kty: 'OKP',
+          crv: 'Ed25519',
+          d: 'mockPrivateKeyV',
+          x: 'mockPublicKeyV',
+        },
       },
       publicKeyV: {
         kty: 'OKP',
@@ -186,14 +202,18 @@ describe('DIDIdentityService', () => {
         x: 'mockPublicKeyV',
       },
       privateKeyE: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        d: 'mockPrivateKeyE',
-        x: 'mockPublicKeyE',
+        id: `#key-2`,
+        type: 'JsonWebKey2020',
+        privateKeyJwk: {
+          kty: 'OKP',
+          crv: 'X25519',
+          d: 'mockPrivateKeyE',
+          x: 'mockPublicKeyE',
+        },
       },
       publicKeyE: {
         kty: 'OKP',
-        crv: 'Ed25519',
+        crv: 'X25519',
         x: 'mockPublicKeyE',
       },
     };
@@ -249,6 +269,8 @@ describe('DIDIdentityService', () => {
             publicKeyMultibase: 'z...publicKeyMultibaseE',
           },
         ],
+        authentication: [`#key-1`],
+        keyAgreement: [`#key-2`],
         service: [
           {
             id: '#didcommmessaging',
@@ -262,10 +284,14 @@ describe('DIDIdentityService', () => {
         ],
       },
       privateKeyV: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        d: 'mockPrivateKeyV',
-        x: 'mockPublicKeyV',
+        id: `#key-1`,
+        type: 'JsonWebKey2020',
+        privateKeyJwk: {
+          kty: 'OKP',
+          crv: 'Ed25519',
+          d: 'mockPrivateKeyV',
+          x: 'mockPublicKeyV',
+        },
       },
       publicKeyV: {
         kty: 'OKP',
@@ -273,14 +299,18 @@ describe('DIDIdentityService', () => {
         x: 'mockPublicKeyV',
       },
       privateKeyE: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        d: 'mockPrivateKeyE',
-        x: 'mockPublicKeyE',
+        id: `#key-2`,
+        type: 'JsonWebKey2020',
+        privateKeyJwk: {
+          kty: 'OKP',
+          crv: 'X25519',
+          d: 'mockPrivateKeyE',
+          x: 'mockPublicKeyE',
+        },
       },
       publicKeyE: {
         kty: 'OKP',
-        crv: 'Ed25519',
+        crv: 'X25519',
         x: 'mockPublicKeyE',
       },
     };
@@ -340,6 +370,8 @@ describe('DIDIdentityService', () => {
             publicKeyMultibase: 'z...publicKeyMultibaseE',
           },
         ],
+        authentication: [`#key-1`],
+        keyAgreement: [`#key-2`],
         service: [
           {
             id: '#didcommmessaging',
@@ -353,10 +385,14 @@ describe('DIDIdentityService', () => {
         ],
       },
       privateKeyV: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        d: 'mockPrivateKeyV',
-        x: 'mockPublicKeyV',
+        id: `#key-1`,
+        type: 'JsonWebKey2020',
+        privateKeyJwk: {
+          kty: 'OKP',
+          crv: 'Ed25519',
+          d: 'mockPrivateKeyV',
+          x: 'mockPublicKeyV',
+        },
       },
       publicKeyV: {
         kty: 'OKP',
@@ -364,14 +400,18 @@ describe('DIDIdentityService', () => {
         x: 'mockPublicKeyV',
       },
       privateKeyE: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        d: 'mockPrivateKeyE',
-        x: 'mockPublicKeyE',
+        id: `#key-2`,
+        type: 'JsonWebKey2020',
+        privateKeyJwk: {
+          kty: 'OKP',
+          crv: 'X25519',
+          d: 'mockPrivateKeyE',
+          x: 'mockPublicKeyE',
+        },
       },
       publicKeyE: {
         kty: 'OKP',
-        crv: 'Ed25519',
+        crv: 'X25519',
         x: 'mockPublicKeyE',
       },
     };
