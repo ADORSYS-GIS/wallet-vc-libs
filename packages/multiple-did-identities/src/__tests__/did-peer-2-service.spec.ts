@@ -81,6 +81,12 @@ describe('DIDIdentityService', () => {
             publicKeyMultibase: 'z...publicKeyMultibaseE',
           },
         ],
+        authentication: [
+          `#key-1`,
+        ],
+        keyAgreement: [
+          `#key-2`,
+        ],
         service: [
           {
             id: '#didcommmessaging',
@@ -170,6 +176,12 @@ describe('DIDIdentityService', () => {
             type: 'Multikey',
             publicKeyMultibase: 'z...publicKeyMultibaseE',
           },
+        ],
+        authentication: [
+          `#key-1`,
+        ],
+        keyAgreement: [
+          `#key-2`,
         ],
         service: [
           {
@@ -263,6 +275,12 @@ describe('DIDIdentityService', () => {
             type: 'Multikey',
             publicKeyMultibase: 'z...publicKeyMultibaseE',
           },
+        ],
+        authentication: [
+          `#key-1`,
+        ],
+        keyAgreement: [
+          `#key-2`,
         ],
         service: [
           {
@@ -358,6 +376,12 @@ describe('DIDIdentityService', () => {
             type: 'Multikey',
             publicKeyMultibase: 'z...publicKeyMultibaseE',
           },
+        ],
+        authentication: [
+          `#key-1`,
+        ],
+        keyAgreement: [
+          `#key-2`,
         ],
         service: [
           {
@@ -457,6 +481,12 @@ describe('DIDIdentityService', () => {
             type: 'Multikey',
             publicKeyMultibase: 'z...publicKeyMultibaseE',
           },
+        ],
+        authentication: [
+          `#key-1`,
+        ],
+        keyAgreement: [
+          `#key-2`,
         ],
         service: [
           {

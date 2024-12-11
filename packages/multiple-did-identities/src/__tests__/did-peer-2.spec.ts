@@ -19,6 +19,11 @@ describe('DidPeerMethod', () => {
     expect(result).toHaveProperty('privateKeyE');
     expect(result).toHaveProperty('publicKeyE');
 
+    console.log('DID: ' + result.did)
+    console.log('DidDoc: '+ JSON.stringify(result.didDocument))
+    console.log('Encryption PriK: '+ JSON.stringify(result.privateKeyE))
+    console.log('Verification PriK: '+ JSON.stringify(result.privateKeyV))
+
     // Validate DID structure
     expect(result.did).toMatch(/^did:peer:2/); // Check if DID starts with 'did:peer:2'
 
