@@ -204,6 +204,8 @@ export class DidPeerMethod implements IDidMethod {
       ],
       id: did,
       verificationMethod: verificationMethod,
+      authentication: [`#key-1`],
+      keyAgreement: [`#key-2`],
       service: service,
     };
 
@@ -290,6 +292,8 @@ export class DidPeerMethod implements IDidMethod {
       ],
       id: did,
       verificationMethod: verificationMethod,
+      authentication: [`#key-1`],
+      keyAgreement: [`#key-2`],
       service: service,
     };
 

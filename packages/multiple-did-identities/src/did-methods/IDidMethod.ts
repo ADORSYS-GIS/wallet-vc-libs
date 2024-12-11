@@ -51,6 +51,8 @@ export interface DIDDocumentMethod2 {
   '@context': string[];
   id: string;
   verificationMethod?: VerificationMethod2[];
+  authentication: string[];
+  keyAgreement: string[];
   service?: Service[];
 }
 
