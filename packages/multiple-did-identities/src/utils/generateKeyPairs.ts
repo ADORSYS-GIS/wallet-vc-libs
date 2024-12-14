@@ -2,8 +2,15 @@ import { ed25519, x25519 } from '@noble/curves/ed25519';
 import { JWKKeys, PrivateKeyJWK } from '../did-methods/IDidMethod';
 import { base64UrlEncode } from '../utils/base64UrlEncode';
 
+export const validateNumKeys = (numKeys: number) => {
+  if (!Number.isInteger(numKeys) || numKeys <= 0) {
+    throw new Error('Invalid input: numKeys must be a positive integer.');
+  }
+};
+
 // Function to generate multiple key pairs and include raw and JWK format
 export const generateKeyPairs = async (numKeys: number) => {
+  validateNumKeys(numKeys);
   const keys: Array<{
     rawPublicKey: Uint8Array;
     rawPrivateKey: Uint8Array;
@@ -42,6 +49,7 @@ export const generateKeyPairs = async (numKeys: number) => {
 
 // Function to generate multiple ED25519 key pairs and include raw and JWK format
 export const generateKeyPairsED25519 = async (numKeys: number) => {
+  validateNumKeys(numKeys);
   const pubKeyType = 'JsonWebKey2020';
   const keys: Array<{
     rawPublicKey: Uint8Array;
@@ -88,6 +96,7 @@ export const generateKeyPairsED25519 = async (numKeys: number) => {
 
 // Function to generate X25519 key pairs
 export const generateKeyPairsX25519 = async (numKeys: number) => {
+  validateNumKeys(numKeys);
   const pubKeyType = 'JsonWebKey2020';
   const keys: Array<{
     rawPublicKey: Uint8Array;

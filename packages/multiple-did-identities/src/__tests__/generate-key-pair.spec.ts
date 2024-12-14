@@ -2,6 +2,7 @@ import {
   generateKeyPairs,
   generateKeyPairsED25519,
   generateKeyPairsX25519,
+  validateNumKeys,
 } from '../utils/generateKeyPairs';
 import { validateKeyPair, validateKeyPair2 } from './validateKeyPair';
 
@@ -41,5 +42,23 @@ describe('generateKeyPairsX25519', () => {
     const keys = await generateKeyPairsX25519(numKeys);
 
     validateKeyPair2(keys[0], 'X25519', '#key-2');
+  });
+});
+
+describe('validateNumKeys', () => {
+  test('throws error for negative numbers', () => {
+    expect(() => validateNumKeys(-1)).toThrow('Invalid input: numKeys must be a positive integer.');
+  });
+
+  test('throws error for zero', () => {
+    expect(() => validateNumKeys(0)).toThrow('Invalid input: numKeys must be a positive integer.');
+  });
+
+  test('throws error for non-integer values', () => {
+    expect(() => validateNumKeys(1.5)).toThrow('Invalid input: numKeys must be a positive integer.');
+  });
+
+  test('does not throw error for positive integers', () => {
+    expect(() => validateNumKeys(5)).not.toThrow();
   });
 });
