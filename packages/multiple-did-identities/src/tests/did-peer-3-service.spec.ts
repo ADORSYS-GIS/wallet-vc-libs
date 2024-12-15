@@ -8,10 +8,7 @@ import {
   DIDMethodName,
   PeerGenerationMethod,
 } from '../did-methods/DidMethodFactory';
-import {
-  DidIdentity,
-  DIDKeyPair,
-} from '../did-methods/IDidMethod';
+import { DidIdentity, DIDKeyPair } from '../did-methods/IDidMethod';
 import { DIDIdentityService } from '../lib/DIDIdentityService';
 import { DidEventChannel } from '../utils/DidEventChannel';
 import { mockDIDPeer3Fixture } from './testFixtures';

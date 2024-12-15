@@ -7,17 +7,20 @@ import {
   validateNumKeys,
 } from '../utils/generateKeyPairs';
 
- function validateKeyPair({
-  rawPublicKey,
-  rawPrivateKey,
-  publicKeyJwk,
-  privateKeyJwk,
-}: {
-  rawPublicKey: Uint8Array;
-  rawPrivateKey: Uint8Array;
-  publicKeyJwk: JWKKeys;
-  privateKeyJwk: JWKKeys;
-}, crv: string ) {
+function validateKeyPair(
+  {
+    rawPublicKey,
+    rawPrivateKey,
+    publicKeyJwk,
+    privateKeyJwk,
+  }: {
+    rawPublicKey: Uint8Array;
+    rawPrivateKey: Uint8Array;
+    publicKeyJwk: JWKKeys;
+    privateKeyJwk: JWKKeys;
+  },
+  crv: string,
+) {
   // Validate raw keys
   expect(rawPublicKey).toBeInstanceOf(Uint8Array);
   expect(rawPrivateKey).toBeInstanceOf(Uint8Array);
@@ -37,17 +40,21 @@ import {
   });
 }
 
-function validateKeyPair2({
-  rawPublicKey,
-  rawPrivateKey,
-  publicKeyJwk,
-  privateKeyJwk,
-}: {
-  rawPublicKey: Uint8Array;
-  rawPrivateKey: Uint8Array;
-  publicKeyJwk: JWKKeys;
-  privateKeyJwk: PrivateKeyJWK;
-}, crv: string, keyId: string) {
+function validateKeyPair2(
+  {
+    rawPublicKey,
+    rawPrivateKey,
+    publicKeyJwk,
+    privateKeyJwk,
+  }: {
+    rawPublicKey: Uint8Array;
+    rawPrivateKey: Uint8Array;
+    publicKeyJwk: JWKKeys;
+    privateKeyJwk: PrivateKeyJWK;
+  },
+  crv: string,
+  keyId: string,
+) {
   // Validate raw keys
   expect(rawPublicKey).toBeInstanceOf(Uint8Array);
   expect(rawPrivateKey).toBeInstanceOf(Uint8Array);
@@ -113,15 +120,21 @@ describe('generateKeyPairsX25519', () => {
 
 describe('validateNumKeys', () => {
   test('throws error for negative numbers', () => {
-    expect(() => validateNumKeys(-1)).toThrow('Invalid input: numKeys must be a positive integer.');
+    expect(() => validateNumKeys(-1)).toThrow(
+      'Invalid input: numKeys must be a positive integer.',
+    );
   });
 
   test('throws error for zero', () => {
-    expect(() => validateNumKeys(0)).toThrow('Invalid input: numKeys must be a positive integer.');
+    expect(() => validateNumKeys(0)).toThrow(
+      'Invalid input: numKeys must be a positive integer.',
+    );
   });
 
   test('throws error for non-integer values', () => {
-    expect(() => validateNumKeys(1.5)).toThrow('Invalid input: numKeys must be a positive integer.');
+    expect(() => validateNumKeys(1.5)).toThrow(
+      'Invalid input: numKeys must be a positive integer.',
+    );
   });
 
   test('does not throw error for positive integers', () => {

@@ -4,8 +4,9 @@ import {
 } from '@adorsys-gis/status-service';
 import { EventEmitter } from 'eventemitter3';
 import {
-  DidMethodFactory, DIDMethodName,
-  PeerGenerationMethod
+  DidMethodFactory,
+  DIDMethodName,
+  PeerGenerationMethod,
 } from '../did-methods/DidMethodFactory';
 import { DidIdentity, DIDKeyPair } from '../did-methods/IDidMethod';
 import { DIDIdentityService } from '../lib/DIDIdentityService';
