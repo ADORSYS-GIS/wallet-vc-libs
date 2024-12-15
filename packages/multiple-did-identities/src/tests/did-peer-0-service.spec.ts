@@ -1,16 +1,16 @@
-import { EventEmitter } from 'eventemitter3';
-import { DIDIdentityService } from '../lib/DIDIdentityService';
-import { DidMethodFactory } from '../did-methods/DidMethodFactory';
 import {
   ServiceResponse,
   ServiceResponseStatus,
 } from '@adorsys-gis/status-service';
-import { DidEventChannel } from '../utils/DidEventChannel';
+import { EventEmitter } from 'eventemitter3';
 import {
-  DIDMethodName,
-  PeerGenerationMethod,
+  DidMethodFactory, DIDMethodName,
+  PeerGenerationMethod
 } from '../did-methods/DidMethodFactory';
 import { DidIdentity, DIDKeyPair } from '../did-methods/IDidMethod';
+import { DIDIdentityService } from '../lib/DIDIdentityService';
+import { DidEventChannel } from '../utils/DidEventChannel';
+import { mockDidKeyPair } from './testFixtures';
 
 describe('DIDIdentityService', () => {
   let didIdentityService: DIDIdentityService;
@@ -54,21 +54,9 @@ describe('DIDIdentityService', () => {
   it('should create a DID identity with did:peer:0 and emit the event', async () => {
     const method = DIDMethodName.Peer;
     const method_type = PeerGenerationMethod.Method0;
+    const did = 'did:peer:0z1234567890';
 
-    const mockDIDPeer0: DIDKeyPair = {
-      did: 'did:peer:0z1234567890',
-      privateKey: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey',
-        d: 'mockPrivateKey',
-      },
-      publicKey: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey',
-      },
-    };
+    const mockDIDPeer0 = mockDidKeyPair(did);
 
     jest
       .spyOn(DidMethodFactory, 'generateDid')
@@ -94,20 +82,7 @@ describe('DIDIdentityService', () => {
     const method = DIDMethodName.Peer;
     const methodType = PeerGenerationMethod.Method0;
 
-    const mockDIDPeer0 = {
-      did,
-      privateKey: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey',
-        d: 'mockPrivateKey',
-      },
-      publicKey: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey',
-      },
-    };
+    const mockDIDPeer0 = mockDidKeyPair(did);
 
     jest
       .spyOn(DidMethodFactory, 'generateDid')
@@ -140,20 +115,7 @@ describe('DIDIdentityService', () => {
     const method = DIDMethodName.Peer;
     const method_type = PeerGenerationMethod.Method0;
 
-    const mockDIDPeer0 = {
-      did,
-      privateKey: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey',
-        d: 'mockPrivateKey',
-      },
-      publicKey: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey',
-      },
-    };
+    const mockDIDPeer0 = mockDidKeyPair(did);
 
     jest
       .spyOn(DidMethodFactory, 'generateDid')
@@ -189,20 +151,7 @@ describe('DIDIdentityService', () => {
     const method = DIDMethodName.Peer;
     const methodType = PeerGenerationMethod.Method0;
 
-    const mockDIDPeer0 = {
-      did,
-      privateKey: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey',
-        d: 'mockPrivateKey',
-      },
-      publicKey: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey',
-      },
-    };
+    const mockDIDPeer0 = mockDidKeyPair(did);
 
     jest
       .spyOn(DidMethodFactory, 'generateDid')
