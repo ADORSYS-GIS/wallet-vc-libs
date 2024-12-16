@@ -180,6 +180,10 @@ export class DidPeerMethod implements IDidMethod {
     const finalEncodedServices = encodedServices.join('');
     const did = `did:peer:2${concatPurposeKeys}${finalEncodedServices}`;
 
+    // Update the privateKeyJwk.id with the DID
+    KeyV.privateKeyJwk.id = `${did}#key-1`;
+    KeyE.privateKeyJwk.id = `${did}#key-2`;
+
     // Define verification methods
     const verificationMethod: VerificationMethod2[] = [
       {
@@ -204,8 +208,8 @@ export class DidPeerMethod implements IDidMethod {
       ],
       id: did,
       verificationMethod: verificationMethod,
-      authentication: [`#key-1`],
-      keyAgreement: [`#key-2`],
+      authentication: ['#key-1'],
+      keyAgreement: ['#key-2'],
       service: service,
     };
 
