@@ -83,7 +83,7 @@ export const mockDIDPeer2Fixture: DIDKeyPairMethod2 = {
     ],
   },
   privateKeyV: {
-    id: `#key-1`,
+    id: 'did:peer:2z1234567890#key-1',
     type: 'JsonWebKey2020',
     privateKeyJwk: {
       kty: 'OKP',
@@ -98,7 +98,7 @@ export const mockDIDPeer2Fixture: DIDKeyPairMethod2 = {
     x: 'mockPublicKeyV',
   },
   privateKeyE: {
-    id: `#key-2`,
+    id: 'did:peer:2z1234567890#key-2',
     type: 'JsonWebKey2020',
     privateKeyJwk: {
       kty: 'OKP',
@@ -151,7 +151,7 @@ export const mockDIDPeer3Fixture: DIDKeyPairMethod2 = {
     ],
   },
   privateKeyV: {
-    id: `#key-1`,
+    id: 'did:peer:3z1234567890#key-1',
     type: 'JsonWebKey2020',
     privateKeyJwk: {
       kty: 'OKP',
@@ -166,7 +166,7 @@ export const mockDIDPeer3Fixture: DIDKeyPairMethod2 = {
     x: 'mockPublicKeyV',
   },
   privateKeyE: {
-    id: `#key-2`,
+    id: 'did:peer:3z1234567890#key-2',
     type: 'JsonWebKey2020',
     privateKeyJwk: {
       kty: 'OKP',

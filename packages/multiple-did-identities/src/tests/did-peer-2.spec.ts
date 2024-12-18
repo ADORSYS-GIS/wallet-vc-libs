@@ -11,6 +11,9 @@ describe('DidPeerMethod', () => {
   test('should generate a valid DIDKeyPairMethod2', async () => {
     const result: DIDKeyPairMethod2 = await didPeerMethod.generateMethod2();
 
+    console.log(JSON.stringify(result.privateKeyV));
+    console.log(JSON.stringify(result.privateKeyE));
+
     // Assertions
     expect(result).toHaveProperty('did');
     expect(result).toHaveProperty('didDocument');
@@ -45,6 +48,10 @@ describe('DidPeerMethod', () => {
     } else {
       fail('Services should be defined.');
     }
+
+    // Check that privateKeyJwk.id is set correctly
+    expect(result.privateKeyV.id).toBe(`${result.did}#key-1`);
+    expect(result.privateKeyE.id).toBe(`${result.did}#key-2`);
   });
 
   it('should generate a valid DIDKeyPairMethod2 with mediator routing keys', async () => {
@@ -91,5 +98,9 @@ describe('DidPeerMethod', () => {
     } else {
       fail('Services should be defined.');
     }
+
+    // Check that privateKeyJwk.id is set correctly
+    expect(result.privateKeyV.id).toBe(`${result.did}#key-1`);
+    expect(result.privateKeyE.id).toBe(`${result.did}#key-2`);
   });
 });
