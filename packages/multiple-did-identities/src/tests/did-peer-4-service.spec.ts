@@ -1,20 +1,17 @@
-import { EventEmitter } from 'eventemitter3';
-import { DIDIdentityService } from '../lib/DIDIdentityService';
-import { DidMethodFactory } from '../did-methods/DidMethodFactory';
 import {
   ServiceResponse,
   ServiceResponseStatus,
 } from '@adorsys-gis/status-service';
-import { DidEventChannel } from '../utils/DidEventChannel';
+import { EventEmitter } from 'eventemitter3';
 import {
+  DidMethodFactory,
   DIDMethodName,
   PeerGenerationMethod,
 } from '../did-methods/DidMethodFactory';
-import {
-  DidIdentity,
-  DIDKeyPair,
-  DIDKeyPairMethod4,
-} from '../did-methods/IDidMethod';
+import { DidIdentity, DIDKeyPair } from '../did-methods/IDidMethod';
+import { DIDIdentityService } from '../lib/DIDIdentityService';
+import { DidEventChannel } from '../utils/DidEventChannel';
+import { mockDIDPeer4Fixture } from './testFixtures';
 
 describe('DIDIdentityService', () => {
   let didIdentityService: DIDIdentityService;
@@ -60,55 +57,7 @@ describe('DIDIdentityService', () => {
     const method_type = PeerGenerationMethod.Method4;
 
     // Mock data representing the structure returned by DID Peer Method 4
-    const mockDIDPeer4: DIDKeyPairMethod4 = {
-      did: 'did:peer:4z123hashedDoc:encodedDoc',
-      didShort: 'did:peer:4z123hashedDoc',
-      didDocument: {
-        '@context': [
-          'https://www.w3.org/ns/did/v1',
-          'https://w3id.org/security/suites/ed25519-2018/v1',
-        ],
-        verificationMethod: [
-          {
-            id: '#key-1',
-            controller: '#didcontroller',
-            type: 'Ed25519VerificationKey2018',
-            publicKeyMultibase: 'z...publicKeyMultibaseKey1',
-          },
-          {
-            id: '#key-2',
-            controller: '#didcontroller',
-            type: 'Ed25519VerificationKey2018',
-            publicKeyMultibase: 'z...publicKeyMultibaseKey2',
-          },
-        ],
-        service: [
-          // Mock services here if required based on your structure
-        ],
-      },
-      privateKey1: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        d: 'mockPrivateKey1',
-        x: 'mockPublicKey1',
-      },
-      publicKey1: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey1',
-      },
-      privateKey2: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        d: 'mockPrivateKey2',
-        x: 'mockPublicKey2',
-      },
-      publicKey2: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey2',
-      },
-    };
+    const mockDIDPeer4 = mockDIDPeer4Fixture;
 
     jest
       .spyOn(DidMethodFactory, 'generateDid')
@@ -134,55 +83,7 @@ describe('DIDIdentityService', () => {
     const method_type = PeerGenerationMethod.Method4;
 
     // Mock data representing the structure returned by DID Peer Method 4
-    const mockDIDPeer4: DIDKeyPairMethod4 = {
-      did: 'did:peer:4z123hashedDoc:encodedDoc',
-      didShort: 'did:peer:4z123hashedDoc',
-      didDocument: {
-        '@context': [
-          'https://www.w3.org/ns/did/v1',
-          'https://w3id.org/security/suites/ed25519-2018/v1',
-        ],
-        verificationMethod: [
-          {
-            id: '#key-1',
-            controller: '#didcontroller',
-            type: 'Ed25519VerificationKey2018',
-            publicKeyMultibase: 'z...publicKeyMultibaseKey1',
-          },
-          {
-            id: '#key-2',
-            controller: '#didcontroller',
-            type: 'Ed25519VerificationKey2018',
-            publicKeyMultibase: 'z...publicKeyMultibaseKey2',
-          },
-        ],
-        service: [
-          // Mock services here if required based on your structure
-        ],
-      },
-      privateKey1: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        d: 'mockPrivateKey1',
-        x: 'mockPublicKey1',
-      },
-      publicKey1: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey1',
-      },
-      privateKey2: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        d: 'mockPrivateKey2',
-        x: 'mockPublicKey2',
-      },
-      publicKey2: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey2',
-      },
-    };
+    const mockDIDPeer4 = mockDIDPeer4Fixture;
 
     jest
       .spyOn(DidMethodFactory, 'generateDid')
@@ -214,55 +115,7 @@ describe('DIDIdentityService', () => {
     const method_type = PeerGenerationMethod.Method4;
 
     // Mock data representing the structure returned by DID Peer Method 4
-    const mockDIDPeer4: DIDKeyPairMethod4 = {
-      did: 'did:peer:4z123hashedDoc:encodedDoc',
-      didShort: 'did:peer:4z123hashedDoc',
-      didDocument: {
-        '@context': [
-          'https://www.w3.org/ns/did/v1',
-          'https://w3id.org/security/suites/ed25519-2018/v1',
-        ],
-        verificationMethod: [
-          {
-            id: '#key-1',
-            controller: '#didcontroller',
-            type: 'Ed25519VerificationKey2018',
-            publicKeyMultibase: 'z...publicKeyMultibaseKey1',
-          },
-          {
-            id: '#key-2',
-            controller: '#didcontroller',
-            type: 'Ed25519VerificationKey2018',
-            publicKeyMultibase: 'z...publicKeyMultibaseKey2',
-          },
-        ],
-        service: [
-          // Mock services here if required based on your structure
-        ],
-      },
-      privateKey1: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        d: 'mockPrivateKey1',
-        x: 'mockPublicKey1',
-      },
-      publicKey1: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey1',
-      },
-      privateKey2: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        d: 'mockPrivateKey2',
-        x: 'mockPublicKey2',
-      },
-      publicKey2: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey2',
-      },
-    };
+    const mockDIDPeer4 = mockDIDPeer4Fixture;
 
     jest
       .spyOn(DidMethodFactory, 'generateDid')
@@ -297,55 +150,7 @@ describe('DIDIdentityService', () => {
     const method_type = PeerGenerationMethod.Method4;
 
     // Mock data representing the structure returned by DID Peer Method 4
-    const mockDIDPeer4: DIDKeyPairMethod4 = {
-      did: 'did:peer:4z123hashedDoc:encodedDoc',
-      didShort: 'did:peer:4z123hashedDoc',
-      didDocument: {
-        '@context': [
-          'https://www.w3.org/ns/did/v1',
-          'https://w3id.org/security/suites/ed25519-2018/v1',
-        ],
-        verificationMethod: [
-          {
-            id: '#key-1',
-            controller: '#didcontroller',
-            type: 'Ed25519VerificationKey2018',
-            publicKeyMultibase: 'z...publicKeyMultibaseKey1',
-          },
-          {
-            id: '#key-2',
-            controller: '#didcontroller',
-            type: 'Ed25519VerificationKey2018',
-            publicKeyMultibase: 'z...publicKeyMultibaseKey2',
-          },
-        ],
-        service: [
-          // Mock services here if required based on your structure
-        ],
-      },
-      privateKey1: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        d: 'mockPrivateKey1',
-        x: 'mockPublicKey1',
-      },
-      publicKey1: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey1',
-      },
-      privateKey2: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        d: 'mockPrivateKey2',
-        x: 'mockPublicKey2',
-      },
-      publicKey2: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey2',
-      },
-    };
+    const mockDIDPeer4 = mockDIDPeer4Fixture;
 
     jest
       .spyOn(DidMethodFactory, 'generateDid')

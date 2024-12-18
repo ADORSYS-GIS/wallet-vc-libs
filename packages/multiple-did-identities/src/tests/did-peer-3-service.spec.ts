@@ -1,16 +1,17 @@
-import { EventEmitter } from 'eventemitter3';
-import { DIDIdentityService } from '../lib/DIDIdentityService';
-import { DidMethodFactory } from '../did-methods/DidMethodFactory';
 import {
   ServiceResponse,
   ServiceResponseStatus,
 } from '@adorsys-gis/status-service';
-import { DidEventChannel } from '../utils/DidEventChannel';
+import { EventEmitter } from 'eventemitter3';
 import {
+  DidMethodFactory,
   DIDMethodName,
   PeerGenerationMethod,
 } from '../did-methods/DidMethodFactory';
 import { DidIdentity, DIDKeyPair } from '../did-methods/IDidMethod';
+import { DIDIdentityService } from '../lib/DIDIdentityService';
+import { DidEventChannel } from '../utils/DidEventChannel';
+import { mockDIDPeer3Fixture } from './testFixtures';
 
 describe('DIDIdentityService', () => {
   let didIdentityService: DIDIdentityService;
@@ -51,76 +52,47 @@ describe('DIDIdentityService', () => {
     });
   };
 
-  it('should create a DID identity with did:peer:0 and emit the event', async () => {
+  it('should create a DID identity with did:peer:3 and emit the event', async () => {
     const method = DIDMethodName.Peer;
-    const method_type = PeerGenerationMethod.Method0;
+    const method_type = PeerGenerationMethod.Method3;
 
-    const mockDIDPeer0: DIDKeyPair = {
-      did: 'did:peer:0z1234567890',
-      privateKey: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey',
-        d: 'mockPrivateKey',
-      },
-      publicKey: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey',
-      },
-    };
+    const mockDIDPeer3 = mockDIDPeer3Fixture;
 
     jest
       .spyOn(DidMethodFactory, 'generateDid')
-      .mockResolvedValueOnce(mockDIDPeer0);
+      .mockResolvedValueOnce(mockDIDPeer3);
 
     const createEvent = waitForEvent(DidEventChannel.CreateDidIdentity);
     await didIdentityService.createDidIdentity(method, method_type);
-
     const createdDid = await createEvent;
 
     expect(createdDid).toEqual(
       expect.objectContaining({
         status: ServiceResponseStatus.Success,
         payload: expect.objectContaining({
-          did: mockDIDPeer0.did,
+          did: mockDIDPeer3.did,
         }),
       }),
     );
   });
 
-  it('should delete a DID identity with did:peer:0 and emit the event', async () => {
-    const did = 'did:peer:0z1234567890';
+  it('should delete a DID identity with did:peer:3 and emit the event', async () => {
     const method = DIDMethodName.Peer;
-    const methodType = PeerGenerationMethod.Method0;
+    const method_type = PeerGenerationMethod.Method3;
 
-    const mockDIDPeer0 = {
-      did,
-      privateKey: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey',
-        d: 'mockPrivateKey',
-      },
-      publicKey: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey',
-      },
-    };
+    const mockDIDPeer3 = mockDIDPeer3Fixture;
 
     jest
       .spyOn(DidMethodFactory, 'generateDid')
-      .mockResolvedValueOnce(mockDIDPeer0);
+      .mockResolvedValueOnce(mockDIDPeer3);
 
-    // Create the DID
     const createEvent = waitForEvent(DidEventChannel.CreateDidIdentity);
-    await didIdentityService.createDidIdentity(method, methodType);
+    await didIdentityService.createDidIdentity(method, method_type);
     await createEvent;
 
     // Delete the DID
     const deleteEvent = waitForEvent(DidEventChannel.DeleteDidIdentity);
-    await didIdentityService.deleteDidIdentity(did);
+    await didIdentityService.deleteDidIdentity(mockDIDPeer3.did);
 
     const response = await deleteEvent;
 
@@ -128,48 +100,34 @@ describe('DIDIdentityService', () => {
       expect.objectContaining({
         status: ServiceResponseStatus.Success,
         payload: expect.objectContaining({
-          deletedDid: did,
-          message: `DID identity with ID ${did} was successfully deleted.`,
+          deletedDid: mockDIDPeer3.did,
+          message: `DID identity with ID ${mockDIDPeer3.did} was successfully deleted.`,
         }),
       }),
     );
   });
 
-  it('should find a DID identity with did:peer:0 and emit the event', async () => {
-    const did = 'did:peer:0z1234567890';
+  it('should find a DID identity with did:peer:3 and emit the event', async () => {
     const method = DIDMethodName.Peer;
-    const method_type = PeerGenerationMethod.Method0;
+    const method_type = PeerGenerationMethod.Method3;
 
-    const mockDIDPeer0 = {
-      did,
-      privateKey: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey',
-        d: 'mockPrivateKey',
-      },
-      publicKey: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey',
-      },
-    };
+    const mockDIDPeer3 = mockDIDPeer3Fixture;
 
     jest
       .spyOn(DidMethodFactory, 'generateDid')
-      .mockResolvedValueOnce(mockDIDPeer0);
+      .mockResolvedValueOnce(mockDIDPeer3);
 
     const createEvent = waitForEvent(DidEventChannel.CreateDidIdentity);
     await didIdentityService.createDidIdentity(method, method_type);
     await createEvent;
 
     const findEvent = waitForEvent(DidEventChannel.GetSingleDidIdentity);
-    await didIdentityService.findDidIdentity(did);
+    await didIdentityService.findDidIdentity(mockDIDPeer3.did);
 
     const response = await findEvent;
 
     const expectedPayload = {
-      did,
+      did: mockDIDPeer3.did,
       method,
       method_type,
       createdAt: expect.any(Number),
@@ -184,32 +142,18 @@ describe('DIDIdentityService', () => {
   });
 
   it('should find all DID identities and emit the event', async () => {
-    // MOCK DID PEER:0
-    const did = 'did:peer:0z1234567890';
+    // MOCK DID PEER:3
     const method = DIDMethodName.Peer;
-    const methodType = PeerGenerationMethod.Method0;
+    const method_type = PeerGenerationMethod.Method3;
 
-    const mockDIDPeer0 = {
-      did,
-      privateKey: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey',
-        d: 'mockPrivateKey',
-      },
-      publicKey: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey',
-      },
-    };
+    const mockDIDPeer3 = mockDIDPeer3Fixture;
 
     jest
       .spyOn(DidMethodFactory, 'generateDid')
-      .mockResolvedValueOnce(mockDIDPeer0);
+      .mockResolvedValueOnce(mockDIDPeer3);
 
     const createEvent = waitForEvent(DidEventChannel.CreateDidIdentity);
-    await didIdentityService.createDidIdentity(method, methodType);
+    await didIdentityService.createDidIdentity(method, method_type);
     await createEvent;
 
     // MOCK DID KEY
@@ -239,9 +183,9 @@ describe('DIDIdentityService', () => {
 
     const didRecords = [
       {
-        did: 'did:peer:0z1234567890',
+        did: 'did:peer:3z1234567890',
         method: DIDMethodName.Peer,
-        method_type: methodType,
+        method_type: method_type,
         createdAt: expect.any(Number),
       },
       {

@@ -1,20 +1,17 @@
-import { EventEmitter } from 'eventemitter3';
-import { DIDIdentityService } from '../lib/DIDIdentityService';
-import { DidMethodFactory } from '../did-methods/DidMethodFactory';
 import {
   ServiceResponse,
   ServiceResponseStatus,
 } from '@adorsys-gis/status-service';
-import { DidEventChannel } from '../utils/DidEventChannel';
+import { EventEmitter } from 'eventemitter3';
 import {
+  DidMethodFactory,
   DIDMethodName,
   PeerGenerationMethod,
 } from '../did-methods/DidMethodFactory';
-import {
-  DidIdentity,
-  DIDKeyPair,
-  DIDKeyPairMethod1,
-} from '../did-methods/IDidMethod';
+import { DidIdentity, DIDKeyPair } from '../did-methods/IDidMethod';
+import { DIDIdentityService } from '../lib/DIDIdentityService';
+import { DidEventChannel } from '../utils/DidEventChannel';
+import { createMockDIDPeer1 } from './testFixtures';
 
 describe('DIDIdentityService', () => {
   let didIdentityService: DIDIdentityService;
@@ -58,32 +55,9 @@ describe('DIDIdentityService', () => {
   it('should create a DID identity with did:peer:1 and emit the event', async () => {
     const method = DIDMethodName.Peer;
     const method_type = PeerGenerationMethod.Method1;
+    const did = 'did:peer:1z1234567890';
 
-    const mockDIDPeer1: DIDKeyPairMethod1 = {
-      did: 'did:peer:1z1234567890',
-      privateKey: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey',
-        d: 'mockPrivateKey',
-      },
-      publicKey: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey',
-      },
-      genesisDocument: {
-        '@context': ['https://www.w3.org/ns/did/v1'],
-        verificationMethod: [
-          {
-            id: '#id',
-            controller: '#id',
-            type: 'Ed25519VerificationKey2018',
-            publicKeyMultibase: 'ziEudjdi38RG34SWr87yrhfiweFDjFoHiR',
-          },
-        ],
-      },
-    };
+    const mockDIDPeer1 = createMockDIDPeer1(did);
 
     jest
       .spyOn(DidMethodFactory, 'generateDid')
@@ -107,32 +81,9 @@ describe('DIDIdentityService', () => {
   it('should delete a DID identity with did:peer:1 and emit the event', async () => {
     const method = DIDMethodName.Peer;
     const method_type = PeerGenerationMethod.Method1;
+    const did = 'did:peer:1z1234567890';
 
-    const mockDIDPeer1: DIDKeyPairMethod1 = {
-      did: 'did:peer:1z1234567890',
-      privateKey: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey',
-        d: 'mockPrivateKey',
-      },
-      publicKey: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey',
-      },
-      genesisDocument: {
-        '@context': ['https://www.w3.org/ns/did/v1'],
-        verificationMethod: [
-          {
-            id: '#id',
-            controller: '#id',
-            type: 'Ed25519VerificationKey2018',
-            publicKeyMultibase: 'ziEudjdi38RG34SWr87yrhfiweFDjFoHiR',
-          },
-        ],
-      },
-    };
+    const mockDIDPeer1 = createMockDIDPeer1(did);
 
     jest
       .spyOn(DidMethodFactory, 'generateDid')
@@ -163,32 +114,9 @@ describe('DIDIdentityService', () => {
     const method = DIDMethodName.Peer;
     const method_type = PeerGenerationMethod.Method1;
     const didPeer1 = 'did:peer:1z1234567890';
+    const did = 'did:peer:1z1234567890';
 
-    const mockDIDPeer1: DIDKeyPairMethod1 = {
-      did: didPeer1,
-      privateKey: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey',
-        d: 'mockPrivateKey',
-      },
-      publicKey: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey',
-      },
-      genesisDocument: {
-        '@context': ['https://www.w3.org/ns/did/v1'],
-        verificationMethod: [
-          {
-            id: '#id',
-            controller: '#id',
-            type: 'Ed25519VerificationKey2018',
-            publicKeyMultibase: 'ziEudjdi38RG34SWr87yrhfiweFDjFoHiR',
-          },
-        ],
-      },
-    };
+    const mockDIDPeer1 = createMockDIDPeer1(did);
 
     jest
       .spyOn(DidMethodFactory, 'generateDid')
@@ -222,33 +150,9 @@ describe('DIDIdentityService', () => {
     // MOCK DID PEER:1
     const method = DIDMethodName.Peer;
     const method_type = PeerGenerationMethod.Method1;
-    const didPeer1 = 'did:peer:1z1234567890';
+    const did = 'did:peer:1z1234567890';
 
-    const mockDIDPeer1: DIDKeyPairMethod1 = {
-      did: didPeer1,
-      privateKey: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey',
-        d: 'mockPrivateKey',
-      },
-      publicKey: {
-        kty: 'OKP',
-        crv: 'Ed25519',
-        x: 'mockPublicKey',
-      },
-      genesisDocument: {
-        '@context': ['https://www.w3.org/ns/did/v1'],
-        verificationMethod: [
-          {
-            id: '#id',
-            controller: '#id',
-            type: 'Ed25519VerificationKey2018',
-            publicKeyMultibase: 'ziEudjdi38RG34SWr87yrhfiweFDjFoHiR',
-          },
-        ],
-      },
-    };
+    const mockDIDPeer1 = createMockDIDPeer1(did);
 
     jest
       .spyOn(DidMethodFactory, 'generateDid')
