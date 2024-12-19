@@ -25,4 +25,14 @@ interface OutOfBandInvitation {
   attachments?: Array<unknown>;
 }
 
+export enum MessageType {
+  RoutingAccept = 'https://mediator.rootsid.cloud',
+  MediationRequest = 'https://didcomm.org/coordinate-mediation/2.0/mediate-request',
+  KeylistUpdate = 'https://didcomm.org/coordinate-mediation/2.0/keylist-update',
+}
+
+export enum MessageTyp {
+  Didcomm = 'application/didcomm-plain+json',
+}
+
 export { DIDCommMessage, OutOfBandInvitation };
