@@ -26,7 +26,6 @@ interface OutOfBandInvitation {
 }
 
 export enum MessageType {
-  RoutingAccept = 'https://mediator.rootsid.cloud',
   MediationRequest = 'https://didcomm.org/coordinate-mediation/2.0/mediate-request',
   KeylistUpdate = 'https://didcomm.org/coordinate-mediation/2.0/keylist-update',
 }

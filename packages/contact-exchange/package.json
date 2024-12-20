@@ -22,7 +22,6 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@adorsys-gis/multiple-did-identities": "file:../packages",
     "axios": "^1.7.7",
     "did-resolver-lib": "https://gitpkg.vercel.app/adorsys/didcomm-messaging-clients-utilities/libs/did-resolver-lib?main",
     "didcomm-node": "^0.4.1"

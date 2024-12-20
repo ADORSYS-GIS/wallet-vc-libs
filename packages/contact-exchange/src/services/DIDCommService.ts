@@ -3,6 +3,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { MessageTyp, MessageType } from './DIDCommOOBInvitation';
 import { DidPeerMethod } from '@adorsys-gis/multiple-did-identities/src/did-methods/DidPeerMethod';
 import { PeerDIDResolver } from 'did-resolver-lib';
+import axios from 'axios';
 
 class DidcommSecretsResolver implements SecretsResolver {
   private knownSecrets: Secret[];
@@ -20,10 +21,6 @@ class DidcommSecretsResolver implements SecretsResolver {
       this.knownSecrets.some((secret) => secret.id === id),
     );
   }
-}
-
-function createSecretsResolver(knownSecrets: Secret[]): DidcommSecretsResolver {
-  return new DidcommSecretsResolver(knownSecrets);
 }
 
 export interface PrivateKeyJWK {
@@ -65,7 +62,6 @@ export async function processMediatorOOB(oob: string) {
     }
 
     const didTo = decodedOob.from;
-
     const didPeerMethod = new DidPeerMethod();
     const didPeer = await didPeerMethod.generateMethod2();
 
@@ -79,7 +75,7 @@ export async function processMediatorOOB(oob: string) {
 
     const secrets: PrivateKeyJWK[] = [didPeer.privateKeyE, didPeer.privateKeyV];
     const updatedSecrets = prependDidToSecretIds(secrets, didPeer.did);
-    const secretsResolver = createSecretsResolver(updatedSecrets);
+    const secretsResolver = new DidcommSecretsResolver(updatedSecrets);
 
     const hardcodedValue =
       'SeyJ0IjoiZG0iLCJzIjp7InVyaSI6Imh0dHA6Ly9leGFtcGxlLmNvbS9kaWRjb21tIiwiYWNjZXB0IjpbImRpZGNvbW0vdjIiXSwicm91dGluZ0tleXMiOlsiZGlkOmV4YW1wbGU6MTIzNDU2Nzg5YWJjZGVmZ2hpI2tleS0xIl19fQ';
@@ -91,7 +87,7 @@ export async function processMediatorOOB(oob: string) {
 
     const resolver = new PeerDIDResolver();
 
-    await mediationRequest.pack_encrypted(
+    const packedMediationRequest = await mediationRequest.pack_encrypted(
       updatedDidTo,
       didPeer.did,
       didPeer.did,
@@ -99,6 +95,28 @@ export async function processMediatorOOB(oob: string) {
       secretsResolver,
       { forward: false },
     );
+
+    const mediatorEndpoint = decodedOob.serviceEndpoint;
+    if (!mediatorEndpoint) {
+      throw new Error('Mediator endpoint is missing from the OOB invitation.');
+    }
+
+    const response = await axios.post(
+      mediatorEndpoint,
+      packedMediationRequest,
+      {
+        params: {
+          message: packedMediationRequest.toString(),
+        },
+        headers: {
+          'Content-Type': 'application/didcomm-encrypted+json',
+        },
+      },
+    );
+
+    if (response.status !== 200) {
+      throw new Error('Mediation request failed.');
+    }
 
     const keylistUpdate = new Message({
       id: uuidv4(),
@@ -114,7 +132,7 @@ export async function processMediatorOOB(oob: string) {
       },
     });
 
-    await keylistUpdate.pack_encrypted(
+    const packedKeylistUpdate = await keylistUpdate.pack_encrypted(
       updatedDidTo,
       didPeer.did,
       didPeer.did,
@@ -123,29 +141,32 @@ export async function processMediatorOOB(oob: string) {
       { forward: false },
     );
 
-    // Send mediation request (commented out to prevent execution)
-    // const mediationResponse = await axios.post(oobUrl, packedMediationRequest, {
-    //   headers: { 'Content-Type': 'application/didcomm-encrypted+json' },
-    // });
-    // const mediatorResponse = await Message.unpack(
-    //   mediationResponse.data,
+    const keylistUpdateResponse = await axios.post(
+      mediatorEndpoint,
+      packedKeylistUpdate,
+      {
+        params: {
+          message: packedKeylistUpdate.toString(),
+        },
+        headers: {
+          'Content-Type': 'application/didcomm-encrypted+json',
+        },
+      },
+    );
+
+    if (keylistUpdateResponse.status !== 200) {
+      throw new Error('Keylist update request failed.');
+    }
+
+    // const unpackedKeylistUpdate = await keylistUpdate.unpack(
+    //   keylistUpdateResponse.data,
+    //   didPeer.did,
     //   resolver,
     //   secretsResolver,
-    //   {},
     // );
+    // console.log('Unpacked Keylist Update:', unpackedKeylistUpdate);
 
-    // Send Keylist Update (commented out to prevent execution)
-    // const keylistResponse = await axios.post(oobUrl, packedKeylistUpdate, {
-    //   headers: { 'Content-Type': 'application/didcomm-encrypted+json' },
-    // });
-    // const unpackedKeylistResponse = await Message.unpack(
-    //   keylistResponse.data,
-    //   resolver,
-    //   secretsResolver,
-    //   {},
-    // );
-
-    // return unpackedKeylistResponse;
+    return keylistUpdateResponse.data;
   } catch (error: unknown) {
     if (error instanceof Error) {
       throw new Error(`Error processing OOB: ${error.message}`);
