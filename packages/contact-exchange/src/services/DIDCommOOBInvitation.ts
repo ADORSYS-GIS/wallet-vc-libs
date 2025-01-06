@@ -26,7 +26,7 @@ interface OutOfBandInvitation {
 }
 
 export enum MessageType {
-  MediationRequest = 'https://didcomm.org/coordinate-mediation/2.0/mediate-request',
+  MediationRequest = "https://didcomm.org/coordinate-mediation/3.0/mediate-request",
   KeylistUpdate = 'https://didcomm.org/coordinate-mediation/2.0/keylist-update',
 }
 

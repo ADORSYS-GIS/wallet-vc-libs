@@ -13,14 +13,21 @@ class DidcommSecretsResolver implements SecretsResolver {
   }
 
   async get_secret(secretId: string): Promise<Secret | null> {
-    return this.knownSecrets.find((secret) => secret.id === secretId) || null;
+    console.log(`get_secret called with secretId: ${secretId}`);
+    const secret = this.knownSecrets.find((secret) => secret.id === secretId) || null;
+    console.log(`Found secret: ${JSON.stringify(secret, null, 2)}`);
+    return secret;
   }
-
+  
   async find_secrets(secretIds: string[]): Promise<string[]> {
-    return secretIds.filter((id) =>
+    console.log(`find_secrets called with secretIds: ${JSON.stringify(secretIds, null, 2)}`);
+    const foundSecrets = secretIds.filter((id) =>
       this.knownSecrets.some((secret) => secret.id === id),
     );
+    console.log(`Found secrets: ${JSON.stringify(foundSecrets, null, 2)}`);
+    return foundSecrets;
   }
+  
 }
 
 export interface PrivateKeyJWK {
@@ -35,18 +42,17 @@ export interface PrivateKeyJWK {
   };
 }
 
-function prependDidToSecretIds(
-  secrets: PrivateKeyJWK[],
-  did: string,
-): PrivateKeyJWK[] {
-  return secrets.map((secret) => ({
+function prependDidToSecretIds(secrets: PrivateKeyJWK[], did: string): PrivateKeyJWK[] {
+  return secrets.map(secret => ({
     ...secret,
-    id: `${did}${secret.id.replace(did, '')}`,
+    id: `${did}${secret.id.split(did).pop()}`
   }));
 }
 
 export async function processMediatorOOB(oob: string) {
   try {
+    console.log('Processing OOB:', oob);
+
     const oobParts = oob.split('=');
     if (oobParts.length < 2) {
       throw new Error('Invalid OOB format. Missing encoded payload.');
@@ -56,122 +62,124 @@ export async function processMediatorOOB(oob: string) {
     const decodedOob = JSON.parse(
       Buffer.from(oobUrl, 'base64url').toString('utf-8'),
     );
+    console.log('Decoded OOB:', JSON.stringify(decodedOob, null, 2));
 
     if (!decodedOob.from) {
       throw new Error('Invalid OOB content. Missing "from" field.');
     }
 
     const didTo = decodedOob.from;
+    console.log('Decoded DID:', didTo);
+
     const didPeerMethod = new DidPeerMethod();
     const didPeer = await didPeerMethod.generateMethod2();
+    console.log(
+      'Generated DID:',
+      JSON.stringify(didPeer, null, 2),
+      didPeer.did,
+    );
 
-    const mediationRequest = new Message({
-      extra_header: [{ return_route: 'all' }],
-      id: uuidv4(),
-      typ: MessageTyp.Didcomm,
-      type: MessageType.MediationRequest,
-      body: {},
-    });
+    const resolver = new PeerDIDResolver();
 
     const secrets: PrivateKeyJWK[] = [didPeer.privateKeyE, didPeer.privateKeyV];
+    console.log('Secrets:', JSON.stringify(secrets, null, 2));
+
     const updatedSecrets = prependDidToSecretIds(secrets, didPeer.did);
+    console.log('Updated Secrets:', JSON.stringify(updatedSecrets, null, 2));
+
     const secretsResolver = new DidcommSecretsResolver(updatedSecrets);
+    console.log('Secrets Resolver:', JSON.stringify(secretsResolver, null, 2));
+
+    // Log the secret IDs that will be requested
+    const secretIdsToFind = updatedSecrets.map(secret => secret.id);
+    console.log('Secret IDs to find:', JSON.stringify(secretIdsToFind, null, 2));
+
+    // Check if the secrets resolver can find the required secrets
+    const foundSecrets = await secretsResolver.find_secrets(secretIdsToFind);
+    console.log('Found Secrets:', JSON.stringify(foundSecrets, null, 2));
+
+    const mediatorDIDDoc = await resolver.resolve(decodedOob.from);
+    console.log('Mediator DID Doc:', JSON.stringify(mediatorDIDDoc, null, 2));
 
     const hardcodedValue =
-      'SeyJ0IjoiZG0iLCJzIjp7InVyaSI6Imh0dHA6Ly9leGFtcGxlLmNvbS9kaWRjb21tIiwiYWNjZXB0IjpbImRpZGNvbW0vdjIiXSwicm91dGluZ0tleXMiOlsiZGlkOmV4YW1wbGU6MTIzNDU2Nzg5YWJjZGVmZ2hpI2tleS0xIl19fQ';
+      'SeyJzIjp7ImEiOlsiZGlkY29tbS92MiJdLCJyIjpbXSwidXJpIjoiaHR0cDovL2V4YW1wbGUuY29tL2RpZGNvbW0ifSwidCI6ImRtIn0';
     const updatedDidTo = didTo
       .split('.')
       .slice(0, -1)
       .concat(hardcodedValue)
-      .join('.');
+      .join('.'); 
+      console.log('Updated DID To:', updatedDidTo);
 
-    const resolver = new PeerDIDResolver();
+      const mediationRequest = new Message({
+        extra_header: [{ return_route: 'all' }],
+        id: uuidv4(),
+        typ: MessageTyp.Didcomm,
+        type: MessageType.MediationRequest,
+        from: didPeer.did,
+        to: [updatedDidTo],
+        body: {},
+        created_time: Date.now(),
+      });
+      
+      console.log(
+        'Mediation Request:',
+        JSON.stringify(mediationRequest, null, 2)
+      );
 
-    const packedMediationRequest = await mediationRequest.pack_encrypted(
-      updatedDidTo,
-      didPeer.did,
-      didPeer.did,
-      resolver,
-      secretsResolver,
-      { forward: false },
+  const [packedMediationRequest, encryptMetadata] = await mediationRequest.pack_encrypted(
+    updatedDidTo,        
+    didPeer.did,         
+    didPeer.did,                
+    resolver,           
+    secretsResolver,    
+    { forward: false }   
+  );
+
+    console.log(
+      'Packed Mediation Request:',
+      JSON.stringify(packedMediationRequest),
+    );
+    console.log('Encrypt Metadata:', encryptMetadata);
+
+    const mediatorService = mediatorDIDDoc?.service?.find(
+      (s) => s.type === 'DIDCommMessaging',
     );
 
-    const mediatorEndpoint = decodedOob.serviceEndpoint;
-    if (!mediatorEndpoint) {
-      throw new Error('Mediator endpoint is missing from the OOB invitation.');
+    if (!mediatorService) {
+      throw new Error('Invalid mediator service endpoint format');
     }
 
-    const response = await axios.post(
-      mediatorEndpoint,
-      packedMediationRequest,
-      {
-        params: {
-          message: packedMediationRequest.toString(),
-        },
-        headers: {
-          'Content-Type': 'application/didcomm-encrypted+json',
-        },
-      },
-    );
+    const mediatorEndpoint = mediatorService.serviceEndpoint;
+    console.log('Mediator Endpoint:', mediatorEndpoint);
 
-    if (response.status !== 200) {
-      throw new Error('Mediation request failed.');
-    }
-
-    const keylistUpdate = new Message({
-      id: uuidv4(),
-      typ: MessageTyp.Didcomm,
-      type: MessageType.KeylistUpdate,
-      body: {
-        updates: [
-          {
-            action: 'add',
-            recipient_did: didPeer.did,
-          },
-        ],
+    // Use Axios to send the packed request
+    const response = await axios.post(mediatorEndpoint, packedMediationRequest, {
+      headers: {
+        'Content-Type': 'application/didcomm-encrypted+json',
       },
     });
 
-    const packedKeylistUpdate = await keylistUpdate.pack_encrypted(
-      updatedDidTo,
-      didPeer.did,
-      didPeer.did,
+    // Log the response status and data
+    console.log('Response status:', response.status);
+    console.log('Response data:', response.data);
+
+    // Unpack Mediator Response
+    const [mediatorResponse, uunpackMetadata_] = await Message.unpack(
+      response.data,
       resolver,
       secretsResolver,
-      { forward: false },
+      {},
     );
+    console.log('Mediator Response:', mediatorResponse);
+    console.log('Unpack Metadata:', uunpackMetadata_);
 
-    const keylistUpdateResponse = await axios.post(
-      mediatorEndpoint,
-      packedKeylistUpdate,
-      {
-        params: {
-          message: packedKeylistUpdate.toString(),
-        },
-        headers: {
-          'Content-Type': 'application/didcomm-encrypted+json',
-        },
-      },
-    );
-
-    if (keylistUpdateResponse.status !== 200) {
-      throw new Error('Keylist update request failed.');
-    }
-
-    // const unpackedKeylistUpdate = await keylistUpdate.unpack(
-    //   keylistUpdateResponse.data,
-    //   didPeer.did,
-    //   resolver,
-    //   secretsResolver,
-    // );
-    // console.log('Unpacked Keylist Update:', unpackedKeylistUpdate);
-
-    return keylistUpdateResponse.data;
   } catch (error: unknown) {
     if (error instanceof Error) {
-      throw new Error(`Error processing OOB: ${error.message}`);
+      console.error('Error processing OOB:', error);
+      throw new Error(`Failed to process OOB invitation: ${error.message}`);
     } else {
-      throw new Error('Unknown error during OOB processing');
+      console.error('Unknown error:', error);
+      throw error;
     }
   }
-}
+ }
