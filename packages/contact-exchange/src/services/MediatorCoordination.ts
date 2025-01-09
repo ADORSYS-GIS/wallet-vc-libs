@@ -1,4 +1,9 @@
-import { Message, SecretsResolver, Secret, IMessage } from 'didcomm';
+import {
+  SecretsResolver,
+  Secret,
+  IMessage,
+  Message
+} from 'didcomm-node';
 import { v4 as uuidv4 } from 'uuid';
 import { MessageTyp, MessageType } from './DIDCommOOBInvitation';
 import { DidPeerMethod } from '@adorsys-gis/multiple-did-identities/src/did-methods/DidPeerMethod';
@@ -74,129 +79,92 @@ export async function processMediatorOOB(oob: string) {
       throw new Error('Invalid OOB content. Missing "from" field.');
     }
 
-    // Recipeint did
     const didTo = decodedOob.from;
-    console.log('Decoded DID:', didTo);
-
-    // Generate the sender did
     const didPeerMethod = new DidPeerMethod();
     const didPeer = await didPeerMethod.generateMethod2();
-    console.log(
-      'Generated DID:',
-      JSON.stringify(didPeer, null, 2),
-      didPeer.did,
-    );
+    console.log('Generated DID:', JSON.stringify(didPeer, null, 2));
 
     const resolver = new PeerDIDResolver();
 
-    const secrets: PrivateKeyJWK[] = [didPeer.privateKeyE, didPeer.privateKeyV];
-    console.log('Secrets:', JSON.stringify(secrets, null, 2));
-
+    const secrets = [didPeer.privateKeyE, didPeer.privateKeyV];
     const updatedSecrets = prependDidToSecretIds(secrets, didPeer.did);
-    console.log('Updated Secrets:', JSON.stringify(updatedSecrets, null, 2));
-
     const secretsResolver = new DidcommSecretsResolver(updatedSecrets);
-    console.log('Secrets Resolver:', JSON.stringify(secretsResolver, null, 2));
-
-    const resolvefrom = await resolver.resolve(didPeer.did);
-    console.log('Resolve from:', JSON.stringify(resolvefrom, null, 2));
-
-    // Log the secret IDs that will be requested
-    const secretIdsToFind = updatedSecrets.map((secret) => secret.id);
-    console.log(
-      'Secret IDs to find:',
-      JSON.stringify(secretIdsToFind, null, 2),
-    );
-
-    // Check if the secrets resolver can find the required secrets
-    const foundSecrets = await secretsResolver.find_secrets(secretIdsToFind);
-    console.log('Found Secrets:', JSON.stringify(foundSecrets, null, 2));
 
     const mediatorDIDDoc = await resolver.resolve(decodedOob.from);
-    console.log('Mediator DID Doc:', JSON.stringify(mediatorDIDDoc, null, 2));
-
     const mediatorService = mediatorDIDDoc?.service?.find(
       (s) => s.type === 'DIDCommMessaging',
     );
-
     if (!mediatorService) {
       throw new Error('Invalid mediator service endpoint format');
     }
 
     const mediatorEndpoint = mediatorService.serviceEndpoint;
-    console.log('Mediator Endpoint:', mediatorEndpoint);
+    console.log('Mediator Endpoint:', JSON.stringify(mediatorEndpoint, null, 2));
 
     const val: IMessage = {
       id: uuidv4(),
       typ: MessageTyp.Didcomm,
       type: MessageType.MediationRequest,
-      body: {},
+      body: { messagespecificattribute: 'and its value' },
       from: didPeer.did,
       to: [didTo],
+      created_time: Math.round(new Date().getTime() / 1000),
+      expires_time: Math.round(new Date().getTime() / 1000) + 60,
       return_route: 'all',
     };
     const mediationRequest = new Message(val);
 
-    console.log('Mediation Request:', JSON.stringify(val, null, 2));
-
-    const [packedMediationRequest, encryptMetadata] =
-      await mediationRequest.pack_encrypted(
-        didTo,
-        didPeer.did,
-        null,
-        resolver,
-        secretsResolver,
-        { forward: false },
-      );
-
-    console.log('Packed Mediation Request:', packedMediationRequest);
-    console.log('Encrypt Metadata:', encryptMetadata);
-
-    // Use Axios to send the packed request
-    const response = await axios.post(
-      'http://localhost:3000/',
-      packedMediationRequest,
-      {
-        headers: {
-          'Content-Type': 'application/didcomm-encrypted+json',
-        },
-      },
-    );
-
-    // Log the response status and data
-    console.log('Response status:', response.status);
-    console.log('Response data:', response.data);
-
-    // Unpack Mediator Response
-    const [mediatorResponse, uunpackMetadata_] = await Message.unpack(
-      response.data,
+    const [packedMediationRequest] = await mediationRequest.pack_encrypted(
+      didTo,
+      didPeer.did,
+      didPeer.did,
       resolver,
       secretsResolver,
+      { forward: false },
+    );
+
+    console.log('Packed Mediation Request:', packedMediationRequest);
+
+    // Send the packed mediation request to the mediator's endpoint
+    const response = await axios.post('http://localhost:3000/', packedMediationRequest, {
+      headers: {
+        'Content-Type': 'application/didcomm-encrypted+json',
+      },
+    });
+
+    console.log('Mediator Response:', JSON.stringify(response.data, null, 2));
+
+    // Simulate receiving the packed response and unpacking it
+    const receivingSecrets = [didPeer.privateKeyE, didPeer.privateKeyV];
+    const receivingSecretsResolver = new DidcommSecretsResolver(
+      prependDidToSecretIds(receivingSecrets, didTo),
+    );
+    console.log(
+      'Receiving Secrets Resolver:',
+      JSON.stringify(receivingSecretsResolver, null, 2),
+    )
+    
+    const [unpackedMessage, unpackMetadata] = await Message.unpack(
+      response.data,
+      resolver,
+      receivingSecretsResolver,
       {},
     );
 
-    const reply = mediatorResponse.as_value();
-    if (reply.type !== MessageType.MediationResponse) {
-      console.error('Invalid mediator response type:', reply.type);
-      throw new Error('Invalid mediator response type');
+    console.log('Unpacked Message:', JSON.stringify(unpackedMessage.as_value(), null, 2));
+    console.log('Unpack Metadata:', JSON.stringify(unpackMetadata, null, 2));
+
+    // Validate unpacked content
+    const unpackedContent = unpackedMessage.as_value();
+    if (unpackedContent.type !== MessageType.MediationResponse) {
+      throw new Error('Unexpected message type received');
     }
 
-    console.log('Mediator Response:', mediatorResponse);
-    console.log('Unpack Metadata:', uunpackMetadata_);
-    return mediatorResponse;
-  } catch (error: unknown) {
-    if (axios.isAxiosError(error)) {
-      console.error(
-        'Axios error occurred while processing OOB:',
-        error.message,
-      );
-      throw new Error(`Failed to process OOB invitation: ${error.message}`);
-    } else if (error instanceof Error) {
-      console.error('Error processing OOB:', error);
-      throw new Error(`Failed to process OOB invitation: ${error.message}`);
-    } else {
-      console.error('Unknown error:', error);
-      throw error;
-    }
+    console.log('Successfully processed mediation response.');
+
+    // Additional processing can go here...
+    
+  } catch (error) {
+    console.error('Error processing mediator OOB:', error);
   }
 }
