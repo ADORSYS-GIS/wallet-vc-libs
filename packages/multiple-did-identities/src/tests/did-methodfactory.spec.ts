@@ -34,7 +34,12 @@ describe('DidMethodFactory', () => {
         expect(result.publicKey.kty).toBe('OKP');
         expect(result.publicKey.crv).toBe('Ed25519');
         expect(result.publicKey.x).toBeDefined();
-        expect(result.privateKey.d).toBeDefined();
+        // Check if privateKey is defined before accessing it
+        if (result.privateKey) {
+          expect(result.privateKey.d).toBeDefined();
+        } else {
+          throw new Error("Private key is undefined");
+        }
       } else {
         throw new Error(
           "Result is not of type DIDKeyPair with 'publicKey' and 'privateKey'",

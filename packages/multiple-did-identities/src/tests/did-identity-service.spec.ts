@@ -42,6 +42,7 @@ describe('DIDIdentityService', () => {
     await deleteAllDIDsEvent;
   });
 
+  const pin = 123456; // the authenticated user's PIN
   const waitForEvent = <T>(channel: DidEventChannel) => {
     return new Promise<ServiceResponse<T>>((resolve) => {
       eventBus.once(channel, (data: ServiceResponse<T>) => resolve(data));
@@ -71,7 +72,7 @@ describe('DIDIdentityService', () => {
       .mockResolvedValueOnce(mockDIDKeyPair);
 
     const createEvent = waitForEvent(DidEventChannel.CreateDidIdentity);
-    await didIdentityService.createDidIdentity(method);
+    await didIdentityService.createDidIdentity(method, pin);
 
     const createdDid = await createEvent;
 
@@ -99,7 +100,7 @@ describe('DIDIdentityService', () => {
       .mockRejectedValueOnce(new Error('Creation failed'));
 
     const errorEvent = waitForEvent(DidEventChannel.CreateDidIdentity);
-    await didIdentityService.createDidIdentity(method);
+    await didIdentityService.createDidIdentity(method, pin);
 
     const response = await errorEvent;
 
@@ -137,7 +138,7 @@ describe('DIDIdentityService', () => {
       .mockResolvedValueOnce(mockDIDKeyPair);
 
     const createEvent = waitForEvent(DidEventChannel.CreateDidIdentity);
-    await didIdentityService.createDidIdentity(method);
+    await didIdentityService.createDidIdentity(method, pin);
     await createEvent;
 
     const deleteEvent = waitForEvent(DidEventChannel.DeleteDidIdentity);
@@ -202,7 +203,7 @@ describe('DIDIdentityService', () => {
       .mockResolvedValueOnce(mockDIDKeyPair);
 
     const createEvent = waitForEvent(DidEventChannel.CreateDidIdentity);
-    await didIdentityService.createDidIdentity(method);
+    await didIdentityService.createDidIdentity(method, pin);
     await createEvent;
 
     const findEvent = waitForEvent(DidEventChannel.GetSingleDidIdentity);
