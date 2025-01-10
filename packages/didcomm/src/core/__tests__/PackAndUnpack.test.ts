@@ -97,7 +97,6 @@ describe('DIDComm message pack and unpack', () => {
       from_kid: ALICE_KID,
       to_kids: expect.any(Array),
     });
-    console.log(encryptedMsg);
 
     // Reinitialize resolvers for the receiving party
     didResolver = createDidResolver([ALICE_DID_DOC, BOB_DID_DOC]);
@@ -111,7 +110,6 @@ describe('DIDComm message pack and unpack', () => {
       {},
     );
 
-
     const unpackedContent = unpackedMsg.as_value();
     expect(unpackedContent).toMatchObject({
       id: MESSAGE_ID,
@@ -120,14 +118,12 @@ describe('DIDComm message pack and unpack', () => {
       body: MESSAGE_BODY,
     });
 
-    console.log('this is unpackMetadata: ', unpackMetadata);
 
     expect(unpackMetadata).toMatchObject({
       sign_from: expect.any(String),
       encrypted_from_kid: ALICE_KID,
       encrypted_to_kids: expect.any(Array),
     });
-    console.log('this is unpackMetadata: ', unpackMetadata);
   });
 
   it('should unpack an encrypted message successfully', async () => {
@@ -154,7 +150,6 @@ describe('DIDComm message pack and unpack', () => {
       },
     );
 
-    console.log(encryptedMsg);
 
     // Unpack the message to simulate receiving it
     didResolver = createDidResolver([ALICE_DID_DOC, BOB_DID_DOC]);
@@ -173,13 +168,10 @@ describe('DIDComm message pack and unpack', () => {
       body: MESSAGE_BODY,
     });
 
-    console.log('unpackedMsg :', unpackedMsg);
-
     expect(unpackMetadata).toMatchObject({
       sign_from: expect.any(String),
       encrypted_from_kid: ALICE_KID,
       encrypted_to_kids: expect.any(Array),
     });
-    console.log('unpackMetadata: ', unpackMetadata);
   });
 });
