@@ -27,7 +27,7 @@ describe('DID Peer Method 0', () => {
     if (result.privateKey) {
       expect(result.privateKey.d).toBeDefined();
     } else {
-      throw new Error("Private key is undefined");
+      throw new Error('Private key is undefined');
     }
     expect(result.publicKey.x).toBeDefined();
   });

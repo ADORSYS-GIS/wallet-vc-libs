@@ -1,13 +1,18 @@
 import { StorageFactory } from '@adorsys-gis/storage';
 import { DBSchema } from 'idb';
-import { DidIdValue, DidIdentity, DidIdentityWithDecryptedKeys, PrivateKeyJWK } from '../did-methods/IDidMethod';
+import { JWK } from 'jose';
 import {
-  DIDMethodName,
   DIDKeyPairVariants,
+  DIDMethodName,
   PeerGenerationMethod,
 } from '../did-methods/DidMethodFactory';
+import {
+  DidIdValue,
+  DidIdentity,
+  DidIdentityWithDecryptedKeys,
+  PrivateKeyJWK,
+} from '../did-methods/IDidMethod';
 import { decryptData } from '../security/security-utils';
-import { JWK } from 'jose';
 
 interface DidSchema extends DBSchema {
   dids: {
@@ -70,11 +75,17 @@ export class DidRepository {
     if ('encryptedPrivateKey' in sanitizedDidDoc) {
       delete sanitizedDidDoc.privateKey;
     }
-    if ('encryptedPrivateKeyV' in sanitizedDidDoc && 'encryptedPrivateKeyE' in sanitizedDidDoc) {
+    if (
+      'encryptedPrivateKeyV' in sanitizedDidDoc &&
+      'encryptedPrivateKeyE' in sanitizedDidDoc
+    ) {
       delete sanitizedDidDoc.privateKeyV;
       delete sanitizedDidDoc.privateKeyE;
     }
-    if ('encryptedPrivateKey1' in sanitizedDidDoc && 'encryptedPrivateKey2' in sanitizedDidDoc) {
+    if (
+      'encryptedPrivateKey1' in sanitizedDidDoc &&
+      'encryptedPrivateKey2' in sanitizedDidDoc
+    ) {
       delete sanitizedDidDoc.privateKey1;
       delete sanitizedDidDoc.privateKey2;
     }
@@ -141,15 +152,24 @@ export class DidRepository {
   }
 
   /**
- * Finds a DID identity by its DID string and decrypts the private keys.
- * @param did The DID string to find.
- * @param pin The pin used for decryption after successful authentication
- * @returns The corresponding DIDDocument with decrypted private keys, or null if not found.
- */
-  async getADidWithDecryptedPrivateKeys(did: string, pin: number): Promise<DidIdentityWithDecryptedKeys | null> {
+   * Finds a DID identity by its DID string and decrypts the private keys.
+   * @param did The DID string to find.
+   * @param pin The pin used for decryption after successful authentication
+   * @returns The corresponding DIDDocument with decrypted private keys, or null if not found.
+   */
+  async getADidWithDecryptedPrivateKeys(
+    did: string,
+    pin: number,
+  ): Promise<DidIdentityWithDecryptedKeys | null> {
     const record = await this.storageFactory.findOne('dids', did);
 
-    const { did: storedDid, method, method_type, createdAt, document } = record.value;
+    const {
+      did: storedDid,
+      method,
+      method_type,
+      createdAt,
+      document,
+    } = record.value;
 
     // Initialize the decrypted private keys object
     const decryptedPrivateKeys: Record<string, JWK | PrivateKeyJWK> = {};
@@ -157,23 +177,56 @@ export class DidRepository {
     // Check for different encrypted private keys in the document and decrypt them
     if (document.encryptedPrivateKey) {
       const { salt, ciphertext, iv } = document.encryptedPrivateKey;
-      decryptedPrivateKeys['privateKey'] = await decryptData(pin, salt, iv, ciphertext);
+      decryptedPrivateKeys['privateKey'] = await decryptData(
+        pin,
+        salt,
+        iv,
+        ciphertext,
+      );
     }
 
     if (document.encryptedPrivateKeyV && document.encryptedPrivateKeyE) {
       const { salt, ciphertext, iv } = document.encryptedPrivateKeyV;
-      decryptedPrivateKeys['privateKeyV'] = await decryptData(pin, salt, iv, ciphertext);
+      decryptedPrivateKeys['privateKeyV'] = await decryptData(
+        pin,
+        salt,
+        iv,
+        ciphertext,
+      );
 
-      const { salt: saltE, ciphertext: ciphertextE, iv: ivE } = document.encryptedPrivateKeyE;
-      decryptedPrivateKeys['privateKeyE'] = await decryptData(pin, saltE, ivE, ciphertextE);
+      const {
+        salt: saltE,
+        ciphertext: ciphertextE,
+        iv: ivE,
+      } = document.encryptedPrivateKeyE;
+      decryptedPrivateKeys['privateKeyE'] = await decryptData(
+        pin,
+        saltE,
+        ivE,
+        ciphertextE,
+      );
     }
 
     if (document.encryptedPrivateKey1 && document.encryptedPrivateKey2) {
       const { salt, ciphertext, iv } = document.encryptedPrivateKey1;
-      decryptedPrivateKeys['privateKey1'] = await decryptData(pin, salt, iv, ciphertext);
+      decryptedPrivateKeys['privateKey1'] = await decryptData(
+        pin,
+        salt,
+        iv,
+        ciphertext,
+      );
 
-      const { salt: salt2, ciphertext: ciphertext2, iv: iv2 } = document.encryptedPrivateKey2;
-      decryptedPrivateKeys['privateKey2'] = await decryptData(pin, salt2, iv2, ciphertext2);
+      const {
+        salt: salt2,
+        ciphertext: ciphertext2,
+        iv: iv2,
+      } = document.encryptedPrivateKey2;
+      decryptedPrivateKeys['privateKey2'] = await decryptData(
+        pin,
+        salt2,
+        iv2,
+        ciphertext2,
+      );
     }
 
     // Return the DID identity with decrypted private keys

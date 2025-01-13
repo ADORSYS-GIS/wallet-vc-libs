@@ -52,8 +52,8 @@ describe('DIDIdentityService', () => {
     });
   };
 
-   // test pin for the user
-   const pin = 28364781;
+  // test pin for the user
+  const pin = 28364781;
 
   it('should create a DID identity with did:peer:4 and emit the event', async () => {
     const method = DIDMethodName.Peer;

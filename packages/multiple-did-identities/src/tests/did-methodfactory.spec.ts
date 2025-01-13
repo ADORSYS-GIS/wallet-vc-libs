@@ -1,9 +1,9 @@
+import { DidKeyMethod } from '../did-methods/DidKeyMethod';
 import {
   DidMethodFactory,
   DIDMethodName,
   PeerGenerationMethod,
 } from '../did-methods/DidMethodFactory';
-import { DidKeyMethod } from '../did-methods/DidKeyMethod';
 import { DidPeerMethod } from '../did-methods/DidPeerMethod';
 
 describe('DidMethodFactory', () => {
@@ -38,7 +38,7 @@ describe('DidMethodFactory', () => {
         if (result.privateKey) {
           expect(result.privateKey.d).toBeDefined();
         } else {
-          throw new Error("Private key is undefined");
+          throw new Error('Private key is undefined');
         }
       } else {
         throw new Error(

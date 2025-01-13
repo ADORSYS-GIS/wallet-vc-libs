@@ -121,7 +121,7 @@ describe('DIDIdentityService', () => {
       .mockResolvedValueOnce(mockDIDPeer3);
 
     const createEvent = waitForEvent(DidEventChannel.CreateDidIdentity);
-    await didIdentityService.createDidIdentity(method,pin, method_type);
+    await didIdentityService.createDidIdentity(method, pin, method_type);
     await createEvent;
 
     const findEvent = waitForEvent(DidEventChannel.GetSingleDidIdentity);
@@ -156,7 +156,7 @@ describe('DIDIdentityService', () => {
       .mockResolvedValueOnce(mockDIDPeer3);
 
     const createEvent = waitForEvent(DidEventChannel.CreateDidIdentity);
-    await didIdentityService.createDidIdentity(method,pin, method_type);
+    await didIdentityService.createDidIdentity(method, pin, method_type);
     await createEvent;
 
     // MOCK DID KEY
@@ -181,7 +181,7 @@ describe('DIDIdentityService', () => {
       .mockResolvedValueOnce(mockDIDKeyPair);
 
     const createEventDidKey = waitForEvent(DidEventChannel.CreateDidIdentity);
-    await didIdentityService.createDidIdentity(methodDidKey,pin);
+    await didIdentityService.createDidIdentity(methodDidKey, pin);
     await createEventDidKey;
 
     const didRecords = [

@@ -1,16 +1,16 @@
 import {
+  ServiceResponse,
+  ServiceResponseStatus,
+} from '@adorsys-gis/status-service';
+import { EventEmitter } from 'eventemitter3';
+import {
   DidMethodFactory,
   DIDMethodName,
   PeerGenerationMethod,
 } from '../did-methods/DidMethodFactory';
 import { DidRepository } from '../repository/DidRepository';
-import { EventEmitter } from 'eventemitter3';
-import {
-  ServiceResponse,
-  ServiceResponseStatus,
-} from '@adorsys-gis/status-service';
-import { DidEventChannel } from '../utils/DidEventChannel';
 import { encryptData } from '../security/security-utils';
+import { DidEventChannel } from '../utils/DidEventChannel';
 
 export class DIDIdentityService {
   private didRepository: DidRepository;
@@ -45,16 +45,41 @@ export class DIDIdentityService {
 
       // Encrypt private keys based on the type of DID document
       if ('privateKey' in didDocument && didDocument.privateKey) {
-        didDocument.encryptedPrivateKey = await encryptData(pin, didDocument.privateKey);
+        didDocument.encryptedPrivateKey = await encryptData(
+          pin,
+          didDocument.privateKey,
+        );
       }
 
-      if ('privateKeyV' in didDocument && 'privateKeyE' in didDocument && didDocument.privateKeyV && didDocument.privateKeyE) {
-        didDocument.encryptedPrivateKeyV = await encryptData(pin, didDocument.privateKeyV);
-        didDocument.encryptedPrivateKeyE = await encryptData(pin, didDocument.privateKeyE);
+      if (
+        'privateKeyV' in didDocument &&
+        'privateKeyE' in didDocument &&
+        didDocument.privateKeyV &&
+        didDocument.privateKeyE
+      ) {
+        didDocument.encryptedPrivateKeyV = await encryptData(
+          pin,
+          didDocument.privateKeyV,
+        );
+        didDocument.encryptedPrivateKeyE = await encryptData(
+          pin,
+          didDocument.privateKeyE,
+        );
       }
-      if ('privateKey1' in didDocument && 'privateKey2' in didDocument && didDocument.privateKey1 && didDocument.privateKey2) {
-        didDocument.encryptedPrivateKey1 = await encryptData(pin, didDocument.privateKey1);
-        didDocument.encryptedPrivateKey2 = await encryptData(pin, didDocument.privateKey2);
+      if (
+        'privateKey1' in didDocument &&
+        'privateKey2' in didDocument &&
+        didDocument.privateKey1 &&
+        didDocument.privateKey2
+      ) {
+        didDocument.encryptedPrivateKey1 = await encryptData(
+          pin,
+          didDocument.privateKey1,
+        );
+        didDocument.encryptedPrivateKey2 = await encryptData(
+          pin,
+          didDocument.privateKey2,
+        );
       }
 
       await this.didRepository.createDidId(didDocument, method);
@@ -83,13 +108,13 @@ export class DIDIdentityService {
       await this.didRepository.deleteDidId(did);
 
       const response: ServiceResponse<{ message: string; deletedDid: string }> =
-      {
-        status: ServiceResponseStatus.Success,
-        payload: {
-          message: `DID identity with ID ${did} was successfully deleted.`,
-          deletedDid: did,
-        },
-      };
+        {
+          status: ServiceResponseStatus.Success,
+          payload: {
+            message: `DID identity with ID ${did} was successfully deleted.`,
+            deletedDid: did,
+          },
+        };
 
       this.eventBus.emit(deleteDidIdentityChannel, response);
     } catch (error) {
@@ -114,16 +139,16 @@ export class DIDIdentityService {
       // Define response payload with conditional structure
       const responsePayload = isDidPeer
         ? {
-          did: didRecord.did,
-          method: didRecord.method,
-          method_type: didRecord.method_type,
-          createdAt: didRecord.createdAt,
-        }
+            did: didRecord.did,
+            method: didRecord.method,
+            method_type: didRecord.method_type,
+            createdAt: didRecord.createdAt,
+          }
         : {
-          did: didRecord.did,
-          method: didRecord.method,
-          createdAt: didRecord.createdAt,
-        };
+            did: didRecord.did,
+            method: didRecord.method,
+            createdAt: didRecord.createdAt,
+          };
 
       // Create the response
       const response: ServiceResponse<typeof responsePayload> = {
@@ -154,16 +179,16 @@ export class DIDIdentityService {
 
         return isDidPeer
           ? {
-            did: record.did,
-            method: record.method,
-            method_type: record.method_type,
-            createdAt: record.createdAt,
-          }
+              did: record.did,
+              method: record.method,
+              method_type: record.method_type,
+              createdAt: record.createdAt,
+            }
           : {
-            did: record.did,
-            method: record.method,
-            createdAt: record.createdAt,
-          };
+              did: record.did,
+              method: record.method,
+              createdAt: record.createdAt,
+            };
       });
 
       // Construct the response
@@ -179,45 +204,49 @@ export class DIDIdentityService {
   }
 
   /**
- * Retrieve a DID identity with decrypted private keys and emit it via the event bus.
- * Emits a {@link DidEventChannel.GetDidWithDecryptedPrivateKeys} event upon successful retrieval.
- *
- * @param did - The DID to retrieve.
- * @param pin - The PIN used for decrypting private keys.
- */
-public async retrieveDidWithDecryptedKeys(did: string, pin: number): Promise<void> {
-  const didEventChannel = DidEventChannel.GetDidWithDecryptedPrivateKeys;
+   * Retrieve a DID identity with decrypted private keys and emit it via the event bus.
+   * Emits a {@link DidEventChannel.GetDidWithDecryptedPrivateKeys} event upon successful retrieval.
+   *
+   * @param did - The DID to retrieve.
+   * @param pin - The PIN used for decrypting private keys.
+   */
+  public async retrieveDidWithDecryptedKeys(
+    did: string,
+    pin: number,
+  ): Promise<void> {
+    const didEventChannel = DidEventChannel.GetDidWithDecryptedPrivateKeys;
 
-  try {
-    const didWithDecryptedKeys = await this.didRepository.getADidWithDecryptedPrivateKeys(did, pin);
+    try {
+      const didWithDecryptedKeys =
+        await this.didRepository.getADidWithDecryptedPrivateKeys(did, pin);
 
-    if (!didWithDecryptedKeys) {
-      // Handle case where no DID identity is found
-      const response: ServiceResponse<null> = {
-        status: ServiceResponseStatus.NotFound,
-        payload: null,
+      if (!didWithDecryptedKeys) {
+        // Handle case where no DID identity is found
+        const response: ServiceResponse<null> = {
+          status: ServiceResponseStatus.NotFound,
+          payload: null,
+        };
+        this.eventBus.emit(didEventChannel, response);
+        return;
+      }
+
+      // Define response payload
+      const responsePayload = {
+        did: didWithDecryptedKeys.did,
+        decryptedPrivateKeys: didWithDecryptedKeys.decryptedPrivateKeys,
       };
+
+      // Create the response
+      const response: ServiceResponse<typeof responsePayload> = {
+        status: ServiceResponseStatus.Success,
+        payload: responsePayload,
+      };
+
       this.eventBus.emit(didEventChannel, response);
-      return;
+    } catch (error) {
+      this.sharedErrorHandler(didEventChannel)(error);
     }
-
-    // Define response payload
-    const responsePayload = {
-      did: didWithDecryptedKeys.did,
-      decryptedPrivateKeys: didWithDecryptedKeys.decryptedPrivateKeys,
-    };
-
-    // Create the response
-    const response: ServiceResponse<typeof responsePayload> = {
-      status: ServiceResponseStatus.Success,
-      payload: responsePayload,
-    };
-
-    this.eventBus.emit(didEventChannel, response);
-  } catch (error) {
-    this.sharedErrorHandler(didEventChannel)(error);
   }
-}
 
   /**
    * Shared error handler that emits an error response.

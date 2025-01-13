@@ -1,5 +1,5 @@
-import { DidPeerMethod } from '../did-methods/DidPeerMethod';
 import { PeerGenerationMethod } from '../did-methods/DidMethodFactory';
+import { DidPeerMethod } from '../did-methods/DidPeerMethod';
 
 describe('DidPeerMethod', () => {
   let didPeerMethod: DidPeerMethod;

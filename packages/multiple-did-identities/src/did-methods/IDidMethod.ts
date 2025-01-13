@@ -8,7 +8,11 @@ export interface Did {
 export interface DIDKeyPair extends Did {
   privateKey?: JWK;
   publicKey: JWK;
-  encryptedPrivateKey?: { salt: Uint8Array, ciphertext: string, iv: Uint8Array };
+  encryptedPrivateKey?: {
+    salt: Uint8Array;
+    ciphertext: string;
+    iv: Uint8Array;
+  };
 }
 
 export interface IDidMethod {
@@ -46,8 +50,16 @@ export interface DIDKeyPairMethod2 extends Did {
   publicKeyV: JWK;
   privateKeyE?: PrivateKeyJWK;
   publicKeyE: JWK;
-  encryptedPrivateKeyV?: { salt: Uint8Array, ciphertext: string, iv: Uint8Array };
-  encryptedPrivateKeyE?: { salt: Uint8Array, ciphertext: string, iv: Uint8Array };
+  encryptedPrivateKeyV?: {
+    salt: Uint8Array;
+    ciphertext: string;
+    iv: Uint8Array;
+  };
+  encryptedPrivateKeyE?: {
+    salt: Uint8Array;
+    ciphertext: string;
+    iv: Uint8Array;
+  };
 }
 
 export interface DIDDocumentMethod2 {
@@ -117,8 +129,16 @@ export interface DIDKeyPairMethod4 extends Did {
   publicKey1: JWK;
   privateKey2?: JWK;
   publicKey2: JWK;
-  encryptedPrivateKey1?: { salt: Uint8Array, ciphertext: string, iv: Uint8Array };
-  encryptedPrivateKey2?: { salt: Uint8Array, ciphertext: string, iv: Uint8Array };
+  encryptedPrivateKey1?: {
+    salt: Uint8Array;
+    ciphertext: string;
+    iv: Uint8Array;
+  };
+  encryptedPrivateKey2?: {
+    salt: Uint8Array;
+    ciphertext: string;
+    iv: Uint8Array;
+  };
 }
 
 export interface JWKKeys {

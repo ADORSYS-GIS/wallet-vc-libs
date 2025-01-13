@@ -104,8 +104,8 @@ describe('DidPeerMethod', () => {
       fail('Services should be defined.');
     }
 
-     // Check that privateKeyV and privateKeyE are defined before accessing their properties
-     if (result.privateKeyV && result.privateKeyE) {
+    // Check that privateKeyV and privateKeyE are defined before accessing their properties
+    if (result.privateKeyV && result.privateKeyE) {
       // Check that privateKeyJwk.id is set correctly
       expect(result.privateKeyV.id).toBe(`${result.did}#key-1`);
       expect(result.privateKeyE.id).toBe(`${result.did}#key-2`);
