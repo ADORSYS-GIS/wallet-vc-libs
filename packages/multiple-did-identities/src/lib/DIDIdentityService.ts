@@ -223,7 +223,7 @@ export class DIDIdentityService {
       if (!didWithDecryptedKeys) {
         // Handle case where no DID identity is found
         const response: ServiceResponse<null> = {
-          status: ServiceResponseStatus.NotFound,
+          status: ServiceResponseStatus.Error,
           payload: null,
         };
         this.eventBus.emit(didEventChannel, response);
