@@ -22,16 +22,13 @@ export interface IDidMethod {
 
 export interface DidIdValue {
   did: string;
-  method: DIDMethodName;
-  method_type: string;
   document: DIDKeyPairVariants;
   createdAt: number;
 }
 
 export interface DidIdentity {
   did: string;
-  method: DIDMethodName;
-  method_type?: string;
+  methodType?: string;
   createdAt: number;
 }
 
@@ -162,8 +159,6 @@ export interface PrivateKeyJWK {
 
 export interface DidIdentityWithDecryptedKeys {
   did: string;
-  method: string;
-  method_type: string;
   createdAt: number;
   decryptedPrivateKeys: Record<string, JWK | PrivateKeyJWK>;
 }

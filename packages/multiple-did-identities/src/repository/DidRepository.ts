@@ -1,11 +1,7 @@
 import { StorageFactory } from '@adorsys-gis/storage';
 import { DBSchema } from 'idb';
 import { JWK } from 'jose';
-import {
-  DIDKeyPairVariants,
-  DIDMethodName,
-  PeerGenerationMethod,
-} from '../did-methods/DidMethodFactory';
+import { DIDKeyPairVariants } from '../did-methods/DidMethodFactory';
 import {
   DidIdValue,
   DidIdentity,
@@ -13,6 +9,7 @@ import {
   PrivateKeyJWK,
 } from '../did-methods/IDidMethod';
 import { decryptData } from '../security/security-utils';
+import { sanitizeDidDoc } from '../utils/sanitizeDidDoc';
 
 interface DidSchema extends DBSchema {
   dids: {
@@ -43,62 +40,17 @@ export class DidRepository {
    * @param method The DID method ('key' or 'peer').
    * @returns The stored DIDIdentity.
    */
-  async createDidId(
-    didDoc: DIDKeyPairVariants,
-    method: DIDMethodName,
-  ): Promise<void> {
-    let methodType;
-
-    // Check the DID to determine its type based on the prefix
-    if (method === DIDMethodName.Peer) {
-      const did = didDoc.did;
-
-      if (did.startsWith('did:peer:0')) {
-        methodType = PeerGenerationMethod.Method0;
-      } else if (did.startsWith('did:peer:1')) {
-        methodType = PeerGenerationMethod.Method1;
-      } else if (did.startsWith('did:peer:2')) {
-        methodType = PeerGenerationMethod.Method2;
-      } else if (did.startsWith('did:peer:3')) {
-        methodType = PeerGenerationMethod.Method3;
-      } else if (did.startsWith('did:peer:4')) {
-        methodType = PeerGenerationMethod.Method4;
-      } else {
-        throw new Error('Unknown Method type');
-      }
-    } else {
-      methodType = '';
-    }
-
+  async createDidId(didDoc: DIDKeyPairVariants): Promise<void> {
     // Replace private keys with encrypted keys in the document
-    const sanitizedDidDoc = { ...didDoc };
-    if ('encryptedPrivateKey' in sanitizedDidDoc) {
-      delete sanitizedDidDoc.privateKey;
-    }
-    if (
-      'encryptedPrivateKeyV' in sanitizedDidDoc &&
-      'encryptedPrivateKeyE' in sanitizedDidDoc
-    ) {
-      delete sanitizedDidDoc.privateKeyV;
-      delete sanitizedDidDoc.privateKeyE;
-    }
-    if (
-      'encryptedPrivateKey1' in sanitizedDidDoc &&
-      'encryptedPrivateKey2' in sanitizedDidDoc
-    ) {
-      delete sanitizedDidDoc.privateKey1;
-      delete sanitizedDidDoc.privateKey2;
-    }
+    const sanitizedDidDoc = sanitizeDidDoc(didDoc);
 
     const payload: DidIdValue = {
       did: sanitizedDidDoc.did,
-      method: method,
-      method_type: methodType,
       document: sanitizedDidDoc,
       createdAt: Date.now(),
     };
 
-    console.log(JSON.stringify(payload.document)); //debug output
+    console.log(JSON.stringify(payload.document));
 
     await this.storageFactory.insert('dids', {
       value: payload,
@@ -122,14 +74,10 @@ export class DidRepository {
   async getADidId(did: string): Promise<DidIdentity> {
     const record = await this.storageFactory.findOne('dids', did);
 
-    const { did: storedDid, method, method_type, createdAt } = record.value;
+    const { did: storedDid, createdAt } = record.value;
 
-    // Check if the DID starts with "did:key" to determine whether to include methodType
-    const didIdentity: DidIdentity = storedDid.startsWith('did:key')
-      ? { did: storedDid, method, createdAt }
-      : { did: storedDid, method, method_type, createdAt };
-
-    return didIdentity;
+    // Return the didIdentity directly
+    return { did: storedDid, createdAt };
   }
 
   /**
@@ -139,13 +87,11 @@ export class DidRepository {
   async getAllDidIds(): Promise<DidIdentity[]> {
     const records = await this.storageFactory.findAll('dids');
     return records.map((record) => {
-      const { did, method, method_type, createdAt } = record.value;
+      const { did, createdAt } = record.value;
 
       // Return an object including method_type if it exists for any DID
       return {
         did,
-        method,
-        method_type: method_type, // Return method_type for all records if it exists
         createdAt,
       };
     });
@@ -163,13 +109,7 @@ export class DidRepository {
   ): Promise<DidIdentityWithDecryptedKeys | null> {
     const record = await this.storageFactory.findOne('dids', did);
 
-    const {
-      did: storedDid,
-      method,
-      method_type,
-      createdAt,
-      document,
-    } = record.value;
+    const { did: storedDid, createdAt, document } = record.value;
 
     // Initialize the decrypted private keys object
     const decryptedPrivateKeys: Record<string, JWK | PrivateKeyJWK> = {};
@@ -232,8 +172,6 @@ export class DidRepository {
     // Return the DID identity with decrypted private keys
     const didIdentityWithDecryptedKeys: DidIdentityWithDecryptedKeys = {
       did: storedDid,
-      method,
-      method_type,
       createdAt,
       decryptedPrivateKeys,
     };

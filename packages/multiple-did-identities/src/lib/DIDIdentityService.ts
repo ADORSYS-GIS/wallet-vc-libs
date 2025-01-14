@@ -4,18 +4,83 @@ import {
 } from '@adorsys-gis/status-service';
 import { EventEmitter } from 'eventemitter3';
 import {
+  DIDKeyPairVariants,
   DidMethodFactory,
   DIDMethodName,
   PeerGenerationMethod,
 } from '../did-methods/DidMethodFactory';
 import { DidRepository } from '../repository/DidRepository';
-import { encryptData } from '../security/security-utils';
+import { SecurityService } from '../security/SecurityService';
 import { DidEventChannel } from '../utils/DidEventChannel';
+import {
+  hasPrivateKey,
+  hasPrivateKey1and2,
+  hasPrivateKeyVandE,
+} from '../utils/typeGuards';
 
 export class DIDIdentityService {
   private didRepository: DidRepository;
 
-  constructor(private eventBus: EventEmitter) {
+  private async encryptPrivateKeys(
+    didDocument: DIDKeyPairVariants,
+    pin: number,
+    keys: string[],
+  ): Promise<void> {
+    for (const key of keys) {
+      if (
+        hasPrivateKey(didDocument) &&
+        key === 'privateKey' &&
+        didDocument.privateKey
+      ) {
+        const encryptedKey = await this.securityService.encrypt(
+          pin,
+          didDocument.privateKey,
+        );
+        didDocument.encryptedPrivateKey = encryptedKey;
+      }
+
+      if (
+        hasPrivateKeyVandE(didDocument) &&
+        key === 'privateKeyV' &&
+        didDocument.privateKeyV &&
+        didDocument.privateKeyE
+      ) {
+        const encryptedKeyV = await this.securityService.encrypt(
+          pin,
+          didDocument.privateKeyV,
+        );
+        const encryptedKeyE = await this.securityService.encrypt(
+          pin,
+          didDocument.privateKeyE,
+        );
+        didDocument.encryptedPrivateKeyV = encryptedKeyV;
+        didDocument.encryptedPrivateKeyE = encryptedKeyE;
+      }
+
+      if (
+        hasPrivateKey1and2(didDocument) &&
+        key === 'privateKey1' &&
+        didDocument.privateKey1 &&
+        didDocument.privateKey2
+      ) {
+        const encryptedKey1 = await this.securityService.encrypt(
+          pin,
+          didDocument.privateKey1,
+        );
+        const encryptedKey2 = await this.securityService.encrypt(
+          pin,
+          didDocument.privateKey2,
+        );
+        didDocument.encryptedPrivateKey1 = encryptedKey1;
+        didDocument.encryptedPrivateKey2 = encryptedKey2;
+      }
+    }
+  }
+
+  constructor(
+    private eventBus: EventEmitter,
+    private securityService: SecurityService,
+  ) {
     this.didRepository = new DidRepository();
   }
 
@@ -43,46 +108,16 @@ export class DIDIdentityService {
         mediatorRoutingKey,
       );
 
-      // Encrypt private keys based on the type of DID document
-      if ('privateKey' in didDocument && didDocument.privateKey) {
-        didDocument.encryptedPrivateKey = await encryptData(
-          pin,
-          didDocument.privateKey,
-        );
-      }
+      // Call method to encrypt private keys based on the DID document
+      await this.encryptPrivateKeys(didDocument, pin, [
+        'privateKey',
+        'privateKeyV',
+        'privateKeyE',
+        'privateKey1',
+        'privateKey2',
+      ]);
 
-      if (
-        'privateKeyV' in didDocument &&
-        'privateKeyE' in didDocument &&
-        didDocument.privateKeyV &&
-        didDocument.privateKeyE
-      ) {
-        didDocument.encryptedPrivateKeyV = await encryptData(
-          pin,
-          didDocument.privateKeyV,
-        );
-        didDocument.encryptedPrivateKeyE = await encryptData(
-          pin,
-          didDocument.privateKeyE,
-        );
-      }
-      if (
-        'privateKey1' in didDocument &&
-        'privateKey2' in didDocument &&
-        didDocument.privateKey1 &&
-        didDocument.privateKey2
-      ) {
-        didDocument.encryptedPrivateKey1 = await encryptData(
-          pin,
-          didDocument.privateKey1,
-        );
-        didDocument.encryptedPrivateKey2 = await encryptData(
-          pin,
-          didDocument.privateKey2,
-        );
-      }
-
-      await this.didRepository.createDidId(didDocument, method);
+      await this.didRepository.createDidId(didDocument);
 
       const response: ServiceResponse<{ did: string }> = {
         status: ServiceResponseStatus.Success,
@@ -134,21 +169,11 @@ export class DIDIdentityService {
     try {
       const didRecord = await this.didRepository.getADidId(did);
 
-      const isDidPeer = didRecord.did.startsWith('did:peer');
-
       // Define response payload with conditional structure
-      const responsePayload = isDidPeer
-        ? {
-            did: didRecord.did,
-            method: didRecord.method,
-            method_type: didRecord.method_type,
-            createdAt: didRecord.createdAt,
-          }
-        : {
-            did: didRecord.did,
-            method: didRecord.method,
-            createdAt: didRecord.createdAt,
-          };
+      const responsePayload = {
+        did: didRecord.did,
+        createdAt: didRecord.createdAt,
+      };
 
       // Create the response
       const response: ServiceResponse<typeof responsePayload> = {
@@ -172,24 +197,11 @@ export class DIDIdentityService {
     try {
       const didRecords = await this.didRepository.getAllDidIds();
 
-      // Process each record to conditionally include methodType
-      const processedRecords = didRecords.map((record) => {
-        // Determine if the DID is of type 'peer'
-        const isDidPeer = record.did.startsWith('did:peer');
-
-        return isDidPeer
-          ? {
-              did: record.did,
-              method: record.method,
-              method_type: record.method_type,
-              createdAt: record.createdAt,
-            }
-          : {
-              did: record.did,
-              method: record.method,
-              createdAt: record.createdAt,
-            };
-      });
+      // Process each record to return only did and createdAt
+      const processedRecords = didRecords.map((record) => ({
+        did: record.did,
+        createdAt: record.createdAt,
+      }));
 
       // Construct the response
       const response: ServiceResponse<typeof processedRecords> = {

@@ -12,14 +12,17 @@ import { DidIdentity, DIDKeyPair } from '../did-methods/IDidMethod';
 import { DIDIdentityService } from '../lib/DIDIdentityService';
 import { DidEventChannel } from '../utils/DidEventChannel';
 import { mockDIDPeer4Fixture } from './testFixtures';
+import { SecurityService } from '../security/SecurityService';
 
 describe('DIDIdentityService', () => {
   let didIdentityService: DIDIdentityService;
   let eventBus: EventEmitter;
+  let securityService: SecurityService;
 
   beforeEach(() => {
     eventBus = new EventEmitter();
-    didIdentityService = new DIDIdentityService(eventBus);
+    securityService = new SecurityService();
+    didIdentityService = new DIDIdentityService(eventBus, securityService);
   });
 
   afterEach(async () => {
@@ -135,8 +138,6 @@ describe('DIDIdentityService', () => {
 
     const expectedPayload = {
       did: mockDIDPeer4.did,
-      method,
-      method_type,
       createdAt: expect.any(Number),
     };
 
@@ -191,13 +192,10 @@ describe('DIDIdentityService', () => {
     const didRecords = [
       {
         did: 'did:peer:4z123hashedDoc:encodedDoc',
-        method: DIDMethodName.Peer,
-        method_type: method_type,
         createdAt: expect.any(Number),
       },
       {
         did: 'did:key:z1234567890',
-        method: DIDMethodName.Key,
         createdAt: expect.any(Number),
       },
     ];

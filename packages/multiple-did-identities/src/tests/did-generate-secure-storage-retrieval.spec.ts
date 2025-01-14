@@ -12,14 +12,17 @@ import { DidIdentity } from '../did-methods/IDidMethod';
 import { DIDIdentityService } from '../lib/DIDIdentityService';
 import { DidEventChannel } from '../utils/DidEventChannel';
 import { createMockDIDPeer1 } from './testFixtures';
+import { SecurityService } from '../security/SecurityService';
 
-describe('DIDIdentityService', () => {
+describe('Create DID Identity, Encrypt and Decrypt', () => {
   let didIdentityService: DIDIdentityService;
   let eventBus: EventEmitter;
+  let securityService: SecurityService;
 
   beforeEach(() => {
     eventBus = new EventEmitter();
-    didIdentityService = new DIDIdentityService(eventBus);
+    securityService = new SecurityService();
+    didIdentityService = new DIDIdentityService(eventBus, securityService);
   });
 
   afterEach(async () => {
@@ -53,7 +56,7 @@ describe('DIDIdentityService', () => {
 
   const pin = 28364781;
 
-  it('should retrieve a DID with decrypted private keys', async () => {
+  it('should  create a DID retrieve the DID with decrypted private keys', async () => {
     const method = DIDMethodName.Peer;
     const method_type = PeerGenerationMethod.Method1;
     const did = 'did:peer:1z1234567890';
