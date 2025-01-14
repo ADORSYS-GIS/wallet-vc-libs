@@ -1,0 +1,24 @@
+{
+  "name": "@adorsys-gis/message-exchange",
+  "description": "A library for DIDComm message routing.",
+  "version": "1.0.1",
+  "author": "adorsys",
+  "license": "ISC",
+  "main": "dist/src/index.js",
+  "typings": "dist/src/index.d.ts",
+  "scripts": {
+    "test": "vitest --run",
+    "build": "tsc",
+    "lint": "eslint ./src --ext .ts",
+    "format": "prettier --write ."
+  },
+  "dependencies": {
+    "@adorsys-gis/message-service": "^1.0.1",
+    "didcomm": "^0.4.1"
+  },
+  "devDependencies": {
+    "fake-indexeddb": "^6.0.0",
+    "vitest": "^2.1.4",
+    "vite-plugin-wasm": "^3.3.0"
+  }
+}
