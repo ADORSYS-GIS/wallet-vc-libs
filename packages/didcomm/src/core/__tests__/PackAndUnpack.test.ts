@@ -118,7 +118,6 @@ describe('DIDComm message pack and unpack', () => {
       body: MESSAGE_BODY,
     });
 
-
     expect(unpackMetadata).toMatchObject({
       sign_from: expect.any(String),
       encrypted_from_kid: ALICE_KID,
@@ -149,7 +148,6 @@ describe('DIDComm message pack and unpack', () => {
         forward: false,
       },
     );
-
 
     // Unpack the message to simulate receiving it
     didResolver = createDidResolver([ALICE_DID_DOC, BOB_DID_DOC]);
