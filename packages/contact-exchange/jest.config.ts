@@ -1,7 +1,7 @@
-// jest.config.js
 module.exports = {
   preset: 'ts-jest',
   testEnvironment: 'jsdom',
+  setupFiles: ['<rootDir>/jest.setup.ts'],
   transform: {
     '^.+\\.ts$': [
       'ts-jest',
@@ -13,7 +13,5 @@ module.exports = {
   testMatch: ['**/tests/**/*.test.ts', '**/src/**/*.test.ts'],
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../../coverage/libs/contact-exchange',
-
-  // Specify which node_modules to transform
   transformIgnorePatterns: ['node_modules/(?!did-resolver-lib)/'],
 };
