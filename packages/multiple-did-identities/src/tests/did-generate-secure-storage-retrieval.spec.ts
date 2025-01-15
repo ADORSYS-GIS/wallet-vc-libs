@@ -103,7 +103,6 @@ describe('Create DID Identity, Encrypt and Decrypt', () => {
     );
   });
 
-
   it('should create a DID Key identity Encrypt before strorage and decrypt for when retrieved', async () => {
     const method = DIDMethodName.Key;
     const mockDIDKeyPair: DIDKeyPair = {
@@ -143,7 +142,10 @@ describe('Create DID Identity, Encrypt and Decrypt', () => {
     const retrieveEvent = waitForEvent(
       DidEventChannel.GetDidWithDecryptedPrivateKeys,
     );
-    await didIdentityService.retrieveDidWithDecryptedKeys(mockDIDKeyPair.did, pin);
+    await didIdentityService.retrieveDidWithDecryptedKeys(
+      mockDIDKeyPair.did,
+      pin,
+    );
 
     const retrievedDid = await retrieveEvent;
 
@@ -187,7 +189,10 @@ describe('Create DID Identity, Encrypt and Decrypt', () => {
     const retrieveEvent = waitForEvent(
       DidEventChannel.GetDidWithDecryptedPrivateKeys,
     );
-    await didIdentityService.retrieveDidWithDecryptedKeys(mockDIDPeer2.did, pin);
+    await didIdentityService.retrieveDidWithDecryptedKeys(
+      mockDIDPeer2.did,
+      pin,
+    );
 
     const retrievedDid = await retrieveEvent;
 
@@ -204,5 +209,4 @@ describe('Create DID Identity, Encrypt and Decrypt', () => {
       }),
     );
   });
-  
 });
