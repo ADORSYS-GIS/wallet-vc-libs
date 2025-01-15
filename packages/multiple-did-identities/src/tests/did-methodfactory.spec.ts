@@ -1,9 +1,9 @@
+import { DidKeyMethod } from '../did-methods/DidKeyMethod';
 import {
   DidMethodFactory,
   DIDMethodName,
   PeerGenerationMethod,
 } from '../did-methods/DidMethodFactory';
-import { DidKeyMethod } from '../did-methods/DidKeyMethod';
 import { DidPeerMethod } from '../did-methods/DidPeerMethod';
 
 describe('DidMethodFactory', () => {
@@ -34,7 +34,12 @@ describe('DidMethodFactory', () => {
         expect(result.publicKey.kty).toBe('OKP');
         expect(result.publicKey.crv).toBe('Ed25519');
         expect(result.publicKey.x).toBeDefined();
-        expect(result.privateKey.d).toBeDefined();
+        // Check if privateKey is defined before accessing it
+        if (result.privateKey) {
+          expect(result.privateKey.d).toBeDefined();
+        } else {
+          throw new Error('Private key is undefined');
+        }
       } else {
         throw new Error(
           "Result is not of type DIDKeyPair with 'publicKey' and 'privateKey'",
