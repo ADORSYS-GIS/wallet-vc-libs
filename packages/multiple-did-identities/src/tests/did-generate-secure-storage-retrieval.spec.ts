@@ -58,7 +58,7 @@ describe('Create DID Identity, Encrypt and Decrypt', () => {
 
   it('should  create a DID retrieve the DID with decrypted private keys', async () => {
     const method = DIDMethodName.Peer;
-    const method_type = PeerGenerationMethod.Method1;
+    const methodType = PeerGenerationMethod.Method1;
     const did = 'did:peer:1z1234567890';
 
     const mockDIDPeer1 = createMockDIDPeer1(did);
@@ -69,7 +69,7 @@ describe('Create DID Identity, Encrypt and Decrypt', () => {
 
     // Create DID identity
     const createEvent = waitForEvent(DidEventChannel.CreateDidIdentity);
-    await didIdentityService.createDidIdentity(method, pin, method_type);
+    await didIdentityService.createDidIdentity(method, pin, methodType);
 
     const createdDid = await createEvent;
 

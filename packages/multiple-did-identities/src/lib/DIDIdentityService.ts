@@ -20,7 +20,6 @@ import {
 
 export class DIDIdentityService {
   private didRepository: DidRepository;
-
   private async encryptPrivateKeys(
     didDocument: DIDKeyPairVariants,
     pin: number,
@@ -81,7 +80,7 @@ export class DIDIdentityService {
     private eventBus: EventEmitter,
     private securityService: SecurityService,
   ) {
-    this.didRepository = new DidRepository();
+    this.didRepository = new DidRepository(securityService);
   }
 
   /**

@@ -8,7 +8,7 @@ import {
   DidIdentityWithDecryptedKeys,
   PrivateKeyJWK,
 } from '../did-methods/IDidMethod';
-import { decryptData } from '../security/security-utils';
+import { SecurityService } from '../security/SecurityService';
 import { sanitizeDidDoc } from '../utils/sanitizeDidDoc';
 
 interface DidSchema extends DBSchema {
@@ -23,7 +23,11 @@ export class DidRepository {
   private storageFactory: StorageFactory<DidSchema>;
   private readonly storeName = 'dids' as const;
 
-  constructor(dbName: string = 'did-storage', dbVersion: number = 1) {
+  constructor(
+    private securityService: SecurityService,
+    dbName: string = 'did-storage',
+    dbVersion: number = 1,
+  ) {
     this.storageFactory = new StorageFactory<DidSchema>(dbName, dbVersion, {
       upgrade(db) {
         if (!db.objectStoreNames.contains('dids')) {
@@ -49,8 +53,6 @@ export class DidRepository {
       document: sanitizedDidDoc,
       createdAt: Date.now(),
     };
-
-    console.log(JSON.stringify(payload.document));
 
     await this.storageFactory.insert('dids', {
       value: payload,
@@ -111,62 +113,35 @@ export class DidRepository {
 
     const { did: storedDid, createdAt, document } = record.value;
 
+    // Helper function to decrypt an encrypted key
+    const decryptKey = async (encryptedKey: {
+      salt: Uint8Array;
+      ciphertext: string;
+      iv: Uint8Array;
+    }) => {
+      const { salt, ciphertext, iv } = encryptedKey;
+      return await this.securityService.decrypt(pin, salt, iv, ciphertext);
+    };
+
     // Initialize the decrypted private keys object
     const decryptedPrivateKeys: Record<string, JWK | PrivateKeyJWK> = {};
 
-    // Check for different encrypted private keys in the document and decrypt them
-    if (document.encryptedPrivateKey) {
-      const { salt, ciphertext, iv } = document.encryptedPrivateKey;
-      decryptedPrivateKeys['privateKey'] = await decryptData(
-        pin,
-        salt,
-        iv,
-        ciphertext,
-      );
-    }
+    // Define the mapping of document keys to decrypted keys
+    const keyMappings = [
+      { documentKey: 'encryptedPrivateKey', resultKey: 'privateKey' },
+      { documentKey: 'encryptedPrivateKeyV', resultKey: 'privateKeyV' },
+      { documentKey: 'encryptedPrivateKeyE', resultKey: 'privateKeyE' },
+      { documentKey: 'encryptedPrivateKey1', resultKey: 'privateKey1' },
+      { documentKey: 'encryptedPrivateKey2', resultKey: 'privateKey2' },
+    ];
 
-    if (document.encryptedPrivateKeyV && document.encryptedPrivateKeyE) {
-      const { salt, ciphertext, iv } = document.encryptedPrivateKeyV;
-      decryptedPrivateKeys['privateKeyV'] = await decryptData(
-        pin,
-        salt,
-        iv,
-        ciphertext,
-      );
-
-      const {
-        salt: saltE,
-        ciphertext: ciphertextE,
-        iv: ivE,
-      } = document.encryptedPrivateKeyE;
-      decryptedPrivateKeys['privateKeyE'] = await decryptData(
-        pin,
-        saltE,
-        ivE,
-        ciphertextE,
-      );
-    }
-
-    if (document.encryptedPrivateKey1 && document.encryptedPrivateKey2) {
-      const { salt, ciphertext, iv } = document.encryptedPrivateKey1;
-      decryptedPrivateKeys['privateKey1'] = await decryptData(
-        pin,
-        salt,
-        iv,
-        ciphertext,
-      );
-
-      const {
-        salt: salt2,
-        ciphertext: ciphertext2,
-        iv: iv2,
-      } = document.encryptedPrivateKey2;
-      decryptedPrivateKeys['privateKey2'] = await decryptData(
-        pin,
-        salt2,
-        iv2,
-        ciphertext2,
-      );
+    // Iterate over the key mappings and decrypt if the key exists
+    for (const { documentKey, resultKey } of keyMappings) {
+      if (document[documentKey]) {
+        decryptedPrivateKeys[resultKey] = await decryptKey(
+          document[documentKey],
+        );
+      }
     }
 
     // Return the DID identity with decrypted private keys

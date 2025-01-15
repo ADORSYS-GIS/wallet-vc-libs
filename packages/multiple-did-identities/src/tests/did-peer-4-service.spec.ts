@@ -60,7 +60,7 @@ describe('DIDIdentityService', () => {
 
   it('should create a DID identity with did:peer:4 and emit the event', async () => {
     const method = DIDMethodName.Peer;
-    const method_type = PeerGenerationMethod.Method4;
+    const methodType = PeerGenerationMethod.Method4;
 
     // Mock data representing the structure returned by DID Peer Method 4
     const mockDIDPeer4 = mockDIDPeer4Fixture;
@@ -70,7 +70,7 @@ describe('DIDIdentityService', () => {
       .mockResolvedValueOnce(mockDIDPeer4);
 
     const createEvent = waitForEvent(DidEventChannel.CreateDidIdentity);
-    await didIdentityService.createDidIdentity(method, pin, method_type);
+    await didIdentityService.createDidIdentity(method, pin, methodType);
 
     const createdDid = await createEvent;
 
@@ -86,7 +86,7 @@ describe('DIDIdentityService', () => {
 
   it('should delete a DID identity with did:peer:4 and emit the event', async () => {
     const method = DIDMethodName.Peer;
-    const method_type = PeerGenerationMethod.Method4;
+    const methodType = PeerGenerationMethod.Method4;
 
     // Mock data representing the structure returned by DID Peer Method 4
     const mockDIDPeer4 = mockDIDPeer4Fixture;
@@ -96,7 +96,7 @@ describe('DIDIdentityService', () => {
       .mockResolvedValueOnce(mockDIDPeer4);
 
     const createEvent = waitForEvent(DidEventChannel.CreateDidIdentity);
-    await didIdentityService.createDidIdentity(method, pin, method_type);
+    await didIdentityService.createDidIdentity(method, pin, methodType);
     await createEvent;
 
     // Delete the DID
@@ -118,7 +118,7 @@ describe('DIDIdentityService', () => {
 
   it('should find a DID identity with did:peer:4 and emit the event', async () => {
     const method = DIDMethodName.Peer;
-    const method_type = PeerGenerationMethod.Method4;
+    const methodType = PeerGenerationMethod.Method4;
 
     // Mock data representing the structure returned by DID Peer Method 4
     const mockDIDPeer4 = mockDIDPeer4Fixture;
@@ -128,7 +128,7 @@ describe('DIDIdentityService', () => {
       .mockResolvedValueOnce(mockDIDPeer4);
 
     const createEvent = waitForEvent(DidEventChannel.CreateDidIdentity);
-    await didIdentityService.createDidIdentity(method, pin, method_type);
+    await didIdentityService.createDidIdentity(method, pin, methodType);
     await createEvent;
 
     const findEvent = waitForEvent(DidEventChannel.GetSingleDidIdentity);
@@ -151,7 +151,7 @@ describe('DIDIdentityService', () => {
 
   it('should find all DID identities and emit the event', async () => {
     const method = DIDMethodName.Peer;
-    const method_type = PeerGenerationMethod.Method4;
+    const methodType = PeerGenerationMethod.Method4;
 
     // Mock data representing the structure returned by DID Peer Method 4
     const mockDIDPeer4 = mockDIDPeer4Fixture;
@@ -161,7 +161,7 @@ describe('DIDIdentityService', () => {
       .mockResolvedValueOnce(mockDIDPeer4);
 
     const createEvent = waitForEvent(DidEventChannel.CreateDidIdentity);
-    await didIdentityService.createDidIdentity(method, pin, method_type);
+    await didIdentityService.createDidIdentity(method, pin, methodType);
     await createEvent;
 
     // MOCK DID KEY
