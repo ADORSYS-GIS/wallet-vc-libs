@@ -1,12 +1,28 @@
+import { CloneMethodArgs } from '@adorsys-gis/cloning-decorator';
 import { DIDMethodName } from '@adorsys-gis/multiple-did-identities/src/did-methods/DidMethodFactory';
-import { PrivateKeyJWK } from '@adorsys-gis/multiple-did-identities/src/did-methods/IDidMethod';
 import { DidPeerMethod } from '@adorsys-gis/multiple-did-identities/src/did-methods/DidPeerMethod';
+import { PrivateKeyJWK } from '@adorsys-gis/multiple-did-identities/src/did-methods/IDidMethod';
 import { DidRepository } from '@adorsys-gis/multiple-did-identities/src/repository/DidRepository';
-import { PeerDIDResolver } from 'did-resolver-lib';
+import {
+  ServiceResponse,
+  ServiceResponseStatus,
+} from '@adorsys-gis/status-service';
 import fetch from 'cross-fetch';
+import { PeerDIDResolver } from 'did-resolver-lib';
 import { IMessage, Message, Secret, SecretsResolver } from 'didcomm-node';
+import { EventEmitter } from 'eventemitter3';
 import { v4 as uuidv4 } from 'uuid';
 import { MessageTyp, MessageType } from './DIDCommOOBInvitation';
+
+// Define event channels
+enum DidEventChannel {
+  ProcessMediatorOOB = 'ProcessMediatorOOB',
+  MediationRequestSent = 'MediationRequestSent',
+  MediationResponseReceived = 'MediationResponseReceived',
+  KeylistUpdateSent = 'KeylistUpdateSent',
+  KeylistUpdateResponseReceived = 'KeylistUpdateResponseReceived',
+  Error = 'DidError',
+}
 
 // Class to resolve secrets based on known secrets
 class DidcommSecretsResolver implements SecretsResolver {
@@ -40,69 +56,208 @@ class DidcommSecretsResolver implements SecretsResolver {
   }
 }
 
-// Function to prepend DID to secret IDs
-function prependDidToSecretIds(
-  secrets: PrivateKeyJWK[],
-  did: string,
-): PrivateKeyJWK[] {
-  return secrets.map((secret) => ({
-    ...secret,
-    id: `${did}${secret.id.split(did).pop()}`,
-  }));
-}
+// Service class to handle DID communication
+export class DidService {
+  private didRepository: DidRepository;
 
-// Refactored main function
-export async function processMediatorOOB(oob: string) {
-  try {
-    const oobParts = oob.split('=');
-    if (oobParts.length < 2) {
-      throw new Error('Invalid OOB format. Missing encoded payload.');
+  constructor(private eventBus: EventEmitter) {
+    this.didRepository = new DidRepository();
+  }
+
+  public async processMediatorOOB(oob: string): Promise<unknown> {
+    const channel = DidEventChannel.ProcessMediatorOOB;
+
+    try {
+      const oobParts = oob.split('=');
+      if (oobParts.length < 2) {
+        throw new Error('Invalid OOB format. Missing encoded payload.');
+      }
+      console.log('OOB parts:', oobParts);
+
+      const oobUrl = oobParts[1];
+      const decodedOob = JSON.parse(
+        Buffer.from(oobUrl, 'base64url').toString('utf-8'),
+      );
+      console.log('Decoded OOB:', decodedOob);
+
+      if (!decodedOob.from) {
+        throw new Error('Invalid OOB content. Missing "from" field.');
+      }
+
+      const didTo = decodedOob.from;
+      const didPeerMethod = new DidPeerMethod();
+      const didPeer = await didPeerMethod.generateMethod2();
+      console.log('didPeer:', didPeer);
+
+      const resolver = new PeerDIDResolver();
+      const secrets = [didPeer.privateKeyE, didPeer.privateKeyV];
+      const updatedSecrets = this.prependDidToSecretIds(secrets, didPeer.did);
+      console.log('updatedSecrets:', updatedSecrets);
+
+      const secretsResolver = new DidcommSecretsResolver(updatedSecrets);
+      console.log('secretsResolver:', secretsResolver);
+
+      const mediatorDIDDoc = await resolver.resolve(didPeer.did);
+      console.log('DIDDoc:', mediatorDIDDoc);
+
+      const mediatorService = mediatorDIDDoc?.service?.find(
+        (s) => s.type === 'DIDCommMessaging',
+      );
+
+      if (!mediatorService || !mediatorService.serviceEndpoint) {
+        throw new Error('Invalid mediator service endpoint format');
+      }
+
+      const mediatorEndpoint = mediatorService.serviceEndpoint;
+      console.log('mediator endpoint:', mediatorEndpoint);
+
+      const val: IMessage = {
+        id: uuidv4(),
+        typ: MessageTyp.Didcomm,
+        type: MessageType.MediationRequest,
+        body: { messagesspecificattribute: 'and its value' },
+        from: didPeer.did,
+        to: [didTo],
+        created_time: Math.round(new Date().getTime() / 1000),
+        return_route: 'all',
+      };
+
+      console.log('mediation request:', val);
+
+      const mediationRequest = new Message(val);
+      const [packedMediationRequest] = await mediationRequest.pack_encrypted(
+        didTo,
+        didPeer.did,
+        didPeer.did,
+        resolver,
+        secretsResolver,
+        { forward: false },
+      );
+
+      this.eventBus.emit(channel, {
+        status: ServiceResponseStatus.Success,
+        payload: packedMediationRequest,
+      });
+      console.log(packedMediationRequest);
+
+      const mediationResponse = await fetch(mediatorEndpoint.uri, {
+        method: 'POST',
+        body: packedMediationRequest,
+        headers: { 'Content-Type': 'application/didcomm-encrypted+json' },
+      });
+
+      if (!mediationResponse.ok) {
+        throw new Error(
+          `Failed to send Mediation Request: ${mediationResponse.statusText}`,
+        );
+      }
+
+      const responseJson = await mediationResponse.json();
+      const [unpackedMessage] = await Message.unpack(
+        JSON.stringify(responseJson),
+        resolver,
+        secretsResolver,
+        {},
+      );
+
+      const unpackedContent = unpackedMessage.as_value();
+      if (unpackedContent.type !== MessageType.MediationResponse) {
+        throw new Error(
+          'Unexpected message type received for Mediation Response',
+        );
+      }
+
+      const mediatorRoutingKey = unpackedContent.body.routing_did;
+      const mediatorNewDID = unpackedContent.from;
+      if (!mediatorRoutingKey || !mediatorNewDID) {
+        throw new Error('Mediation Response missing required fields');
+      }
+
+      const newDid =
+        await didPeerMethod.generateMethod2RoutingKey(mediatorRoutingKey);
+      const method = DIDMethodName.Peer;
+
+      await this.didRepository.createDidId(newDid, method);
+      this.eventBus.emit(DidEventChannel.MediationResponseReceived, {
+        status: ServiceResponseStatus.Success,
+        payload: unpackedContent,
+      });
+
+      // Call the refactored Keylist Update function
+      const keylistUpdateResponse = await this.handleKeylistUpdate(
+        didTo,
+        didPeer,
+        newDid,
+        resolver,
+        secretsResolver,
+        mediatorEndpoint,
+      );
+      this.eventBus.emit(DidEventChannel.KeylistUpdateResponseReceived, {
+        status: ServiceResponseStatus.Success,
+        payload: keylistUpdateResponse,
+      });
+
+      return keylistUpdateResponse;
+    } catch (error: unknown) {
+      const response: ServiceResponse<Error> = {
+        status: ServiceResponseStatus.Error,
+        payload: error instanceof Error ? error : new Error(String(error)),
+      };
+      this.eventBus.emit(DidEventChannel.Error, response);
+      throw response;
     }
+  }
 
-    const oobUrl = oobParts[1];
-    const decodedOob = JSON.parse(
-      Buffer.from(oobUrl, 'base64url').toString('utf-8'),
-    );
+  private prependDidToSecretIds(
+    secrets: PrivateKeyJWK[],
+    did: string,
+  ): PrivateKeyJWK[] {
+    return secrets.map((secret) => ({
+      ...secret,
+      id: `${did}${secret.id.split(did).pop()}`,
+    }));
+  }
 
-    if (!decodedOob.from) {
-      throw new Error('Invalid OOB content. Missing "from" field.');
-    }
+  // private getMediatorServiceEndpoint(mediatorDIDDoc: unknown ): { uri: string } {
+  //   const mediatorService = mediatorDIDDoc?.service?.find(
+  //     (s) => s.type === DID_COMM_MESSAGING_TYPE,
+  //   );
 
-    const didTo = decodedOob.from;
-    const didPeerMethod = new DidPeerMethod();
-    const didPeer = await didPeerMethod.generateMethod2();
+  //   if (!mediatorService || !mediatorService.serviceEndpoint) {
+  //     throw new Error('Invalid mediator service endpoint format');
+  //   }
 
-    const resolver = new PeerDIDResolver();
-    const secrets = [didPeer.privateKeyE, didPeer.privateKeyV];
-    const updatedSecrets = prependDidToSecretIds(secrets, didPeer.did);
+  //   return { uri: mediatorService.serviceEndpoint };
+  // }
 
-    const secretsResolver = new DidcommSecretsResolver(updatedSecrets);
-    const mediatorDIDDoc = await resolver.resolve(decodedOob.from);
-
-    const mediatorService = mediatorDIDDoc?.service?.find(
-      (s) => s.type === 'DIDCommMessaging',
-    );
-
-    if (!mediatorService || !mediatorService.serviceEndpoint) {
-      throw new Error('Invalid mediator service endpoint format');
-    }
-
-    const mediatorEndpoint = mediatorService.serviceEndpoint;
-
-    const val: IMessage = {
+  private async handleKeylistUpdate(
+    didTo: string,
+    didPeer: { did: string },
+    newDid: { did: string },
+    resolver: PeerDIDResolver,
+    secretsResolver: SecretsResolver,
+    mediatorEndpoint: { uri: string },
+  ): Promise<unknown> {
+    const keyupdate: IMessage = {
       id: uuidv4(),
       typ: MessageTyp.Didcomm,
-      type: MessageType.MediationRequest,
-      body: { messagespecificattribute: 'and its value' },
+      type: MessageType.KeylistUpdate,
+      body: {
+        updates: [
+          {
+            recipient_did: newDid.did,
+            action: 'add',
+          },
+        ],
+      },
       from: didPeer.did,
       to: [didTo],
       created_time: Math.round(new Date().getTime() / 1000),
       return_route: 'all',
     };
 
-    const mediationRequest = new Message(val);
-
-    const [packedMediationRequest] = await mediationRequest.pack_encrypted(
+    const keylistUpdate = new Message(keyupdate);
+    const [packedKeylistUpdate] = await keylistUpdate.pack_encrypted(
       didTo,
       didPeer.did,
       didPeer.did,
@@ -110,149 +265,47 @@ export async function processMediatorOOB(oob: string) {
       secretsResolver,
       { forward: false },
     );
-    console.log(packedMediationRequest);
 
-    const mediationResponse = await fetch(mediatorEndpoint.uri, {
-      method: 'POST',
-      body: packedMediationRequest,
-      headers: {
-        'Content-Type': 'application/didcomm-encrypted+json',
-      },
+    this.eventBus.emit(DidEventChannel.KeylistUpdateSent, {
+      status: ServiceResponseStatus.Success,
+      payload: packedKeylistUpdate,
     });
 
-    if (!mediationResponse.ok) {
-      throw new Error(
-        `Failed to send Mediation Request: ${mediationResponse.statusText}`,
-      );
+    const response = await fetch(mediatorEndpoint.uri, {
+      method: 'POST',
+      body: packedKeylistUpdate,
+      headers: { 'Content-Type': 'application/didcomm-encrypted+json' },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Failed to send Keylist Update: ${response.statusText}`);
     }
 
-    const responseJson = await mediationResponse.json();
-
-    const [unpackedMessage] = await Message.unpack(
-      JSON.stringify(responseJson),
+    const keylistResponseData = await response.json();
+    const [unpackedKeylistResponse] = await Message.unpack(
+      JSON.stringify(keylistResponseData),
       resolver,
       secretsResolver,
       {},
     );
 
-    const unpackedContent = unpackedMessage.as_value();
-
-    if (unpackedContent.type !== MessageType.MediationResponse) {
-      throw new Error(
-        'Unexpected message type received for Mediation Response',
-      );
+    const responseContent = unpackedKeylistResponse.as_value();
+    if (responseContent.type !== MessageType.KeylistUpdateResponse) {
+      throw new Error('Unexpected message type received for Keylist Update');
     }
 
-    const mediatorRoutingKey = unpackedContent.body.routing_did;
-    const mediatorNewDID = unpackedContent.from;
-    if (!mediatorRoutingKey || !mediatorNewDID) {
-      throw new Error('Mediation Response missing required fields');
+    if (
+      responseContent.body.updated[0]?.recipient_did !== newDid.did ||
+      responseContent.body.updated[0]?.action !== 'add' ||
+      responseContent.body.updated[0]?.result !== 'success'
+    ) {
+      throw new Error('Unexpected response in Keylist Update');
     }
 
-    const storeDid = new DidRepository();
-    const newDid =
-      await didPeerMethod.generateMethod2RoutingKey(mediatorRoutingKey);
-    const method = DIDMethodName.Peer;
-
-    await storeDid.createDidId(newDid, method);
-
-    // Call the refactored Keylist Update function
-    const keylistUpdateResponse = await handleKeylistUpdate(
-      didTo,
-      didPeer,
-      newDid,
-      resolver,
-      secretsResolver,
-      mediatorEndpoint,
-    );
-
-    return keylistUpdateResponse;
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      throw new Error(`Error: ${error.message}`);
-    } else {
-      throw new Error(`Unexpected error: ${String(error)}`);
-    }
+    return responseContent.body;
   }
 }
 
-// Extracted function to handle Keylist Update functionality
-async function handleKeylistUpdate(
-  didTo: string,
-  didPeer: { did: string },
-  newDid: { did: string },
-  resolver: PeerDIDResolver,
-  secretsResolver: SecretsResolver,
-  mediatorEndpoint: { uri: string },
-): Promise<unknown> {
-  // Create a keylist update message
-  const keyupdate: IMessage = {
-    id: uuidv4(),
-    typ: MessageTyp.Didcomm,
-    type: MessageType.KeylistUpdate,
-    body: {
-      updates: [
-        {
-          recipient_did: newDid.did,
-          action: 'add',
-        },
-      ],
-    },
-    from: didPeer.did,
-    to: [didTo],
-    created_time: Math.round(new Date().getTime() / 1000),
-    return_route: 'all',
-  };
-
-  const keylistUpdate = new Message(keyupdate);
-
-  // Pack the keylist update message for encryption
-  const [packedKeylistUpdate] = await keylistUpdate.pack_encrypted(
-    didTo,
-    didPeer.did,
-    didPeer.did,
-    resolver,
-    secretsResolver,
-    { forward: false },
-  );
-  console.log(packedKeylistUpdate);
-
-  // Send the packed keylist update to the mediator endpoint using fetch
-  const response = await fetch(mediatorEndpoint.uri, {
-    method: 'POST',
-    body: packedKeylistUpdate,
-    headers: { 'Content-Type': 'application/didcomm-encrypted+json' },
-  });
-
-  if (!response.ok) {
-    throw new Error(`Failed to send Keylist Update: ${response.statusText}`);
-  }
-
-  const keylistResponseData = await response.json();
-
-  // Unpack the keylist update response message
-  const [unpackedKeylistResponse] = await Message.unpack(
-    JSON.stringify(keylistResponseData),
-    resolver,
-    secretsResolver,
-    {},
-  );
-
-  const responseContent = unpackedKeylistResponse.as_value();
-
-  // Validate the message type of the keylist update response
-  if (responseContent.type !== MessageType.KeylistUpdateResponse) {
-    throw new Error('Unexpected message type received for Keylist Update');
-  }
-
-  // Validate the response content for the keylist update
-  if (
-    responseContent.body.updated[0]?.recipient_did !== newDid.did ||
-    responseContent.body.updated[0]?.action !== 'add' ||
-    responseContent.body.updated[0]?.result !== 'success'
-  ) {
-    throw new Error('Unexpected response in Keylist Update');
-  }
-
-  return responseContent.body;
-}
+// Decorate the DidService class to clone method arguments
+const decorate = CloneMethodArgs({ exclude: [EventEmitter] });
+export const DecoratedDidService = decorate(DidService);

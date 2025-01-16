@@ -21,6 +21,8 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@adorsys-gis/multiple-did-identities": "^1.0.2",
+    "@adorsys-gis/status-service": "^1.0.0",
     "cross-fetch": "^4.1.0",
     "did-resolver-lib": "https://gitpkg.vercel.app/adorsys/didcomm-messaging-clients-utilities/libs/did-resolver-lib?main",
     "didcomm": "^1.0.0",
