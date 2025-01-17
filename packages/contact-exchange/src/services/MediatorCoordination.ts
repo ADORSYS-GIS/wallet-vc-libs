@@ -15,7 +15,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { MessageTyp, MessageType } from './DIDCommOOBInvitation';
 
 // Define event channels
-enum DidEventChannel {
+export enum DidEventChannel {
   ProcessMediatorOOB = 'ProcessMediatorOOB',
   MediationRequestSent = 'MediationRequestSent',
   MediationResponseReceived = 'MediationResponseReceived',
@@ -25,14 +25,13 @@ enum DidEventChannel {
 }
 
 // Class to resolve secrets based on known secrets
-class DidcommSecretsResolver implements SecretsResolver {
+export class DidcommSecretsResolver implements SecretsResolver {
   private knownSecrets: Secret[];
 
   constructor(knownSecrets: Secret[]) {
     this.knownSecrets = knownSecrets;
   }
 
-  // Retrieve a secret by its ID
   async get_secret(secretId: string): Promise<Secret> {
     const secret =
       this.knownSecrets.find((secret) => secret.id === secretId) || null;
@@ -42,7 +41,6 @@ class DidcommSecretsResolver implements SecretsResolver {
     return secret;
   }
 
-  // Find multiple secrets based on an array of secret IDs
   async find_secrets(secretIds: string[]): Promise<string[]> {
     const foundSecrets = secretIds.filter((id) =>
       this.knownSecrets.some((secret) => secret.id === id),
@@ -97,7 +95,7 @@ export class DidService {
       const secretsResolver = new DidcommSecretsResolver(updatedSecrets);
       console.log('secretsResolver:', secretsResolver);
 
-      const mediatorDIDDoc = await resolver.resolve(didPeer.did);
+      const mediatorDIDDoc = await resolver.resolve(decodedOob.from);
       console.log('DIDDoc:', mediatorDIDDoc);
 
       const mediatorService = mediatorDIDDoc?.service?.find(
@@ -138,7 +136,7 @@ export class DidService {
         status: ServiceResponseStatus.Success,
         payload: packedMediationRequest,
       });
-      console.log(packedMediationRequest);
+      console.log('packedMediationRequest', packedMediationRequest);
 
       const mediationResponse = await fetch(mediatorEndpoint.uri, {
         method: 'POST',
@@ -153,6 +151,8 @@ export class DidService {
       }
 
       const responseJson = await mediationResponse.json();
+      console.log('responseJson', responseJson);
+
       const [unpackedMessage] = await Message.unpack(
         JSON.stringify(responseJson),
         resolver,
@@ -160,15 +160,21 @@ export class DidService {
         {},
       );
 
+      console.log('Unpacked message:', unpackedMessage);
+
       const unpackedContent = unpackedMessage.as_value();
-      if (unpackedContent.type !== MessageType.MediationResponse) {
-        throw new Error(
-          'Unexpected message type received for Mediation Response',
-        );
+      console.log('Unpacked content:', unpackedContent);
+      if (
+        unpackedContent.type !== MessageType.MediationResponse ||
+        unpackedContent.body.message_type == MessageType.MediationDeny
+      ) {
+        return unpackedContent.body.message_type;
       }
 
       const mediatorRoutingKey = unpackedContent.body.routing_did;
+      console.log('mediatorRoutingKey:', mediatorRoutingKey);
       const mediatorNewDID = unpackedContent.from;
+      console.log('mediatorNewDID:', mediatorNewDID);
       if (!mediatorRoutingKey || !mediatorNewDID) {
         throw new Error('Mediation Response missing required fields');
       }
@@ -183,22 +189,18 @@ export class DidService {
         payload: unpackedContent,
       });
 
-      // Call the refactored Keylist Update function
-      const keylistUpdateResponse = await this.handleKeylistUpdate(
+      await this.handleKeylistUpdate(
         didTo,
         didPeer,
-        newDid,
         resolver,
         secretsResolver,
         mediatorEndpoint,
+        newDid.did,
       );
-      this.eventBus.emit(DidEventChannel.KeylistUpdateResponseReceived, {
-        status: ServiceResponseStatus.Success,
-        payload: keylistUpdateResponse,
-      });
 
-      return keylistUpdateResponse;
+      return unpackedContent.body.message_type;
     } catch (error: unknown) {
+      console.log('Error in processMediatorOOB:', error);
       const response: ServiceResponse<Error> = {
         status: ServiceResponseStatus.Error,
         payload: error instanceof Error ? error : new Error(String(error)),
@@ -208,36 +210,15 @@ export class DidService {
     }
   }
 
-  private prependDidToSecretIds(
-    secrets: PrivateKeyJWK[],
-    did: string,
-  ): PrivateKeyJWK[] {
-    return secrets.map((secret) => ({
-      ...secret,
-      id: `${did}${secret.id.split(did).pop()}`,
-    }));
-  }
-
-  // private getMediatorServiceEndpoint(mediatorDIDDoc: unknown ): { uri: string } {
-  //   const mediatorService = mediatorDIDDoc?.service?.find(
-  //     (s) => s.type === DID_COMM_MESSAGING_TYPE,
-  //   );
-
-  //   if (!mediatorService || !mediatorService.serviceEndpoint) {
-  //     throw new Error('Invalid mediator service endpoint format');
-  //   }
-
-  //   return { uri: mediatorService.serviceEndpoint };
-  // }
-
   private async handleKeylistUpdate(
     didTo: string,
     didPeer: { did: string },
-    newDid: { did: string },
     resolver: PeerDIDResolver,
-    secretsResolver: SecretsResolver,
-    mediatorEndpoint: { uri: string },
+    secretsResolver: DidcommSecretsResolver,
+    mediatorEndpoint: string,
+    newDidId: string,
   ): Promise<unknown> {
+    console.log(mediatorEndpoint);
     const keyupdate: IMessage = {
       id: uuidv4(),
       typ: MessageTyp.Didcomm,
@@ -245,7 +226,7 @@ export class DidService {
       body: {
         updates: [
           {
-            recipient_did: newDid.did,
+            recipient_did: newDidId,
             action: 'add',
           },
         ],
@@ -256,7 +237,9 @@ export class DidService {
       return_route: 'all',
     };
 
+    console.log('keyupdate', keyupdate);
     const keylistUpdate = new Message(keyupdate);
+
     const [packedKeylistUpdate] = await keylistUpdate.pack_encrypted(
       didTo,
       didPeer.did,
@@ -265,44 +248,55 @@ export class DidService {
       secretsResolver,
       { forward: false },
     );
+    console.log('packedKeylistUpdate', packedKeylistUpdate);
 
-    this.eventBus.emit(DidEventChannel.KeylistUpdateSent, {
-      status: ServiceResponseStatus.Success,
-      payload: packedKeylistUpdate,
-    });
-
-    const response = await fetch(mediatorEndpoint.uri, {
+    const keylistResponse = await fetch(mediatorEndpoint, {
       method: 'POST',
       body: packedKeylistUpdate,
       headers: { 'Content-Type': 'application/didcomm-encrypted+json' },
     });
 
-    if (!response.ok) {
-      throw new Error(`Failed to send Keylist Update: ${response.statusText}`);
-    }
+    console.log('keylistResponse', keylistResponse);
 
-    const keylistResponseData = await response.json();
+    // Unpack the keylist update response message
+    const keylistResponseJson = await keylistResponse.json();
+    console.log('keylistResponseJson', keylistResponseJson);
     const [unpackedKeylistResponse] = await Message.unpack(
-      JSON.stringify(keylistResponseData),
+      JSON.stringify(keylistResponseJson),
       resolver,
       secretsResolver,
       {},
     );
+    console.log('unpackedKeylistResponse', unpackedKeylistResponse);
 
     const responseContent = unpackedKeylistResponse.as_value();
+    console.log('responseContent', responseContent);
+
+    // Validate the message type of the keylist update response
     if (responseContent.type !== MessageType.KeylistUpdateResponse) {
       throw new Error('Unexpected message type received for Keylist Update');
     }
 
+    // Validate the response content for the keylist update
     if (
-      responseContent.body.updated[0]?.recipient_did !== newDid.did ||
+      responseContent.body.updated[0]?.recipient_did !== newDidId ||
       responseContent.body.updated[0]?.action !== 'add' ||
       responseContent.body.updated[0]?.result !== 'success'
     ) {
       throw new Error('Unexpected response in Keylist Update');
     }
 
-    return responseContent.body;
+    // Return the response content if needed
+    return responseContent; // Explicitly return the response content
+  }
+  private prependDidToSecretIds(
+    secrets: PrivateKeyJWK[],
+    did: string,
+  ): PrivateKeyJWK[] {
+    return secrets.map((secret) => ({
+      ...secret,
+      id: `${did}${secret.id.split(did).pop()}`,
+    }));
   }
 }
 

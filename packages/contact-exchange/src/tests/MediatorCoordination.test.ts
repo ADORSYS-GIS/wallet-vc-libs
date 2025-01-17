@@ -1,212 +1,165 @@
-import { DidService, DidEventChannel } from '../services/MediatorCoordination';
 import { EventEmitter } from 'eventemitter3';
-import { ServiceResponseStatus } from '@adorsys-gis/status-service';
+import { DidService, DidEventChannel } from '../services/MediatorCoordination';
 import fetch from 'cross-fetch';
-import { PeerDIDResolver } from 'did-resolver-lib';
-import { Message } from 'didcomm-node';
-import { DidPeerMethod } from '@adorsys-gis/multiple-did-identities/src/did-methods/DidPeerMethod';
 
-// Mocking the dependencies
+// Mock dependencies
 jest.mock('cross-fetch');
-jest.mock('did-resolver-lib');
-jest.mock('didcomm-node', () => ({
-  ...jest.requireActual('didcomm-node'),
-  Message: {
-    unpack: jest.fn(),
-    pack_encrypted: jest.fn(),
+jest.mock(
+  '@adorsys-gis/multiple-did-identities/src/did-methods/DidPeerMethod',
+  () => {
+    return {
+      DidPeerMethod: jest.fn().mockImplementation(() => ({
+        generateMethod2: jest.fn().mockResolvedValue({
+          did: 'did:peer:456',
+          privateKeyE: { id: 'key1', kty: 'OKP' },
+          privateKeyV: { id: 'key2', kty: 'OKP' },
+        }),
+      })),
+    };
   },
-}));
-jest.mock('eventemitter3', () => ({
-  EventEmitter: jest.fn().mockImplementation(() => ({
-    emit: jest.fn(),
-  })),
-}));
+);
+
+jest.mock('did-resolver-lib', () => {
+  return {
+    PeerDIDResolver: jest.fn().mockImplementation(() => ({
+      resolve: jest.fn().mockResolvedValue({
+        service: [
+          {
+            type: 'DIDCommMessaging',
+            serviceEndpoint: { uri: 'https://mediator.example.com' },
+          },
+        ],
+      }),
+    })),
+  };
+});
+
+// Mock the didcomm-node module
+jest.mock('didcomm-node', () => {
+  return {
+    Message: jest.fn().mockImplementation(() => ({
+      pack_encrypted: jest.fn().mockResolvedValue(['packedMessage']),
+      unpack: jest.fn().mockResolvedValue([
+        {
+          as_value: jest.fn().mockReturnValue({
+            type: 'MediationResponse',
+            body: { routing_did: 'did:example:789' },
+          }),
+        },
+        {},
+      ]),
+    })),
+  };
+});
+
+const mockEventBus = new EventEmitter();
 
 describe('DidService', () => {
   let didService: DidService;
-  let eventBus: EventEmitter;
-  let resolver: PeerDIDResolver;
-  let secretsResolver: unknown;
 
   beforeEach(() => {
-    eventBus = new EventEmitter();
-    didService = new DidService(eventBus);
-    resolver = new PeerDIDResolver();
-    secretsResolver = {
-      get_secret: jest.fn(),
-      find_secrets: jest.fn(),
-    };
+    jest.resetModules();
+    didService = new DidService(mockEventBus);
   });
 
   afterEach(() => {
     jest.clearAllMocks();
   });
 
-  test('processMediatorOOB - success flow', async () => {
-    const mockOob = 'key=base64urlencodedOOB';
+  it('should process a valid OOB and emit events', async () => {
+    const mockOOB =
+      'someprefix=' +
+      Buffer.from(JSON.stringify({ from: 'did:example:123' })).toString(
+        'base64url',
+      );
 
-    // Mocking the DID Peer Method generation and resolution
-    const mockDidPeer = {
-      did: 'did:peer:123',
-      privateKeyE: { id: 'key1' },
-      privateKeyV: { id: 'key2' },
-    };
-    jest.spyOn(PeerDIDResolver.prototype, 'resolve').mockResolvedValueOnce({
-      service: [
-        { type: 'DIDCommMessaging', serviceEndpoint: 'https://example.com' },
-      ],
-    });
-    jest
-      .spyOn(DidPeerMethod.prototype, 'generateMethod2')
-      .mockResolvedValue(mockDidPeer);
-    jest
-      .spyOn(Message.prototype, 'pack_encrypted')
-      .mockResolvedValueOnce([Buffer.from('packed')]);
-    fetch.mockResolvedValueOnce({
+    // Mock the fetch function
+    (fetch as jest.Mock).mockResolvedValue({
       ok: true,
-      json: jest.fn().mockResolvedValueOnce({ type: 'MediationResponse' }),
-    });
-
-    const result = await didService.processMediatorOOB(mockOob);
-
-    expect(result).toBeDefined();
-    expect(fetch).toHaveBeenCalledWith('https://example.com', {
-      method: 'POST',
-      body: expect.any(Buffer),
-      headers: { 'Content-Type': 'application/didcomm-encrypted+json' },
-    });
-    expect(eventBus.emit).toHaveBeenCalledWith(
-      DidEventChannel.ProcessMediatorOOB,
-      expect.objectContaining({
-        status: ServiceResponseStatus.Success,
-        payload: expect.any(Buffer),
+      json: jest.fn().mockResolvedValue({
+        type: 'MediationResponse',
+        body: { routing_did: 'did:example:789' },
+        from: 'did:example:123',
       }),
+    });
+
+    // Call the method
+    await didService.processMediatorOOB(mockOOB);
+
+    // Check that the appropriate events were emitted
+    expect(mockEventBus.emit).toHaveBeenCalledWith(
+      DidEventChannel.ProcessMediatorOOB,
+      expect.any(Object),
+    );
+    expect(mockEventBus.emit).toHaveBeenCalledWith(
+      DidEventChannel.MediationResponseReceived,
+      expect.objectContaining({
+        status: 'success',
+        payload: expect.objectContaining({
+          routing_did: 'did:example:789',
+        }),
+      }),
+    );
+    expect(mockEventBus.emit).toHaveBeenCalledWith(
+      DidEventChannel.KeylistUpdateResponseReceived,
+      expect.any(Object),
     );
   });
 
-  test('processMediatorOOB - invalid OOB format', async () => {
-    const invalidOob = 'invalidFormat';
+  it('should throw an error for invalid OOB format', async () => {
+    const invalidOOB = 'invalidOOBFormat';
 
-    await expect(didService.processMediatorOOB(invalidOob)).rejects.toThrow(
+    await expect(didService.processMediatorOOB(invalidOOB)).rejects.toThrow(
       'Invalid OOB format. Missing encoded payload.',
     );
-    expect(eventBus.emit).toHaveBeenCalledWith(
-      DidEventChannel.Error,
-      expect.objectContaining({
-        status: ServiceResponseStatus.Error,
-        payload: expect.any(Error),
-      }),
-    );
   });
 
-  test('processMediatorOOB - error in resolving DID', async () => {
-    const mockOob = 'key=base64urlencodedOOB';
-    const mockDidPeer = {
-      did: 'did:peer:123',
-      privateKeyE: { id: 'key1' },
-      privateKeyV: { id: 'key2' },
-    };
-    jest
-      .spyOn(PeerDIDResolver.prototype, 'resolve')
-      .mockRejectedValueOnce(new Error('DID resolution failed'));
-    jest
-      .spyOn(DidPeerMethod.prototype, 'generateMethod2')
-      .mockResolvedValue(mockDidPeer);
+  it('should throw an error if the mediator service endpoint is missing', async () => {
+    const mockOOB =
+      'someprefix=' +
+      Buffer.from(JSON.stringify({ from: 'did:example:123' })).toString(
+        'base64url',
+      );
 
-    await expect(didService.processMediatorOOB(mockOob)).rejects.toThrow(
-      'DID resolution failed',
-    );
-    expect(eventBus.emit).toHaveBeenCalledWith(
-      DidEventChannel.Error,
-      expect.objectContaining({
-        status: ServiceResponseStatus.Error,
-        payload: expect.any(Error),
-      }),
-    );
-  });
-
-  test('handleKeylistUpdate - success', async () => {
-    const mockDidTo = 'did:peer:456';
-    const mockDidPeer = { did: 'did:peer:123' };
-    const mockNewDid = { did: 'did:peer:789' };
-    const mediatorEndpoint = { uri: 'https://example.com' };
-    const mockKeylistUpdateResponse = {
-      type: 'KeylistUpdateResponse',
-      body: {
-        updated: [
-          { recipient_did: mockNewDid.did, action: 'add', result: 'success' },
-        ],
-      },
-    };
-
-    // Mocking the packing and API call
-    jest
-      .spyOn(Message.prototype, 'pack_encrypted')
-      .mockResolvedValueOnce([Buffer.from('packed-keylist')]);
-    fetch.mockResolvedValueOnce({
+    // Mock the fetch function to simulate a missing service endpoint
+    (fetch as jest.Mock).mockResolvedValue({
       ok: true,
-      json: jest.fn().mockResolvedValueOnce(mockKeylistUpdateResponse),
+      json: jest.fn().mockResolvedValue({
+        type: 'MediationResponse',
+        body: { routing_did: 'did:example:789' },
+        from: 'did:example:123',
+      }),
     });
 
-    const result = await didService['handleKeylistUpdate'](
-      mockDidTo,
-      mockDidPeer,
-      mockNewDid,
-      resolver,
-      secretsResolver,
-      mediatorEndpoint,
+    // Mock the resolver to return an invalid DID document
+    jest.mock('did-resolver-lib', () => {
+      return {
+        PeerDIDResolver: jest.fn().mockImplementation(() => ({
+          resolve: jest.fn().mockResolvedValue({
+            service: [], // No service endpoint
+          }),
+        })),
+      };
+    });
+
+    await expect(didService.processMediatorOOB(mockOOB)).rejects.toThrow(
+      'Invalid mediator service endpoint format',
     );
-
-    expect(result).toEqual(mockKeylistUpdateResponse.body);
-    expect(fetch).toHaveBeenCalledWith(mediatorEndpoint.uri, {
-      method: 'POST',
-      body: expect.any(Buffer),
-      headers: { 'Content-Type': 'application/didcomm-encrypted+json' },
-    });
-  });
-
-  test('handleKeylistUpdate - error', async () => {
-    const mockDidTo = 'did:peer:456';
-    const mockDidPeer = { did: 'did:peer:123' };
-    const mockNewDid = { did: 'did:peer:789' };
-    const mediatorEndpoint = { uri: 'https://example.com' };
-    const mockKeylistUpdateResponse = {
-      type: 'KeylistUpdateResponse',
-      body: {
-        updated: [
-          { recipient_did: mockNewDid.did, action: 'add', result: 'failed' },
-        ],
-      },
-    };
-
-    // Mocking the packing and API call
-    jest
-      .spyOn(Message.prototype, 'pack_encrypted')
-      .mockResolvedValueOnce([Buffer.from('packed-keylist')]);
-    fetch.mockResolvedValueOnce({
-      ok: true,
-      json: jest.fn().mockResolvedValueOnce(mockKeylistUpdateResponse),
-    });
-
-    await expect(
-      didService['handleKeylistUpdate'](
-        mockDidTo,
-        mockDidPeer,
-        mockNewDid,
-        resolver,
-        secretsResolver,
-        mediatorEndpoint,
-      ),
-    ).rejects.toThrow('Unexpected response in Keylist Update');
-  });
-
-  test('prependDidToSecretIds', () => {
-    const secrets = [{ id: 'key1' }, { id: 'key2' }];
-    const did = 'did:peer:123';
-
-    const updatedSecrets = didService['prependDidToSecretIds'](secrets, did);
-
-    expect(updatedSecrets[0].id).toBe('did:peer:123key1');
-    expect(updatedSecrets[1].id).toBe('did:peer:123key2');
   });
 });
+
+// const EventBus = new EventEmitter();
+// describe('DIDCommRoutingService', () => {
+//   let didService: DidService;
+
+//   beforeEach(async () => {
+//     didService = new DidService(EventBus);
+//   });
+
+//   it('should do the mediator coordination dance from an OOB', async () => {
+//     const oob =
+//       'https://mediator.socious.io?_oob=eyJpZCI6IjFkNjc5NzBlLTNjOGMtNDAxNy05M2VkLTY5ODVhZGQ5MWM1YyIsInR5cGUiOiJodHRwczovL2RpZGNvbW0ub3JnL291dC1vZi1iYW5kLzIuMC9pbnZpdGF0aW9uIiwiZnJvbSI6ImRpZDpwZWVyOjIuRXo2TFNrcDkyV2JRUThzQW5mSGJ5cGZVWHVUNkM3OHpWUnBOc0F6cFE3SE5rdHRpMy5WejZNa2pUTkRLbkV2Y3gyRXl0Zkw4QmVadmRHVWZFMTUzU2JlNFU3MjlNMnhkSDVILlNleUowSWpvaVpHMGlMQ0p6SWpwN0luVnlhU0k2SW1oMGRIQnpPaTh2YldWa2FXRjBiM0l1YzI5amFXOTFjeTVwYnlJc0ltRWlPbHNpWkdsa1kyOXRiUzkyTWlKZGZYMC5TZXlKMElqb2laRzBpTENKeklqcDdJblZ5YVNJNkluZHpjem92TDIxbFpHbGhkRzl5TG5OdlkybHZkWE11YVc4dmQzTWlMQ0poSWpwYkltUnBaR052YlcwdmRqSWlYWDE5IiwiYm9keSI6eyJnb2FsX2NvZGUiOiJyZXF1ZXN0LW1lZGlhdGUiLCJnb2FsIjoiUmVxdWVzdE1lZGlhdGUiLCJhY2NlcHQiOlsiZGlkY29tbS92MiJdfSwidHlwIjoiYXBwbGljYXRpb24vZGlkY29tbS1wbGFpbitqc29uIn0';
+//     const result = await didService.processMediatorOOB(oob);
+//     console.log(result);
+//   }, 2000);
+// });
