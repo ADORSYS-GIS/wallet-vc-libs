@@ -1,3 +1,7 @@
+import { OOBServiceError } from '../lib/errors-logs/OOBServiceError';
+import { WalletError } from '../lib/errors-logs/Wallet.errors';
+import { logError } from '../lib/errors-logs/logger';
+
 export interface Contact {
   id: string;
   from: string;
@@ -13,7 +17,9 @@ export class Wallet {
   addContact(contact: Contact, identity: string): void {
     if (!this.isValidContact(contact)) {
       const errors = this.getValidationErrors(contact);
-      throw new Error(`Invalid contact: ${errors.join(', ')}`);
+      throw new OOBServiceError(
+        `${WalletError.InvalidContact}: ${errors.join(', ')}`,
+      );
     }
 
     const didWithoutFragment = contact.id.split('#')[0];
@@ -23,8 +29,11 @@ export class Wallet {
         existingContacts &&
         existingContacts.some((c) => c.id.split('#')[0] === didWithoutFragment)
       ) {
-        console.log(
-          `Contact already exists in wallet for identity ${identity}`,
+        logError(
+          new Error(
+            `${WalletError.ContactAlreadyExists} for identity ${identity}`,
+          ),
+          'Adding Contact',
         );
         return;
       }
