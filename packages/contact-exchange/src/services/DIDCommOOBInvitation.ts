@@ -25,4 +25,16 @@ interface OutOfBandInvitation {
   attachments?: Array<unknown>;
 }
 
+export enum MessageType {
+  MediationRequest = 'https://didcomm.org/coordinate-mediation/2.0/mediate-request',
+  KeylistUpdate = 'https://didcomm.org/coordinate-mediation/2.0/keylist-update',
+  MediationResponse = 'https://didcomm.org/coordinate-mediation/2.0/mediate-grant',
+  MediationDeny = 'https://didcomm.org/coordinate-mediation/2.0/mediate-deny',
+  KeylistUpdateResponse = 'https://didcomm.org/coordinate-mediation/2.0/keylist-update-response',
+}
+
+export enum MessageTyp {
+  Didcomm = 'application/didcomm-plain+json',
+}
+
 export { DIDCommMessage, OutOfBandInvitation };
