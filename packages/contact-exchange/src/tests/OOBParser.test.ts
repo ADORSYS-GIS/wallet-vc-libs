@@ -1,62 +1,59 @@
 import { parseOOBInvitation } from '../services/OOBParser';
-import { OutOfBandInvitation } from '../services/DIDCommOOBInvitation';
-import { validEncodedUrl, validOutOfBandInvitation } from './OOBTestFixtures';
-
-beforeEach(() => {
-  jest.spyOn(console, 'error').mockImplementation(() => {});
-});
-
-afterEach(() => {
-  jest.restoreAllMocks();
-});
+import { OOBServiceError } from '../lib/errors-logs/OOBServiceError';
+import { OutOfBandInvitationError } from '../lib/errors-logs/OutOfBandInvitation.errors';
 
 describe('parseOOBInvitation', () => {
-  it('should return null for an invalid URL', () => {
+  it('should throw MissingIdOrType error for an invitation with a missing type', () => {
+    const url = 'https://example.com/_oob=eyJpZCI6IjEyMzQ1In0='; // Missing `type`
+    expect(() => parseOOBInvitation(url)).toThrow(
+      new OOBServiceError(OutOfBandInvitationError.MissingIdOrType),
+    );
+  });
+
+  it('should throw InvalidBody error for an invitation with a non-object body', () => {
+    const url =
+      'https://example.com/_oob=eyJpZCI6IjEyMzQ1IiwidHlwZSI6Ik52YXRpb24iLCJib2R5IjoiVGhpcyBpcyBhIHN0cmluZywgbm90IGFuIG9iamVjdCBib2R5In0='; // Body is a string
+    expect(() => parseOOBInvitation(url)).toThrow(
+      new OOBServiceError(OutOfBandInvitationError.InvalidBody),
+    );
+  });
+  it('should throw MissingQueryString error for a URL without the query string', () => {
     const url = 'https://example.com/invalid-url';
-    expect(parseOOBInvitation(url)).toBeNull();
+    expect(() => parseOOBInvitation(url)).toThrow(
+      new OOBServiceError(OutOfBandInvitationError.MissingQueryString),
+    );
   });
 
-  it('should return null for a URL without a base64 encoded part', () => {
-    const url = 'https://example.com/_oob=';
-    expect(parseOOBInvitation(url)).toBeNull();
+  it('should throw InvalidJson error for a URL with an invalid base64 part', () => {
+    const url = 'https://example.com/_oob=invalid-base64';
+    expect(() => parseOOBInvitation(url)).toThrow(
+      new OOBServiceError(OutOfBandInvitationError.InvalidJson),
+    );
   });
 
-  it('should return null for a URL with an invalid base64 encoded part', () => {
+  it('should throw an error when invitation is', () => {
     const url = 'https://example.com/_oob=InvalidBase64';
-    expect(parseOOBInvitation(url)).toBeNull();
-  });
+    jest.spyOn(Buffer, 'from').mockImplementationOnce(() => {
+      throw new Error('Unknown error');
+    });
 
-  it('should return null for a URL with an invalid JSON encoded part', () => {
-    const url = 'https://example.com/_oob=eyJzdWIiOiJzdWIiLCJzdWIiOiJzdWIifQ==';
-    expect(parseOOBInvitation(url)).toBeNull();
-  });
-
-  it('should return null for an invitation with a missing id', () => {
-    const url =
-      'https://example.com/_oob=eyJzdWIiOiJzdWIiLCJ0eXBlIjoiIHR5cGUifQ==';
-    expect(parseOOBInvitation(url)).toBeNull();
-  });
-
-  it('should return null for an invitation with a missing type', () => {
-    const url = 'https://example.com/_oob=eyJzdWIiOiJzdWIiLCJpZCI6ImlkIn0=';
-    expect(parseOOBInvitation(url)).toBeNull();
-  });
-
-  it('should return null for an invitation with a non-object body', () => {
-    const url =
-      'https://example.com/_oob=eyJzdWIiOiJzdWIiLCJ0eXBlIjoiIHR5cGUifQ==';
-    expect(parseOOBInvitation(url)).toBeNull();
+    expect(() => parseOOBInvitation(url)).toThrow(
+      new OOBServiceError(OutOfBandInvitationError.Generic),
+    );
   });
 
   it('should return a valid OutOfBandInvitation for a valid URL', () => {
-    const url = `https://example.com/${validEncodedUrl}`;
-    const expectedInvitation: OutOfBandInvitation = {
-      id: validOutOfBandInvitation.id,
-      type: validOutOfBandInvitation.type,
-      body: validOutOfBandInvitation.body,
-      encodedPart: '',
-      from: validOutOfBandInvitation.from,
+    const validInvitation = {
+      id: '12345',
+      type: 'test',
+      body: { key: 'value' },
     };
-    expect(parseOOBInvitation(url)).toEqual(expectedInvitation);
+    const encodedInvitation = Buffer.from(
+      JSON.stringify(validInvitation),
+    ).toString('base64');
+    const url = `https://example.com/_oob=${encodedInvitation}`;
+    const parsedInvitation = parseOOBInvitation(url);
+
+    expect(parsedInvitation).toEqual(validInvitation);
   });
 });

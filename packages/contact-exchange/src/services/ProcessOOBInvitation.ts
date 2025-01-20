@@ -1,6 +1,8 @@
-// processOOBInvitation.ts
-import { OutOfBandInvitation, DIDCommMessage } from './DIDCommOOBInvitation';
+import { OOBServiceError } from '../lib/errors-logs/OOBServiceError';
+import { ProcessOOBInvitationError } from '../lib/errors-logs/ProcessOOBInvitation.errors';
+import { DIDCommMessage, OutOfBandInvitation } from './DIDCommOOBInvitation';
 import { parseOOBInvitation } from './OOBParser';
+import { logError } from '../lib/errors-logs/logger';
 
 /**
  * Process an out-of-band invitation and return a DIDComm message.
@@ -18,7 +20,7 @@ export function processOOBInvitation(
     if (typeof invitation === 'string') {
       const parsed = parseOOBInvitation(invitation);
       if (!parsed) {
-        throw new Error('Failed to parse OOB invitation from URL.');
+        throw new OOBServiceError(ProcessOOBInvitationError.ParsingError);
       }
       parsedInvitation = parsed;
     } else {
@@ -26,14 +28,19 @@ export function processOOBInvitation(
     }
 
     if (!parsedInvitation) {
-      throw new Error('Invalid invitation');
+      throw new OOBServiceError(ProcessOOBInvitationError.InvalidInvitation);
     }
-    if (
-      !parsedInvitation ||
-      !parsedInvitation.body ||
-      !parsedInvitation.body.goal_code
-    ) {
-      return null;
+    // Handle invalid invitations
+    if (!parsedInvitation) {
+      throw new OOBServiceError(ProcessOOBInvitationError.InvalidInvitation);
+    }
+
+    // Check if body and goal_code are present in the invitation
+    if (!parsedInvitation.body) {
+      throw new OOBServiceError(ProcessOOBInvitationError.MissingBody);
+    }
+    if (!parsedInvitation.body.goal_code) {
+      throw new OOBServiceError(ProcessOOBInvitationError.MissingGoalCode);
     }
 
     // Extract the necessary fields from the parsed invitation
@@ -56,10 +63,14 @@ export function processOOBInvitation(
 
     return didCommMessage;
   } catch (error) {
-    console.error(
-      'Error processing OOB Invitation:',
-      error instanceof Error ? error.message : error,
-    );
+    if (error instanceof OOBServiceError) {
+      logError(error, 'Processing OOB Invitation');
+    } else {
+      logError(
+        error instanceof Error ? error : new Error('Unknown error'),
+        'Unexpected Error',
+      );
+    }
     return null;
   }
 }

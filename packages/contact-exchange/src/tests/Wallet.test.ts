@@ -21,7 +21,7 @@ describe('Wallet', () => {
   });
 
   it('should not add an invalid contact to the wallet', () => {
-    expect(() => wallet.addContact(invalidContact, 'wallet-1')).toThrowError(
+    expect(() => wallet.addContact(invalidContact, 'wallet-1')).toThrow(
       'Invalid contact: Invalid id',
     );
     expect(wallet.getContacts('wallet-1')).toEqual([]);

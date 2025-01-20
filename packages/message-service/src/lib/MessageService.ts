@@ -107,6 +107,7 @@ export class MessageService {
 
   private sharedErrorHandler(channel: MessageEventChannel) {
     return (error: unknown) => {
+      console.error(`Error occurred in channel ${channel}:`, error); // capture the error details for debugging and monitoring
       const response: ServiceResponse<Error> = {
         status: ServiceResponseStatus.Error,
         payload: error instanceof Error ? error : new Error(String(error)),
