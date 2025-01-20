@@ -6,6 +6,15 @@ import { Contact, Wallet } from './Wallet';
 
 const messageEmitter = new EventEmitter();
 
+// Registering listeners for events
+messageEmitter.on('error', (errorMessage: string, error?: Error) => {
+  logError(error || new Error('Unknown error'), errorMessage);
+});
+
+messageEmitter.on('success', (successMessage: string) => {
+  console.log(`Success: ${successMessage}`);
+});
+
 export function handleOOBInvitation(
   wallet: Wallet,
   invitation: OutOfBandInvitation | string,
@@ -18,43 +27,37 @@ export function handleOOBInvitation(
       try {
         parsedInvitation = JSON.parse(invitation) as OutOfBandInvitation;
       } catch (error) {
-        logError(
-          error as Error,
-          'Error parsing invitation: invalid JSON format.',
-        );
         messageEmitter.emit(
           'error',
-          'The invitation format is invalid. Please check the data.',
+          'Error parsing invitation: invalid JSON format.',
+          error as Error,
         );
+        return;
       }
     } else if (typeof invitation === 'object') {
       parsedInvitation = invitation as OutOfBandInvitation;
     } else {
-      const error = new Error(`Invalid invitation type: ${typeof invitation}`);
-      logError(error, 'Invalid invitation type provided.');
       messageEmitter.emit(
         'error',
-        'Invalid invitation type. Please provide valid data.',
+        `Invalid invitation type: ${typeof invitation}. Please provide valid data.`,
       );
+      return;
     }
 
     if (!parsedInvitation) {
-      const error = new Error('No parsed invitation provided.');
-      logError(error, 'Invalid OOB invitation.');
       messageEmitter.emit(
         'error',
-        'No invitation data found. Please check your input.',
+        'No parsed invitation provided. Please check your input.',
       );
       return;
     }
 
     if (!parsedInvitation.body) {
-      const error = new Error('No body provided in the invitation.');
-      logError(error, 'Invalid OOB invitation body.');
       messageEmitter.emit(
         'error',
-        'The invitation body is missing. Please check your input.',
+        'No body provided in the invitation. Please check your input.',
       );
+      return;
     }
 
     const body = parsedInvitation.body as {
@@ -64,21 +67,19 @@ export function handleOOBInvitation(
     };
 
     if (!body.goal_code || !body.goal || !body.accept) {
-      const error = new Error('Invalid invitation body structure.');
-      logError(error, 'Missing required fields in invitation body.');
       messageEmitter.emit(
         'error',
         'The invitation body structure is invalid. Missing required fields.',
       );
+      return;
     }
 
     if (!wallet || !identity) {
-      const error = new Error('Wallet or identity is missing.');
-      logError(error, 'Invalid wallet or identity.');
       messageEmitter.emit(
         'error',
-        'The wallet or identity information is missing. Please check your setup.',
+        'Invalid wallet or identity, The wallet or identity information is missing. Please check your setup.',
       );
+      return;
     }
 
     try {
@@ -95,14 +96,17 @@ export function handleOOBInvitation(
         `Contact successfully added for identity ${identity}`,
       );
     } catch (error) {
-      logError(error as Error, 'Error adding contact to the wallet.');
-      messageEmitter.emit('error', 'Failed to add the contact to the wallet.');
+      messageEmitter.emit(
+        'error',
+        'Failed to add the contact to the wallet.',
+        error as Error,
+      );
     }
   } catch (error) {
-    logError(error as Error, 'Unhandled error in handleOOBInvitation.');
     messageEmitter.emit(
       'error',
       'An unexpected error occurred. Please try again later.',
+      error as Error,
     );
   }
 }
