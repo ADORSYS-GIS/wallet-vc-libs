@@ -44,11 +44,6 @@ export class DidcommSecretsResolver implements SecretsResolver {
     const foundSecrets = secretIds.filter((id) =>
       this.knownSecrets.some((secret) => secret.id === id),
     );
-    if (foundSecrets.length === 0) {
-      throw new Error(
-        `No matching secrets found for the provided IDs: ${secretIds}`,
-      );
-    }
     return foundSecrets;
   }
 }
