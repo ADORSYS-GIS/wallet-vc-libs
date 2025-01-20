@@ -1,21 +1,26 @@
-import { EventEmitter } from 'eventemitter3';
-import { DIDIdentityService } from '../lib/DIDIdentityService';
-import { DidMethodFactory } from '../did-methods/DidMethodFactory';
 import {
   ServiceResponse,
   ServiceResponseStatus,
 } from '@adorsys-gis/status-service';
-import { DidEventChannel } from '../utils/DidEventChannel';
-import { DIDMethodName } from '../did-methods/DidMethodFactory';
+import { EventEmitter } from 'eventemitter3';
+import {
+  DidMethodFactory,
+  DIDMethodName,
+} from '../did-methods/DidMethodFactory';
 import { DidIdentity, DIDKeyPair } from '../did-methods/IDidMethod';
+import { DIDIdentityService } from '../lib/DIDIdentityService';
+import { DidEventChannel } from '../utils/DidEventChannel';
+import { SecurityService } from '../security/SecurityService';
 
 describe('DIDIdentityService', () => {
   let didIdentityService: DIDIdentityService;
   let eventBus: EventEmitter;
+  let securityService: SecurityService;
 
   beforeEach(() => {
     eventBus = new EventEmitter();
-    didIdentityService = new DIDIdentityService(eventBus);
+    securityService = new SecurityService();
+    didIdentityService = new DIDIdentityService(eventBus, securityService);
   });
 
   afterEach(async () => {
@@ -42,6 +47,7 @@ describe('DIDIdentityService', () => {
     await deleteAllDIDsEvent;
   });
 
+  const pin = 123456; // the authenticated user's PIN
   const waitForEvent = <T>(channel: DidEventChannel) => {
     return new Promise<ServiceResponse<T>>((resolve) => {
       eventBus.once(channel, (data: ServiceResponse<T>) => resolve(data));
@@ -71,7 +77,7 @@ describe('DIDIdentityService', () => {
       .mockResolvedValueOnce(mockDIDKeyPair);
 
     const createEvent = waitForEvent(DidEventChannel.CreateDidIdentity);
-    await didIdentityService.createDidIdentity(method);
+    await didIdentityService.createDidIdentity(method, pin);
 
     const createdDid = await createEvent;
 
@@ -99,7 +105,7 @@ describe('DIDIdentityService', () => {
       .mockRejectedValueOnce(new Error('Creation failed'));
 
     const errorEvent = waitForEvent(DidEventChannel.CreateDidIdentity);
-    await didIdentityService.createDidIdentity(method);
+    await didIdentityService.createDidIdentity(method, pin);
 
     const response = await errorEvent;
 
@@ -137,7 +143,7 @@ describe('DIDIdentityService', () => {
       .mockResolvedValueOnce(mockDIDKeyPair);
 
     const createEvent = waitForEvent(DidEventChannel.CreateDidIdentity);
-    await didIdentityService.createDidIdentity(method);
+    await didIdentityService.createDidIdentity(method, pin);
     await createEvent;
 
     const deleteEvent = waitForEvent(DidEventChannel.DeleteDidIdentity);
@@ -202,7 +208,7 @@ describe('DIDIdentityService', () => {
       .mockResolvedValueOnce(mockDIDKeyPair);
 
     const createEvent = waitForEvent(DidEventChannel.CreateDidIdentity);
-    await didIdentityService.createDidIdentity(method);
+    await didIdentityService.createDidIdentity(method, pin);
     await createEvent;
 
     const findEvent = waitForEvent(DidEventChannel.GetSingleDidIdentity);
@@ -212,7 +218,6 @@ describe('DIDIdentityService', () => {
 
     const expectedPayload = {
       did,
-      method,
       createdAt: expect.any(Number),
     };
 
@@ -251,12 +256,10 @@ describe('DIDIdentityService', () => {
     const didRecords = [
       {
         did: 'did:key:z1234567890',
-        method: DIDMethodName.Key,
         createdAt: expect.any(Number),
       },
       {
         did: 'did:key:z0987654321',
-        method: DIDMethodName.Key,
         createdAt: expect.any(Number),
       },
     ];

@@ -4,8 +4,8 @@ import {
   DIDKeyPair,
   DIDKeyPairMethod1,
   DIDKeyPairMethod2,
-  IDidMethod,
   DIDKeyPairMethod4,
+  IDidMethod,
 } from './IDidMethod';
 
 // Declare enum for the supported DID methods

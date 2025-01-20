@@ -1,7 +1,7 @@
 import bs58 from 'bs58';
-import { IDidMethod, DIDKeyPair } from './IDidMethod';
-import { DIDMethodName } from './DidMethodFactory';
 import { generateKeyPairs } from '../utils/generateKeyPairs';
+import { DIDMethodName } from './DidMethodFactory';
+import { DIDKeyPair, IDidMethod } from './IDidMethod';
 
 /**
  * DID:key Method Implementation

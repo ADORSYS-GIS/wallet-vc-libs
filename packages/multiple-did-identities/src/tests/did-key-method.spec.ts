@@ -21,11 +21,16 @@ describe('DidKeyMethod', () => {
 
     // Validate the privateKey JWK format
     const privateKey = didKeyPair.privateKey;
-    expect(privateKey).toHaveProperty('kty', 'OKP');
-    expect(privateKey).toHaveProperty('crv', 'Ed25519');
-    expect(privateKey).toHaveProperty('x');
-    expect(privateKey).toHaveProperty('d');
-    expect(typeof privateKey.x).toBe('string');
-    expect(typeof privateKey.d).toBe('string');
+
+    // Check if privateKey is defined before accessing its properties
+    expect(privateKey).toBeDefined();
+    if (privateKey) {
+      expect(privateKey).toHaveProperty('kty', 'OKP');
+      expect(privateKey).toHaveProperty('crv', 'Ed25519');
+      expect(privateKey).toHaveProperty('x');
+      expect(privateKey).toHaveProperty('d');
+      expect(typeof privateKey.x).toBe('string');
+      expect(typeof privateKey.d).toBe('string');
+    }
   });
 });

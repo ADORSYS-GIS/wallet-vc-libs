@@ -6,8 +6,13 @@ export interface Did {
 }
 
 export interface DIDKeyPair extends Did {
-  privateKey: JWK;
+  privateKey?: JWK;
   publicKey: JWK;
+  encryptedPrivateKey?: {
+    salt: Uint8Array;
+    ciphertext: string;
+    iv: Uint8Array;
+  };
 }
 
 export interface IDidMethod {
@@ -17,16 +22,13 @@ export interface IDidMethod {
 
 export interface DidIdValue {
   did: string;
-  method: DIDMethodName;
-  method_type: string;
   document: DIDKeyPairVariants;
   createdAt: number;
 }
 
 export interface DidIdentity {
   did: string;
-  method: DIDMethodName;
-  method_type?: string;
+  methodType?: string;
   createdAt: number;
 }
 
@@ -41,10 +43,20 @@ export interface GenesisDocument {
 
 export interface DIDKeyPairMethod2 extends Did {
   didDocument: DIDDocumentMethod2;
-  privateKeyV: PrivateKeyJWK;
+  privateKeyV?: PrivateKeyJWK;
   publicKeyV: JWK;
-  privateKeyE: PrivateKeyJWK;
+  privateKeyE?: PrivateKeyJWK;
   publicKeyE: JWK;
+  encryptedPrivateKeyV?: {
+    salt: Uint8Array;
+    ciphertext: string;
+    iv: Uint8Array;
+  };
+  encryptedPrivateKeyE?: {
+    salt: Uint8Array;
+    ciphertext: string;
+    iv: Uint8Array;
+  };
 }
 
 export interface DIDDocumentMethod2 {
@@ -110,10 +122,20 @@ export interface DIDDocumentMethod4 {
 export interface DIDKeyPairMethod4 extends Did {
   didShort: string;
   didDocument: DIDDocumentMethod4;
-  privateKey1: JWK;
+  privateKey1?: JWK;
   publicKey1: JWK;
-  privateKey2: JWK;
+  privateKey2?: JWK;
   publicKey2: JWK;
+  encryptedPrivateKey1?: {
+    salt: Uint8Array;
+    ciphertext: string;
+    iv: Uint8Array;
+  };
+  encryptedPrivateKey2?: {
+    salt: Uint8Array;
+    ciphertext: string;
+    iv: Uint8Array;
+  };
 }
 
 export interface JWKKeys {
@@ -133,4 +155,10 @@ export interface PrivateKeyJWK {
     x: string;
     y?: string;
   };
+}
+
+export interface DidIdentityWithDecryptedKeys {
+  did: string;
+  createdAt: number;
+  decryptedPrivateKeys: Record<string, JWK | PrivateKeyJWK>;
 }
