@@ -1,8 +1,8 @@
 import { CloneMethodArgs } from '@adorsys-gis/cloning-decorator';
-import { DIDMethodName } from '@adorsys-gis/multiple-did-identities/src/did-methods/DidMethodFactory';
 import { DidPeerMethod } from '@adorsys-gis/multiple-did-identities/src/did-methods/DidPeerMethod';
 import { PrivateKeyJWK } from '@adorsys-gis/multiple-did-identities/src/did-methods/IDidMethod';
 import { DidRepository } from '@adorsys-gis/multiple-did-identities/src/repository/DidRepository';
+import { SecurityService } from '@adorsys-gis/multiple-did-identities/src/security/SecurityService';
 import {
   ServiceResponse,
   ServiceResponseStatus,
@@ -52,8 +52,11 @@ export class DidcommSecretsResolver implements SecretsResolver {
 export class DidService {
   private didRepository: DidRepository;
 
-  constructor(public eventBus: EventEmitter) {
-    this.didRepository = new DidRepository();
+  constructor(
+    public eventBus: EventEmitter,
+    public securityService: SecurityService,
+  ) {
+    this.didRepository = new DidRepository(securityService);
   }
 
   public async processMediatorOOB(oob: string): Promise<unknown> {
@@ -79,7 +82,9 @@ export class DidService {
       const didPeer = await didPeerMethod.generateMethod2();
 
       const resolver = new PeerDIDResolver();
-      const secrets = [didPeer.privateKeyE, didPeer.privateKeyV];
+      const secrets = [didPeer.privateKeyE, didPeer.privateKeyV].filter(
+        (secret) => secret !== undefined,
+      );
       const updatedSecrets = this.prependDidToSecretIds(secrets, didPeer.did);
 
       const secretsResolver = new DidcommSecretsResolver(updatedSecrets);
@@ -156,9 +161,8 @@ export class DidService {
 
       const newDid =
         await didPeerMethod.generateMethod2RoutingKey(mediatorRoutingKey);
-      const method = DIDMethodName.Peer;
 
-      await this.didRepository.createDidId(newDid, method);
+      await this.didRepository.createDidId(newDid);
       this.eventBus.emit(DidEventChannel.MediationResponseReceived, {
         status: ServiceResponseStatus.Success,
         payload: unpackedContent,

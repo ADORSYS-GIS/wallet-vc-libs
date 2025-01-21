@@ -49,9 +49,14 @@ describe('DidPeerMethod', () => {
       fail('Services should be defined.');
     }
 
-    // Check that privateKeyJwk.id is set correctly
-    expect(result.privateKeyV.id).toBe(`${result.did}#key-1`);
-    expect(result.privateKeyE.id).toBe(`${result.did}#key-2`);
+    // Check if privateKeyV and privateKeyE are defined before accessing their properties
+    if (result.privateKeyV && result.privateKeyE) {
+      // Check that privateKeyJwk.id is set correctly
+      expect(result.privateKeyV.id).toBe(`${result.did}#key-1`);
+      expect(result.privateKeyE.id).toBe(`${result.did}#key-2`);
+    } else {
+      fail('Private keys should be defined.');
+    }
   });
 
   it('should generate a valid DIDKeyPairMethod2 with mediator routing keys', async () => {
@@ -99,8 +104,13 @@ describe('DidPeerMethod', () => {
       fail('Services should be defined.');
     }
 
-    // Check that privateKeyJwk.id is set correctly
-    expect(result.privateKeyV.id).toBe(`${result.did}#key-1`);
-    expect(result.privateKeyE.id).toBe(`${result.did}#key-2`);
+    // Check that privateKeyV and privateKeyE are defined before accessing their properties
+    if (result.privateKeyV && result.privateKeyE) {
+      // Check that privateKeyJwk.id is set correctly
+      expect(result.privateKeyV.id).toBe(`${result.did}#key-1`);
+      expect(result.privateKeyE.id).toBe(`${result.did}#key-2`);
+    } else {
+      fail('Private keys should be defined.');
+    }
   });
 });
