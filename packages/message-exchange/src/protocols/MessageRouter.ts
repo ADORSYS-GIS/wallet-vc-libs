@@ -1,5 +1,6 @@
 import { DIDDoc, DIDResolver, Message, Secret, SecretsResolver } from 'didcomm';
 import { generateUuid, currentTimestampInSecs } from '../utils';
+
 import {
   BASIC_MESSAGE_TYPE_URI,
   PLAIN_DIDCOMM_MESSAGE_TYP,
