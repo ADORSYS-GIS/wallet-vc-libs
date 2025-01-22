@@ -24,7 +24,11 @@ describe('DID Peer Method 0', () => {
     expect(result.publicKey).toHaveProperty('crv', 'Ed25519');
 
     // Validate that the keys are not empty
-    expect(result.privateKey.d).toBeDefined();
+    if (result.privateKey) {
+      expect(result.privateKey.d).toBeDefined();
+    } else {
+      throw new Error('Private key is undefined');
+    }
     expect(result.publicKey.x).toBeDefined();
   });
 });

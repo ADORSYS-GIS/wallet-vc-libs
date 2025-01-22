@@ -12,14 +12,17 @@ import { DidIdentity, DIDKeyPair } from '../did-methods/IDidMethod';
 import { DIDIdentityService } from '../lib/DIDIdentityService';
 import { DidEventChannel } from '../utils/DidEventChannel';
 import { mockDIDPeer2Fixture } from './testFixtures';
+import { SecurityService } from '../security/SecurityService';
 
 describe('DIDIdentityService', () => {
   let didIdentityService: DIDIdentityService;
   let eventBus: EventEmitter;
+  let securityService: SecurityService;
 
   beforeEach(() => {
     eventBus = new EventEmitter();
-    didIdentityService = new DIDIdentityService(eventBus);
+    securityService = new SecurityService();
+    didIdentityService = new DIDIdentityService(eventBus, securityService);
   });
 
   afterEach(async () => {
@@ -52,9 +55,12 @@ describe('DIDIdentityService', () => {
     });
   };
 
+  // test pin for the user
+  const pin = 28364781;
+
   it('should create a DID identity with did:peer:2 and emit the event', async () => {
     const method = DIDMethodName.Peer;
-    const method_type = PeerGenerationMethod.Method2;
+    const methodType = PeerGenerationMethod.Method2;
 
     const mockDIDPeer2 = mockDIDPeer2Fixture;
 
@@ -63,7 +69,7 @@ describe('DIDIdentityService', () => {
       .mockResolvedValueOnce(mockDIDPeer2);
 
     const createEvent = waitForEvent(DidEventChannel.CreateDidIdentity);
-    await didIdentityService.createDidIdentity(method, method_type);
+    await didIdentityService.createDidIdentity(method, pin, methodType);
 
     const createdDid = await createEvent;
 
@@ -79,7 +85,7 @@ describe('DIDIdentityService', () => {
 
   it('should create a  valid DIDKeyPairMethod2 with mediator routing keys', async () => {
     const method = DIDMethodName.Peer;
-    const method_type = PeerGenerationMethod.Method2WithMediatorRoutingKey;
+    const methodType = PeerGenerationMethod.Method2WithMediatorRoutingKey;
     const mediatorRoutingKey = 'routingKey1';
 
     const mockDIDPeer2 = mockDIDPeer2Fixture;
@@ -90,7 +96,8 @@ describe('DIDIdentityService', () => {
     const createEvent = waitForEvent(DidEventChannel.CreateDidIdentity);
     await didIdentityService.createDidIdentity(
       method,
-      method_type,
+      pin,
+      methodType,
       mediatorRoutingKey,
     );
 
@@ -108,7 +115,7 @@ describe('DIDIdentityService', () => {
 
   it('should delete a DID identity with did:peer:2 and emit the event', async () => {
     const method = DIDMethodName.Peer;
-    const method_type = PeerGenerationMethod.Method2;
+    const methodType = PeerGenerationMethod.Method2;
 
     const mockDIDPeer2 = mockDIDPeer2Fixture;
 
@@ -117,7 +124,7 @@ describe('DIDIdentityService', () => {
       .mockResolvedValueOnce(mockDIDPeer2);
 
     const createEvent = waitForEvent(DidEventChannel.CreateDidIdentity);
-    await didIdentityService.createDidIdentity(method, method_type);
+    await didIdentityService.createDidIdentity(method, pin, methodType);
     await createEvent;
 
     // Delete the DID
@@ -139,7 +146,7 @@ describe('DIDIdentityService', () => {
 
   it('should find a DID identity with did:peer:2 and emit the event', async () => {
     const method = DIDMethodName.Peer;
-    const method_type = PeerGenerationMethod.Method2;
+    const methodType = PeerGenerationMethod.Method2;
 
     const mockDIDPeer2 = mockDIDPeer2Fixture;
 
@@ -148,7 +155,7 @@ describe('DIDIdentityService', () => {
       .mockResolvedValueOnce(mockDIDPeer2);
 
     const createEvent = waitForEvent(DidEventChannel.CreateDidIdentity);
-    await didIdentityService.createDidIdentity(method, method_type);
+    await didIdentityService.createDidIdentity(method, pin, methodType);
     await createEvent;
 
     const findEvent = waitForEvent(DidEventChannel.GetSingleDidIdentity);
@@ -158,8 +165,6 @@ describe('DIDIdentityService', () => {
 
     const expectedPayload = {
       did: mockDIDPeer2.did,
-      method,
-      method_type,
       createdAt: expect.any(Number),
     };
 
@@ -174,7 +179,7 @@ describe('DIDIdentityService', () => {
   it('should find all DID identities and emit the event', async () => {
     // MOCK DID PEER:2
     const method = DIDMethodName.Peer;
-    const method_type = PeerGenerationMethod.Method2;
+    const methodType = PeerGenerationMethod.Method2;
 
     const mockDIDPeer2 = mockDIDPeer2Fixture;
 
@@ -183,7 +188,7 @@ describe('DIDIdentityService', () => {
       .mockResolvedValueOnce(mockDIDPeer2);
 
     const createEvent = waitForEvent(DidEventChannel.CreateDidIdentity);
-    await didIdentityService.createDidIdentity(method, method_type);
+    await didIdentityService.createDidIdentity(method, pin, methodType);
     await createEvent;
 
     // MOCK DID KEY
@@ -208,19 +213,16 @@ describe('DIDIdentityService', () => {
       .mockResolvedValueOnce(mockDIDKeyPair);
 
     const createEventDidKey = waitForEvent(DidEventChannel.CreateDidIdentity);
-    await didIdentityService.createDidIdentity(methodDidKey);
+    await didIdentityService.createDidIdentity(methodDidKey, pin);
     await createEventDidKey;
 
     const didRecords = [
       {
         did: 'did:peer:2z1234567890',
-        method: DIDMethodName.Peer,
-        method_type: method_type,
         createdAt: expect.any(Number),
       },
       {
         did: 'did:key:z1234567890',
-        method: DIDMethodName.Key,
         createdAt: expect.any(Number),
       },
     ];

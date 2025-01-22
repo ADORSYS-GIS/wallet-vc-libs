@@ -1,6 +1,6 @@
-import { Contact, Wallet } from './Wallet';
-import { OutOfBandInvitation } from './DIDCommOOBInvitation';
 import { validOutOfBandInvitation } from '../tests/OOBTestFixtures';
+import { OutOfBandInvitation } from './DIDCommOOBInvitation';
+import { Contact, Wallet } from './Wallet';
 
 export function handleOOBInvitation(
   wallet: Wallet,

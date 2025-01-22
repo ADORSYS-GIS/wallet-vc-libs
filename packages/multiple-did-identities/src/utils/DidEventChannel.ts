@@ -8,4 +8,5 @@ export enum DidEventChannel {
   DeleteDidIdentity = 'did-identity-deleted',
   GetSingleDidIdentity = 'get-single-did-identity',
   GetAllDidIdentities = 'get-all-did-identities',
+  GetDidWithDecryptedPrivateKeys = 'get-did-with-decrypted-private-keys',
 }
