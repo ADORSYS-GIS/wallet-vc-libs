@@ -100,35 +100,10 @@ describe('DidService', () => {
       };
       (PeerDIDResolver as jest.Mock).mockImplementation(() => mockResolver);
 
-      (fetch as jest.Mock)
-        .mockResolvedValueOnce({
-          ok: true,
-          json: jest.fn().mockResolvedValue({
-            '@type':
-              'https://didcomm.org/coordinate-mediation/2.0/mediate-grant',
-            body: {
-              message_type:
-                'https://didcomm.org/coordinate-mediation/2.0/mediate-grant',
-              routing_did: 'did:example:mediatorRoutingKey',
-              from: 'did:example:mediatorNewDID',
-            },
-          }),
-        })
-        .mockResolvedValueOnce({
-          ok: true,
-          json: jest.fn().mockResolvedValue({
-            type: 'https://didcomm.org/coordinate-mediation/2.0/keylist-update-response',
-            body: {
-              updated: [
-                {
-                  recipient_did: 'did:example:mediatorNewDID',
-                  action: 'add',
-                  result: 'success',
-                },
-              ],
-            },
-          }),
-        });
+      (fetch as jest.Mock).mockResolvedValue({
+        ok: true,
+        json: jest.fn().mockResolvedValue({}),
+      });
 
       await service.processMediatorOOB(mockOob);
 
