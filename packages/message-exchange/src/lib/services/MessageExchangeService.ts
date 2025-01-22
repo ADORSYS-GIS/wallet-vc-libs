@@ -1,5 +1,9 @@
 import { EventEmitter } from 'eventemitter3';
+import { MessageRouter } from '../../protocols/MessageRouter';
 import { MessageExchangeEvent } from '../events/MessageExchangeEvent';
+import { PeerDIDResolver } from 'did-resolver-lib';
+import { DidRepository } from '@adorsys-gis/multiple-did-identities';
+import { SecurityService } from '@adorsys-gis/multiple-did-identities/dist/src/security/SecurityService';
 
 import {
   ServiceResponse,
@@ -10,10 +14,21 @@ import {
  * Handles exchange of DIDComm messages between parties.
  */
 export class MessageExchangeService {
-  // private contactRepository: ContactRepository;
+  private readonly messageRouter: MessageRouter;
 
-  public constructor(private eventBus: EventEmitter) {
-    // this.contactRepository = new ContactRepository();
+  /**
+   * @param eventBus - The event bus for sending back responses.
+   * @param secretPinNumber - The secret PIN number for accessing the wallet's secure storage.
+   */
+  public constructor(
+    private readonly eventBus: EventEmitter,
+    private readonly secretPinNumber: number,
+  ) {
+    this.messageRouter = new MessageRouter(
+      new PeerDIDResolver(),
+      new DidRepository(new SecurityService()),
+      secretPinNumber,
+    );
   }
 
   /**

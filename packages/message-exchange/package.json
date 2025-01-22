@@ -7,6 +7,7 @@
   "main": "dist/src/index.js",
   "typings": "dist/src/index.d.ts",
   "scripts": {
+    "prepare": "npm run build",
     "test": "vitest --run",
     "build": "tsc",
     "lint": "eslint ./src --ext .ts",
@@ -14,6 +15,7 @@
   },
   "dependencies": {
     "@adorsys-gis/message-service": "^1.0.1",
+    "@adorsys-gis/multiple-did-identities": "^1.0.2",
     "@adorsys-gis/status-service": "^1.0.0",
     "didcomm": "^0.4.1"
   },

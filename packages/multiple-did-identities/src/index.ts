@@ -1,6 +1,13 @@
+export * from './did-methods/IDidMethod';
 export { DIDIdentityService } from './lib/services';
 export { DidEventChannel } from './utils/DidEventChannel';
+
 export {
   DIDMethodName,
   PeerGenerationMethod,
 } from './did-methods/DidMethodFactory';
+
+// Exports intended for inter-service calls
+
+export { DidRepository } from './repository/DidRepository';
+export { SecurityService } from './security/SecurityService';

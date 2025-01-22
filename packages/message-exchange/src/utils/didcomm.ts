@@ -1,18 +1,9 @@
-import { DIDDoc, DIDResolver, Secret, SecretsResolver } from 'didcomm';
+import { Secret, SecretsResolver } from 'didcomm';
 
-export class ExampleDIDResolver implements DIDResolver {
-  diddoc: DIDDoc[];
-
-  constructor(diddoc: DIDDoc[]) {
-    this.diddoc = diddoc;
-  }
-
-  async resolve(did: string): Promise<DIDDoc | null> {
-    return this.diddoc.find((ddoc) => ddoc.id === did) || null;
-  }
-}
-
-export class ExampleSecretsResolver implements SecretsResolver {
+/**
+ * Implementation of a {@link SecretsResolver} for static secrets.
+ */
+export class StaticSecretsResolver implements SecretsResolver {
   knownSecrets: Secret[];
 
   constructor(knownSecrets: Secret[]) {

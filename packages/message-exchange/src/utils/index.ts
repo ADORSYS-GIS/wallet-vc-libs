@@ -1,2 +1,1 @@
-export * from './datetime';
-export * from './random';
+export * from './misc';
