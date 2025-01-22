@@ -21,6 +21,7 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
+    "@adorsys-gis/cloning-decorator": "^1.0.1",
     "@adorsys-gis/multiple-did-identities": "^1.0.2",
     "@adorsys-gis/status-service": "^1.0.0",
     "cross-fetch": "^4.1.0",

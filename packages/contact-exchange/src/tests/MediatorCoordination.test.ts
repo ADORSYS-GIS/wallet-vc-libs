@@ -3,7 +3,6 @@ import { SecurityService } from '@adorsys-gis/multiple-did-identities/src/securi
 import fetch from 'cross-fetch';
 import { PeerDIDResolver } from 'did-resolver-lib';
 import { EventEmitter } from 'eventemitter3';
-import { v4 as uuidv4 } from 'uuid';
 import { DidService } from '../services/MediatorCoordination';
 
 // Mocking dependencies
@@ -41,32 +40,6 @@ jest.mock('didcomm-node', () => ({
 }));
 
 jest.mock('cross-fetch', () => jest.fn());
-jest.mock('uuid', () => ({ v4: jest.fn() }));
-
-// Mocking TextEncoder and TextDecoder
-global.TextEncoder = class {
-  encoding: string = 'utf-8';
-  encode(input: string) {
-    return Buffer.from(input);
-  }
-  encodeInto(source: string, destination: Uint8Array) {
-    const encoded = this.encode(source);
-    destination.set(encoded);
-    return {
-      read: encoded.length,
-      written: encoded.length,
-    };
-  }
-};
-
-global.TextDecoder = class {
-  encoding: string = 'utf-8';
-  fatal: boolean = false;
-  ignoreBOM: boolean = false;
-  decode(input: Buffer) {
-    return input.toString();
-  }
-};
 
 describe('DidService', () => {
   let service: DidService;
@@ -77,7 +50,6 @@ describe('DidService', () => {
     eventBus = new EventEmitter();
     const securityService = new SecurityService();
     service = new DidService(eventBus, securityService);
-    (uuidv4 as jest.Mock).mockReturnValue('test-uuid');
   });
 
   describe('processMediatorOOB', () => {
@@ -168,20 +140,3 @@ describe('DidService', () => {
     });
   });
 });
-
-// describe('DIDCommRoutingService', () => {
-//   let eventBus: EventEmitter;
-//   let didService: DidService;
-
-//   beforeEach(async () => {
-//     const securityService = new SecurityService();
-//     eventBus = new EventEmitter();
-//     didService= new DidService(eventBus, securityService);
-//   });
-
-//   it('should do the mediator coordination dance from an OOB', async () => {
-//     const oob =
-//       'https://mediator.socious.io?_oob=eyJpZCI6IjFkNjc5NzBlLTNjOGMtNDAxNy05M2VkLTY5ODVhZGQ5MWM1YyIsInR5cGUiOiJodHRwczovL2RpZGNvbW0ub3JnL291dC1vZi1iYW5kLzIuMC9pbnZpdGF0aW9uIiwiZnJvbSI6ImRpZDpwZWVyOjIuRXo2TFNrcDkyV2JRUThzQW5mSGJ5cGZVWHVUNkM3OHpWUnBOc0F6cFE3SE5rdHRpMy5WejZNa2pUTkRLbkV2Y3gyRXl0Zkw4QmVadmRHVWZFMTUzU2JlNFU3MjlNMnhkSDVILlNleUowSWpvaVpHMGlMQ0p6SWpwN0luVnlhU0k2SW1oMGRIQnpPaTh2YldWa2FXRjBiM0l1YzI5amFXOTFjeTVwYnlJc0ltRWlPbHNpWkdsa1kyOXRiUzkyTWlKZGZYMC5TZXlKMElqb2laRzBpTENKeklqcDdJblZ5YVNJNkluZHpjem92TDIxbFpHbGhkRzl5TG5OdlkybHZkWE11YVc4dmQzTWlMQ0poSWpwYkltUnBaR052YlcwdmRqSWlYWDE5IiwiYm9keSI6eyJnb2FsX2NvZGUiOiJyZXF1ZXN0LW1lZGlhdGUiLCJnb2FsIjoiUmVxdWVzdE1lZGlhdGUiLCJhY2NlcHQiOlsiZGlkY29tbS92MiJdfSwidHlwIjoiYXBwbGljYXRpb24vZGlkY29tbS1wbGFpbitqc29uIn0';
-//   await didService.processMediatorOOB(oob);
-//   }, 2000);
-// });
