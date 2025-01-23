@@ -1,1 +1,2 @@
-export * from './lib/contact-exchange';
+import { DidService } from './services/MediatorCoordination';
+export { DidService };
