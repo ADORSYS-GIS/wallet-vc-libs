@@ -7,7 +7,7 @@
   "main": "dist/src/index.js",
   "typings": "dist/src/index.d.ts",
   "scripts": {
-    "prepare": "npm run build",
+    "prepare": "npm run build || true",
     "test": "vitest --run",
     "build": "tsc",
     "lint": "eslint ./src --ext .ts",
@@ -17,11 +17,12 @@
     "@adorsys-gis/message-service": "^1.0.1",
     "@adorsys-gis/multiple-did-identities": "^1.0.2",
     "@adorsys-gis/status-service": "^1.0.0",
+    "cross-fetch": "^4.1.0",
     "didcomm": "^0.4.1"
   },
   "devDependencies": {
     "fake-indexeddb": "^6.0.0",
-    "vitest": "^3.0.2",
-    "vite-plugin-wasm": "^3.3.0"
+    "vite-plugin-wasm": "^3.3.0",
+    "vitest": "^3.0.2"
   }
 }

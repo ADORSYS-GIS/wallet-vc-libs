@@ -1,9 +1,10 @@
+import { MessageRepository } from '@adorsys-gis/message-service';
+import { DidRepository } from '@adorsys-gis/multiple-did-identities';
+import { SecurityService } from '@adorsys-gis/multiple-did-identities/dist/src/security/SecurityService';
+import { PeerDIDResolver } from 'did-resolver-lib';
 import { EventEmitter } from 'eventemitter3';
 import { MessageRouter } from '../../protocols/MessageRouter';
 import { MessageExchangeEvent } from '../events/MessageExchangeEvent';
-import { PeerDIDResolver } from 'did-resolver-lib';
-import { DidRepository } from '@adorsys-gis/multiple-did-identities';
-import { SecurityService } from '@adorsys-gis/multiple-did-identities/dist/src/security/SecurityService';
 
 import {
   ServiceResponse,
@@ -27,6 +28,7 @@ export class MessageExchangeService {
     this.messageRouter = new MessageRouter(
       new PeerDIDResolver(),
       new DidRepository(new SecurityService()),
+      new MessageRepository(),
       secretPinNumber,
     );
   }

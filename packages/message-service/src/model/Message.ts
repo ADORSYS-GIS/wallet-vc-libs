@@ -5,7 +5,8 @@
 export interface Message {
   id: string;
   text: string;
-  sender: string; //sender DID or anything identifying the sender
-  contactId: string; // contact DID
+  sender: string; // Sender DID or anything identifying the sender
+  contactId: string; // Contact DID (Receipient)
   timestamp: Date;
+  direction: 'in' | 'out'; // Tell sent and received messages apart
 }
