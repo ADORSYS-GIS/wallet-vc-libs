@@ -2,8 +2,8 @@
   "name": "@adorsys-gis/multiple-did-identities",
   "version": "1.0.3",
   "dependencies": {
-    "@adorsys-gis/cloning-decorator": "^1.0.0",
-    "@adorsys-gis/event-bus": "^1.0.2",
+    "@adorsys-gis/cloning-decorator": "^1.0.1",
+    "@adorsys-gis/event-bus": "^1.0.5",
     "@adorsys-gis/storage": "^1.0.1",
     "@noble/curves": "^1.6.0",
     "bs58": "^6.0.0",
