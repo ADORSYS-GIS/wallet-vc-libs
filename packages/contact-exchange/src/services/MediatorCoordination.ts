@@ -24,6 +24,18 @@ export enum DidEventChannel {
   Error = 'DidError',
 }
 
+// Shared error handler
+function sharedErrorHandler(channel: DidEventChannel, eventBus: EventEmitter) {
+  return (error: unknown) => {
+    console.error(`Error occurred in channel ${channel}:`, error);
+    const response: ServiceResponse<Error> = {
+      status: ServiceResponseStatus.Error,
+      payload: error instanceof Error ? error : new Error(String(error)),
+    };
+    eventBus.emit(channel, response);
+  };
+}
+
 // Class to resolve secrets based on known secrets
 export class DidcommSecretsResolver implements SecretsResolver {
   private knownSecrets: Secret[];
@@ -213,11 +225,7 @@ export class DidService {
       );
       return unpackedKeylistResponse;
     } catch (error: unknown) {
-      const response: ServiceResponse<Error> = {
-        status: ServiceResponseStatus.Error,
-        payload: error instanceof Error ? error : new Error(String(error)),
-      };
-      this.eventBus.emit(DidEventChannel.Error, response);
+      this.sharedErrorHandler(channel)(error);
       throw error;
     }
   }
@@ -230,6 +238,10 @@ export class DidService {
       ...secret,
       id: `${did}${secret.id.split(did).pop()}`,
     }));
+  }
+
+  private sharedErrorHandler(channel: DidEventChannel) {
+    return sharedErrorHandler(channel, this.eventBus);
   }
 }
 
