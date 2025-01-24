@@ -1,12 +1,14 @@
 ### Error Handling and Logging Guidelines
 
 ## Overview
+
 This document provides guidelines for handling and logging errors in our codebase. We use a centralized approach to ensure consistency and maintainability.
 We have two approaches to logging and handling errors in our codebase
 
 ### Approach One
 
 ## Directory Structure
+
 All error handling and logging logic is centralized in the `errors-logs` directory within the `src/lib` folder.
 This is just an example. You can decide where or ehich folder to centralize your logging and error logic.
 
@@ -22,6 +24,7 @@ src
 ```
 
 ## Logger Implementation
+
 The logger.ts file contains the logError function, which logs error details to the console.
 
 ```ts
@@ -47,6 +50,7 @@ export function logError(error: Error, context: string): void {
 ```
 
 ## Custom Error Classes
+
 We define custom error classes to handle specific error types. For example, CustomServiceError
 
 ```ts
@@ -60,6 +64,7 @@ export class CustomServiceError extends Error {
 ```
 
 ## Error Enumerations
+
 We use enums to define error messages for different services. For example:
 
 ```ts
@@ -75,6 +80,7 @@ export enum ServiceAError {
 Here are examples of how to use the centralized logging and error handling logic in service files.
 
 ServiceA.ts
+
 ```ts
 import { logError } from '../lib/errors-logs/logger';
 import { CustomServiceError } from '../lib/errors-logs/CustomServiceError';
@@ -87,7 +93,6 @@ export function serviceAFunction(param: string): void {
     }
 
     // Service logic here
-
   } catch (error) {
     if (error instanceof CustomServiceError) {
       logError(error, 'Service A');
@@ -99,6 +104,7 @@ export function serviceAFunction(param: string): void {
 ```
 
 ServiceB.ts
+
 ```ts
 import { logError } from '../lib/errors-logs/logger';
 import { CustomServiceError } from '../lib/errors-logs/CustomServiceError';
@@ -111,7 +117,6 @@ export function serviceBFunction(data: any): void {
     }
 
     // Service logic here
-
   } catch (error) {
     if (error instanceof CustomServiceError) {
       logError(error, 'Service B');
@@ -123,6 +128,7 @@ export function serviceBFunction(data: any): void {
 ```
 
 ServiceC.ts
+
 ```ts
 import { logError } from '../lib/errors-logs/logger';
 import { CustomServiceError } from '../lib/errors-logs/CustomServiceError';
@@ -135,7 +141,6 @@ export function serviceCFunction(input: string): void {
     }
 
     // Service logic here
-
   } catch (error) {
     if (error instanceof CustomServiceError) {
       logError(error, 'Service C');
@@ -160,14 +165,17 @@ By following these guidelines, we ensure that our error handling and logging are
 # Error Handling and Logging Guidelines for Event-Driven Architecture
 
 ## Overview
+
 This document provides guidelines for handling and logging errors in an event-driven architecture. We use event emitters to communicate success and error messages between different parts of the application. A shared error handler is used to log errors and emit error responses consistently.
 
 ## Key Components
+
 1. **Event Emitters**: Used to emit events for success and error messages.
 2. **Event Channels**: Custom event channels to categorize and manage different types of events.
 3. **Shared Error Handler**: A function that logs errors and emits error responses.
 
 ## Event Channels
+
 We define custom event channels to categorize and manage different types of events. Each event channel has a unique string identifier.
 
 ```ts
@@ -180,6 +188,7 @@ export enum EventChannel {
 ```
 
 ## Shared Error Handler
+
 The shared error handler logs errors and emits error responses. This ensures consistent error handling across the application.
 
 ```ts
@@ -198,7 +207,9 @@ function sharedErrorHandler(channel: EventChannel, eventBus: EventEmitter) {
 ```
 
 ## Service Example
+
 Here's an example of a service that uses the event-driven approach and the shared error handler:
+
 ```ts
 import { EventEmitter } from 'eventemitter3';
 import { EventChannel } from './EventChannel';
@@ -240,7 +251,9 @@ class ItemService {
 
       const response = {
         status: 'success',
-        payload: { message: `Item with ID ${itemId} was successfully deleted.` },
+        payload: {
+          message: `Item with ID ${itemId} was successfully deleted.`,
+        },
       };
 
       this.eventBus.emit(deleteItemChannel, response);
