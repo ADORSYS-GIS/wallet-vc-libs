@@ -1,5 +1,8 @@
 import { MessageRepository } from '@adorsys-gis/message-service';
-import { DidRepository, SecurityService } from '@adorsys-gis/multiple-did-identities';
+import {
+  DidRepository,
+  SecurityService,
+} from '@adorsys-gis/multiple-did-identities';
 import { PeerDIDResolver } from 'did-resolver-lib';
 import { EventEmitter } from 'eventemitter3';
 import { MessageRouter } from '../../protocols/MessageRouter';

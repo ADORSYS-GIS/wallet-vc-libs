@@ -1,4 +1,4 @@
 export interface MediatorServiceEndpoint {
-    uri: string[],
-    routingKeys: string[]
+  uri: string[];
+  routingKeys: string[];
 }

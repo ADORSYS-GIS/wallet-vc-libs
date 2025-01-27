@@ -1,8 +1,4 @@
-import {
-  Secret,
-  SecretsResolver,
-  DIDCommMessagingService,
-} from 'didcomm';
+import { Secret, SecretsResolver, DIDCommMessagingService } from 'didcomm';
 
 /**
  * Type guard for {@link DIDCommMessagingService}

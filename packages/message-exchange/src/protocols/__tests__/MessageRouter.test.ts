@@ -1,4 +1,4 @@
-import { describe, test } from 'vitest';
+import { describe, test, expect } from 'vitest';
 
 import { MessageRepository } from '@adorsys-gis/message-service';
 import { ServiceResponse } from '@adorsys-gis/status-service';
@@ -21,14 +21,15 @@ import {
 
 describe('MessageRouter', () => {
   const secretPinNumber = 1234;
+  const didRepository = new DidRepository(securityService);
   const messageRouter = new MessageRouter(
     new PeerDIDResolver(),
-    new DidRepository(securityService),
+    didRepository,
     new MessageRepository(),
     secretPinNumber,
   );
 
-  const generateIdentity = async () => {
+  const generateIdentity = async (secretPinNumber: number) => {
     const createEvent = waitForEvent(DidEventChannel.CreateDidIdentity);
     didIdentityService.createDidIdentity(
       DIDMethodName.Peer,
@@ -40,13 +41,20 @@ describe('MessageRouter', () => {
     return data.payload.did;
   };
 
-  test('encrypt with security service', async () => {
-    const senderDid = await generateIdentity();
-    console.log(senderDid);
+  test('should generate and retrieve identiy', async () => {
+    const senderDid = await generateIdentity(secretPinNumber);
+
+    const keys = await didRepository.getADidWithDecryptedPrivateKeys(
+      senderDid,
+      secretPinNumber,
+    );
+
+    const decryptedPrivateKeys = keys?.decryptedPrivateKeys ?? {};
+    expect(Object.values(decryptedPrivateKeys)).toHaveLength(2);
   });
 
   test('should route messages successfully', async () => {
-    const senderDid = await generateIdentity();
+    const senderDid = await generateIdentity(secretPinNumber);
     const messageModel = await messageRouter.routeForwardMessage(
       'Hello, World!',
       aliceDid,

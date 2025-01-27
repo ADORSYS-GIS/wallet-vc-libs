@@ -63,22 +63,15 @@ export class MessageRouter {
       senderDid,
     );
 
-    // Prepare secrets resolver
-    const secrets = await this.retrieveSenderDidSecrets(senderDid);
-    const secretsResolver = new StaticSecretsResolver(secrets);
-
     // Identify DIDComm endpoints of the recipient's mediator
     const mediatorEndpoints = await this.extractMediatorEndpoints(recipientDid);
     const mediatorEnpointUrls = mediatorEndpoints.flatMap((e) => e.uri);
 
     // Pack into a forward message
-    const [packedMessage] = await basicMessage.pack_encrypted(
+    const packedMessage = await this.packForwardMessage(
+      basicMessage,
       recipientDid,
       senderDid,
-      null,
-      this.didResolver,
-      secretsResolver,
-      {},
     );
 
     // Route message to mediator
@@ -157,6 +150,36 @@ export class MessageRouter {
   }
 
   /**
+   * Prepares and packs forward messages.
+   */
+  private async packForwardMessage(
+    basicMessage: Message,
+    recipientDid: string,
+    senderDid: string,
+  ): Promise<string> {
+    // Prepare secrets resolver
+    const secrets = await this.retrieveSenderDidSecrets(senderDid);
+    const secretsResolver = new StaticSecretsResolver(secrets);
+
+    // Attempting to pack message
+    try {
+      const [packedMessage] = await basicMessage.pack_encrypted(
+        recipientDid,
+        senderDid,
+        null,
+        this.didResolver,
+        secretsResolver,
+        {}, // { forward: false },
+      );
+
+      return packedMessage;
+    } catch (e) {
+      console.error(e);
+      throw new Error('Forward message packing failed');
+    }
+  }
+
+  /**
    * Retrieves the private keys of the sender DID.
    */
   private async retrieveSenderDidSecrets(senderDid: string): Promise<Secret[]> {
@@ -173,6 +196,11 @@ export class MessageRouter {
     const secrets = Object.values(privateKeys.decryptedPrivateKeys).filter(
       (key): key is PrivateKeyJWK => 'privateKeyJwk' in key,
     );
+
+    if (secrets.length == 0) {
+      console.warn('No decrypted private keys available');
+      // throw new Error('Cannot proceed with no private keys');
+    }
 
     return secrets;
   }
@@ -195,11 +223,21 @@ export class MessageRouter {
     const mediatorEndpoints = await Promise.all(
       serviceEndpoints.map(async (serviceEndpoint) => {
         const uri = await this.normalizeServiceEndpointUri(serviceEndpoint.uri);
-        const routingKeys = Array.isArray(serviceEndpoint.routing_keys)
-          ? serviceEndpoint.routing_keys
-          : (serviceEndpoint as unknown as { routingKeys: string[] })[
-              'routingKeys'
-            ];
+
+        const routingKeys1 = serviceEndpoint.routing_keys;
+        const routingKeys2 = (
+          serviceEndpoint as unknown as { routingKeys: string[] }
+        )['routingKeys'];
+
+        let routingKeys = Array.isArray(routingKeys1)
+          ? routingKeys1
+          : Array.isArray(routingKeys2)
+            ? routingKeys2
+            : [];
+
+        if (serviceEndpoint.uri.startsWith('did:')) {
+          routingKeys.unshift(serviceEndpoint.uri);
+        }
 
         return { uri, routingKeys };
       }),
@@ -262,6 +300,12 @@ export class MessageRouter {
     // Filter only DIDComm services
     return services
       .filter((service) => service.type == DIDCOMM_MESSAGING_SERVICE_TYPE)
-      .map((service) => service.serviceEndpoint);
+      .flatMap((service) => {
+        const serviceEndpoints = service.serviceEndpoint;
+        // Normalize service endpoints to the array variant
+        return Array.isArray(serviceEndpoints)
+          ? serviceEndpoints
+          : [serviceEndpoints];
+      });
   }
 }
