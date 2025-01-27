@@ -2,6 +2,7 @@ import { generateUuid, currentTimestampInSecs, isHttpUrl } from '../utils';
 import { MediatorServiceEndpoint } from './types/routing';
 import { fetch } from 'cross-fetch';
 import { DIDResolver, Message, Secret, ServiceKind } from 'didcomm';
+
 import {
   Message as MessageModel,
   MessageRepository,
@@ -196,7 +197,9 @@ export class MessageRouter {
         const uri = await this.normalizeServiceEndpointUri(serviceEndpoint.uri);
         const routingKeys = Array.isArray(serviceEndpoint.routing_keys)
           ? serviceEndpoint.routing_keys
-          : (serviceEndpoint as any)['routingKeys'];
+          : (serviceEndpoint as unknown as { routingKeys: string[] })[
+              'routingKeys'
+            ];
 
         return { uri, routingKeys };
       }),

@@ -21,8 +21,9 @@
     "didcomm": "^0.4.1"
   },
   "devDependencies": {
+    "eventemitter3": "^5.0.1",
     "fake-indexeddb": "^6.0.0",
     "vite-plugin-wasm": "^3.3.0",
-    "vitest": "^3.0.2"
+    "vitest": "^3.0.4"
   }
 }

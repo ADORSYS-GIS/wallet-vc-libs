@@ -2,7 +2,6 @@ import {
   Secret,
   SecretsResolver,
   DIDCommMessagingService,
-  ServiceKind,
 } from 'didcomm';
 
 /**
