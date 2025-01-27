@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
+    "postinstall": "npm run build || true",
     "test": "npm run test --workspaces",
     "build": "npm run build --workspaces",
     "format": "prettier --write .",
