@@ -48,13 +48,18 @@ export class DIDIdentityService {
       );
 
       // Call method to encrypt private keys based on the DID document
-      await encryptPrivateKeys(didDocument, pin, [
-        'privateKey',
-        'privateKeyV',
-        'privateKeyE',
-        'privateKey1',
-        'privateKey2',
-      ], this.securityService);
+      await encryptPrivateKeys(
+        didDocument,
+        pin,
+        [
+          'privateKey',
+          'privateKeyV',
+          'privateKeyE',
+          'privateKey1',
+          'privateKey2',
+        ],
+        this.securityService,
+      );
 
       await this.didRepository.createDidId(didDocument);
 

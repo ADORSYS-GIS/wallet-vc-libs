@@ -25,7 +25,6 @@ export class SecurityService {
     return this.decoder;
   }
 
-
   private async deriveKey(pin: number, salt: Uint8Array): Promise<CryptoKey> {
     const passphraseBuffer = this.getEncoder().encode(JSON.stringify(pin));
 
