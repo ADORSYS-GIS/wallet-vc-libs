@@ -11,9 +11,6 @@ describe('DidPeerMethod', () => {
   test('should generate a valid DIDKeyPairMethod2', async () => {
     const result: DIDKeyPairMethod2 = await didPeerMethod.generateMethod2();
 
-    console.log(JSON.stringify(result.privateKeyV));
-    console.log(JSON.stringify(result.privateKeyE));
-
     // Assertions
     expect(result).toHaveProperty('did');
     expect(result).toHaveProperty('didDocument');

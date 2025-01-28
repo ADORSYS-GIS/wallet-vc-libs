@@ -1,6 +1,19 @@
+import { EventEmitter } from 'eventemitter3';
+import { logError } from '../lib/errors-logs/logger';
 import { validOutOfBandInvitation } from '../tests/OOBTestFixtures';
 import { OutOfBandInvitation } from './DIDCommOOBInvitation';
 import { Contact, Wallet } from './Wallet';
+
+const messageEmitter = new EventEmitter();
+
+// Registering listeners for events
+messageEmitter.on('error', (errorMessage: string, error?: Error) => {
+  logError(error || new Error('Unknown error'), errorMessage);
+});
+
+messageEmitter.on('success', (successMessage: string) => {
+  console.log(`Success: ${successMessage}`);
+});
 
 export function handleOOBInvitation(
   wallet: Wallet,
@@ -14,23 +27,36 @@ export function handleOOBInvitation(
       try {
         parsedInvitation = JSON.parse(invitation) as OutOfBandInvitation;
       } catch (error) {
-        console.error('Error parsing invitation:', error);
+        messageEmitter.emit(
+          'error',
+          'Error parsing invitation: invalid JSON format.',
+          error as Error,
+        );
         return;
       }
     } else if (typeof invitation === 'object') {
       parsedInvitation = invitation as OutOfBandInvitation;
     } else {
-      console.error('Invalid invitation type:', typeof invitation);
+      messageEmitter.emit(
+        'error',
+        `Invalid invitation type: ${typeof invitation}. Please provide valid data.`,
+      );
       return;
     }
 
     if (!parsedInvitation) {
-      console.error('Invalid OOB invitation: no parsed invitation provided.');
+      messageEmitter.emit(
+        'error',
+        'No parsed invitation provided. Please check your input.',
+      );
       return;
     }
 
     if (!parsedInvitation.body) {
-      console.error('Invalid OOB invitation: no body provided.');
+      messageEmitter.emit(
+        'error',
+        'No body provided in the invitation. Please check your input.',
+      );
       return;
     }
 
@@ -41,12 +67,18 @@ export function handleOOBInvitation(
     };
 
     if (!body.goal_code || !body.goal || !body.accept) {
-      console.error('Invalid invitation body');
+      messageEmitter.emit(
+        'error',
+        'The invitation body structure is invalid. Missing required fields.',
+      );
       return;
     }
 
     if (!wallet || !identity) {
-      console.error('Invalid wallet or identity');
+      messageEmitter.emit(
+        'error',
+        'Invalid wallet or identity, The wallet or identity information is missing. Please check your setup.',
+      );
       return;
     }
 
@@ -59,11 +91,22 @@ export function handleOOBInvitation(
       };
 
       wallet.addContact(contact, identity);
-      console.log(`Contact added for identity ${identity}`);
+      messageEmitter.emit(
+        'success',
+        `Contact successfully added for identity ${identity}`,
+      );
     } catch (error) {
-      console.error('Error adding contact:', error);
+      messageEmitter.emit(
+        'error',
+        'Failed to add the contact to the wallet.',
+        error as Error,
+      );
     }
   } catch (error) {
-    console.error('Error handling OOB invitation:', error);
+    messageEmitter.emit(
+      'error',
+      'An unexpected error occurred. Please try again later.',
+      error as Error,
+    );
   }
 }
