@@ -54,35 +54,38 @@ export class StableDIDResolver extends PeerDIDResolver {
     // Normalize services to the array variant
     diddoc.service = normalizeToArray(diddoc.service);
 
-    // Normalize service endpoints to the array variant
+    // Reducing service endpoints to the single object variant
+    // If an array, service endpoints beyond the first element will be dismissed
     diddoc.service.forEach((service) => {
-      service.serviceEndpoint = normalizeToArray(service.serviceEndpoint);
+      if (Array.isArray(service.serviceEndpoint)) {
+        service.serviceEndpoint = service.serviceEndpoint[0];
+      }
     });
 
     // Normalize service endpoints of DIDCommMessaging services
     diddoc.service
       .filter((service) => service.type == DIDCOMM_MESSAGING_SERVICE_TYPE)
       .forEach((service) => {
-        service.serviceEndpoint = service.serviceEndpoint.map(
-          (serviceEndpoint: ServiceKind) => {
-            // Attempt to autocorrect malformed service endpoint
-            if (!isDIDCommMessagingServiceEndpoint(serviceEndpoint)) {
-              if (typeof serviceEndpoint === 'string') {
-                serviceEndpoint = { uri: serviceEndpoint };
-              } else {
-                throw new Error(
-                  'Failed to autocorrect malformed DIDCommMessaging service endpoint',
-                );
-              }
-            }
+        let serviceEndpoint = service.serviceEndpoint;
 
-            // Duplicate routingKeys to routing_keys for compatibility
-            const routingKeys = serviceEndpoint.routingKeys;
-            if (!Array.isArray(serviceEndpoint.routing_keys)) {
-              serviceEndpoint.routing_keys = normalizeToArray(routingKeys);
-            }
-          },
-        );
+        // Attempt to autocorrect malformed service endpoint
+        if (!isDIDCommMessagingServiceEndpoint(serviceEndpoint)) {
+          if (typeof serviceEndpoint === 'string') {
+            serviceEndpoint = { uri: serviceEndpoint };
+          } else {
+            throw new Error(
+              'Failed to autocorrect malformed DIDCommMessaging service endpoint',
+            );
+          }
+        }
+
+        // Duplicate routingKeys to routing_keys for compatibility
+        const routingKeys = serviceEndpoint.routingKeys;
+        if (!Array.isArray(serviceEndpoint.routing_keys)) {
+          serviceEndpoint.routing_keys = normalizeToArray(routingKeys);
+        }
+
+        service.serviceEndpoint = serviceEndpoint;
       });
 
     return diddoc;

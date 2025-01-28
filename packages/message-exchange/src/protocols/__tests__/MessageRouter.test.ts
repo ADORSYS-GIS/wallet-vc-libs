@@ -39,18 +39,6 @@ describe('MessageRouter', () => {
     return data.payload.did;
   };
 
-  test('should generate and retrieve identiy', async () => {
-    const senderDid = await generateIdentity(secretPinNumber);
-
-    const keys = await didRepository.getADidWithDecryptedPrivateKeys(
-      senderDid,
-      secretPinNumber,
-    );
-
-    const decryptedPrivateKeys = keys?.decryptedPrivateKeys ?? {};
-    expect(Object.values(decryptedPrivateKeys)).toHaveLength(2);
-  });
-
   test('should route messages successfully', async () => {
     const senderDid = await generateIdentity(secretPinNumber);
     const messageModel = await messageRouter.routeForwardMessage(

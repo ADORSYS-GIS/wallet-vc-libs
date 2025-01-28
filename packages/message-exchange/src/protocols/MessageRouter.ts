@@ -1,5 +1,11 @@
 import { fetch } from 'cross-fetch';
-import { DIDResolver, Message, Secret, ServiceKind } from 'didcomm';
+import {
+  DIDCommMessagingService,
+  DIDResolver,
+  Message,
+  Secret,
+  ServiceKind,
+} from 'didcomm';
 import { MediatorServiceEndpoint } from './types/routing';
 
 import {
@@ -85,7 +91,6 @@ export class MessageRouter {
     let messageWasRouted = false;
     for (const url of mediatorEnpointUrls) {
       try {
-        console.log('Routing message...');
         const response = await fetch(url, {
           method: 'POST',
           headers: { 'Content-Type': ENCRYPTED_DIDCOMM_MESSAGE_TYPE },
@@ -96,6 +101,10 @@ export class MessageRouter {
           console.log('Message successfully routed');
           messageWasRouted = true;
           break;
+        } else {
+          throw new Error(
+            `${response.status} ${response.statusText} ${await response.text()}`,
+          );
         }
       } catch (e) {
         console.warn(e);
@@ -176,7 +185,7 @@ export class MessageRouter {
         null,
         this.didResolver,
         secretsResolver,
-        {}, // { forward: false },
+        {},
       );
 
       return packedMessage;
@@ -219,9 +228,8 @@ export class MessageRouter {
     recipientDid: string,
   ): Promise<MediatorServiceEndpoint[]> {
     // Collect exposed DIDComm services
-    const serviceEndpoints = (
-      await this.resolveDIDCommServiceEndpoints(recipientDid)
-    ).filter(isDIDCommMessagingServiceEndpoint);
+    const serviceEndpoints =
+      await this.resolveDIDCommServiceEndpoints(recipientDid);
 
     // TODO: Which service endpoint is the didcomm library considering?
 
@@ -257,13 +265,7 @@ export class MessageRouter {
 
       return serviceEndpoints
         .map((serviceEndpoint) => {
-          let uri = '';
-          if (typeof serviceEndpoint == 'string') {
-            uri = serviceEndpoint;
-          } else if (isDIDCommMessagingServiceEndpoint(serviceEndpoint)) {
-            uri = serviceEndpoint.uri;
-          }
-
+          const { uri } = serviceEndpoint;
           return isHttpUrl(uri) ? uri : null;
         })
         .filter((url) => url != null);
@@ -283,7 +285,7 @@ export class MessageRouter {
    */
   private async resolveDIDCommServiceEndpoints(
     did: string,
-  ): Promise<ServiceKind[]> {
+  ): Promise<DIDCommMessagingService[]> {
     // Resolve DID to retrieve exposed services
     const diddoc = await this.didResolver.resolve(did);
     let services = normalizeToArray(diddoc?.service);
@@ -291,6 +293,7 @@ export class MessageRouter {
     // Filter only DIDComm services
     return services
       .filter((service) => service.type == DIDCOMM_MESSAGING_SERVICE_TYPE)
-      .flatMap((service) => normalizeToArray(service.serviceEndpoint));
+      .map((service) => service.serviceEndpoint)
+      .filter(isDIDCommMessagingServiceEndpoint);
   }
 }
