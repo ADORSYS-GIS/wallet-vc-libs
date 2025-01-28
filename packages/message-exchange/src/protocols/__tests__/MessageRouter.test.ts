@@ -2,7 +2,6 @@ import { describe, test, expect } from 'vitest';
 
 import { MessageRepository } from '@adorsys-gis/message-service';
 import { ServiceResponse } from '@adorsys-gis/status-service';
-import { PeerDIDResolver } from 'did-resolver-lib';
 import { MessageRouter } from '../MessageRouter';
 
 import {
@@ -23,7 +22,6 @@ describe('MessageRouter', () => {
   const secretPinNumber = 1234;
   const didRepository = new DidRepository(securityService);
   const messageRouter = new MessageRouter(
-    new PeerDIDResolver(),
     didRepository,
     new MessageRepository(),
     secretPinNumber,

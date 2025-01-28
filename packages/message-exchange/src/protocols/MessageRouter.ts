@@ -1,7 +1,6 @@
-import { generateUuid, currentTimestampInSecs, isHttpUrl } from '../utils';
-import { MediatorServiceEndpoint } from './types/routing';
 import { fetch } from 'cross-fetch';
 import { DIDResolver, Message, Secret, ServiceKind } from 'didcomm';
+import { MediatorServiceEndpoint } from './types/routing';
 
 import {
   Message as MessageModel,
@@ -14,9 +13,14 @@ import {
 } from '@adorsys-gis/multiple-did-identities';
 
 import {
+  currentTimestampInSecs,
+  generateUuid,
   isDIDCommMessagingServiceEndpoint,
+  isHttpUrl,
+  normalizeToArray,
+  StableDIDResolver,
   StaticSecretsResolver,
-} from '../utils/didcomm';
+} from '../utils';
 
 import {
   BASIC_MESSAGE_TYPE_URI,
@@ -32,13 +36,16 @@ import {
  */
 export class MessageRouter {
   /**
-   * @param didResolver - A DID resolver for resolving DID addresses.
+   * A DID resolver for resolving DID addresses
+   */
+  private readonly didResolver: DIDResolver = new StableDIDResolver();
+
+  /**
    * @param didRepository - A repository for retrieving wallet's secret keys.
    * @param messageRepository - A repository for persisting sent messages.
    * @param secretPinNumber - The secret PIN number for decrypting data from safe storage.
    */
   public constructor(
-    private readonly didResolver: DIDResolver,
     private readonly didRepository: DidRepository,
     private readonly messageRepository: MessageRepository,
     private readonly secretPinNumber: number,
@@ -198,8 +205,7 @@ export class MessageRouter {
     );
 
     if (secrets.length == 0) {
-      console.warn('No decrypted private keys available');
-      // throw new Error('Cannot proceed with no private keys');
+      throw new Error('Cannot proceed with no sender secrets');
     }
 
     return secrets;
@@ -223,17 +229,7 @@ export class MessageRouter {
     const mediatorEndpoints = await Promise.all(
       serviceEndpoints.map(async (serviceEndpoint) => {
         const uri = await this.normalizeServiceEndpointUri(serviceEndpoint.uri);
-
-        const routingKeys1 = serviceEndpoint.routing_keys;
-        const routingKeys2 = (
-          serviceEndpoint as unknown as { routingKeys: string[] }
-        )['routingKeys'];
-
-        let routingKeys = Array.isArray(routingKeys1)
-          ? routingKeys1
-          : Array.isArray(routingKeys2)
-            ? routingKeys2
-            : [];
+        const routingKeys = serviceEndpoint.routing_keys;
 
         if (serviceEndpoint.uri.startsWith('did:')) {
           routingKeys.unshift(serviceEndpoint.uri);
@@ -290,22 +286,11 @@ export class MessageRouter {
   ): Promise<ServiceKind[]> {
     // Resolve DID to retrieve exposed services
     const diddoc = await this.didResolver.resolve(did);
-    let services = diddoc?.service;
-
-    // Normalize services to the array variant
-    if (!Array.isArray(services)) {
-      services = services ? [services] : [];
-    }
+    let services = normalizeToArray(diddoc?.service);
 
     // Filter only DIDComm services
     return services
       .filter((service) => service.type == DIDCOMM_MESSAGING_SERVICE_TYPE)
-      .flatMap((service) => {
-        const serviceEndpoints = service.serviceEndpoint;
-        // Normalize service endpoints to the array variant
-        return Array.isArray(serviceEndpoints)
-          ? serviceEndpoints
-          : [serviceEndpoints];
-      });
+      .flatMap((service) => normalizeToArray(service.serviceEndpoint));
   }
 }

@@ -1,4 +1,14 @@
-import { Secret, SecretsResolver, DIDCommMessagingService } from 'didcomm';
+import {
+  DIDCommMessagingService,
+  DIDDoc,
+  Secret,
+  SecretsResolver,
+  ServiceKind,
+} from 'didcomm';
+
+import { PeerDIDResolver } from 'did-resolver-lib';
+import { DIDCOMM_MESSAGING_SERVICE_TYPE } from '../protocols/types/constants';
+import { normalizeToArray } from './misc';
 
 /**
  * Type guard for {@link DIDCommMessagingService}
@@ -27,5 +37,54 @@ export class StaticSecretsResolver implements SecretsResolver {
     return secretIds.filter((id) =>
       this.knownSecrets.find((secret) => secret.id === id),
     );
+  }
+}
+
+/**
+ * This {@link DIDResolver} implementation ensures that returned
+ * DID documents are in a widely compatible format.
+ */
+export class StableDIDResolver extends PeerDIDResolver {
+  override async resolve(did: string): Promise<DIDDoc | null> {
+    const diddoc = await super.resolve(did);
+    if (diddoc == null) {
+      return diddoc;
+    }
+
+    // Normalize services to the array variant
+    diddoc.service = normalizeToArray(diddoc.service);
+
+    // Normalize service endpoints to the array variant
+    diddoc.service.forEach((service) => {
+      service.serviceEndpoint = normalizeToArray(service.serviceEndpoint);
+    });
+
+    // Normalize service endpoints of DIDCommMessaging services
+    diddoc.service
+      .filter((service) => service.type == DIDCOMM_MESSAGING_SERVICE_TYPE)
+      .forEach((service) => {
+        service.serviceEndpoint = service.serviceEndpoint.map(
+          (serviceEndpoint: ServiceKind) => {
+            // Attempt to autocorrect malformed service endpoint
+            if (!isDIDCommMessagingServiceEndpoint(serviceEndpoint)) {
+              if (typeof serviceEndpoint === 'string') {
+                serviceEndpoint = { uri: serviceEndpoint };
+              } else {
+                throw new Error(
+                  'Failed to autocorrect malformed DIDCommMessaging service endpoint',
+                );
+              }
+            }
+
+            // Duplicate routingKeys to routing_keys for compatibility
+            const routingKeys = serviceEndpoint.routingKeys;
+            if (!Array.isArray(serviceEndpoint.routing_keys)) {
+              serviceEndpoint.routing_keys = normalizeToArray(routingKeys);
+            }
+          },
+        );
+      });
+
+    return diddoc;
   }
 }
