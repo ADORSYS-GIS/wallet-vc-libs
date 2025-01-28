@@ -1,9 +1,9 @@
 import { DIDKeyPairVariants } from '../did-methods/DidMethodFactory';
 import { SecurityService } from '../security/SecurityService';
 import {
-    hasPrivateKey,
-    hasPrivateKey1and2,
-    hasPrivateKeyVandE,
+  hasPrivateKey,
+  hasPrivateKey1and2,
+  hasPrivateKeyVandE,
 } from './typeGuards';
 
 export async function encryptPrivateKeys(
