@@ -1,6 +1,4 @@
-// MessageRouter.ts
-
-import { Message, DIDResolver, SecretsResolver } from 'didcomm-node';
+import { DIDResolver, Message, SecretsResolver } from 'didcomm-node';
 import { v4 as uuidv4 } from 'uuid';
 import { MessageTyp, MessageType } from './Messages.types';
 
