@@ -1,7 +1,11 @@
-import { MessageRepository } from '@adorsys-gis/message-service';
 import { EventEmitter } from 'eventemitter3';
 import { MessageRouter } from '../../protocols/MessageRouter';
 import { MessageExchangeEvent } from '../events/MessageExchangeEvent';
+
+import {
+  Message as MessageModel,
+  MessageRepository,
+} from '@adorsys-gis/message-service';
 
 import {
   DidRepository,
@@ -50,18 +54,22 @@ export class MessageExchangeService {
   ): void {
     const channel = MessageExchangeEvent.RouteForwardMessages;
 
-    // this.contactRepository
-    //   .create(contact)
-    //   .then((createdContact) => {
-    //     const response: ServiceResponse<Contact> = {
-    //       status: ServiceResponseStatus.Success,
-    //       payload: createdContact,
-    //     };
-    //     this.eventBus.emit(createContactChannel, response);
-    //   })
-    //   .catch(this.sharedErrorHandler(createContactChannel));
+    this.messageRouter
+      .routeForwardMessage(message, recipientDid, senderDid)
+      .then((persistedMessage) => {
+        const response: ServiceResponse<MessageModel> = {
+          status: ServiceResponseStatus.Success,
+          payload: persistedMessage,
+        };
+
+        this.eventBus.emit(channel, response);
+      })
+      .catch(this.sharedErrorHandler(channel));
   }
 
+  /**
+   * Common handler for emitting errors.
+   */
   private sharedErrorHandler(channel: MessageExchangeEvent) {
     return (error: unknown) => {
       const response: ServiceResponse<Error> = {
