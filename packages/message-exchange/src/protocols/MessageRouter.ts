@@ -1,13 +1,7 @@
 import { fetch } from 'cross-fetch';
 import { MediatorServiceEndpoint } from './types/routing';
 
-import {
-  DIDCommMessagingService,
-  DIDResolver,
-  Message,
-  Secret,
-  SecretsResolver,
-} from 'didcomm';
+import { DIDCommMessagingService, DIDResolver, Message, Secret } from 'didcomm';
 
 import {
   Message as MessageModel,
@@ -77,28 +71,24 @@ export class MessageRouter {
       senderDid,
     );
 
-    // Prepare secrets resolver
-    const secrets = await this.retrieveSenderDidSecrets(senderDid);
-    const secretsResolver = new StaticSecretsResolver(secrets);
+    // Pack into a forward message
+    const packedMessage = await this.packForwardMessage(
+      basicMessage,
+      recipientDid,
+      senderDid,
+    );
 
     // Identify DIDComm endpoints of the recipient's mediator
-    const mediatorEndpoints = await this.extractMediatorEndpoints(recipientDid);
+    const mediatorEndpointUris = await this.recoverMediatorEndpointUris(
+      packedMessage,
+      recipientDid,
+    );
 
-    // Pack and route message
+    // Route message to mediator
     let messageWasRouted = false;
-    for (const mediatorEndpoint of mediatorEndpoints) {
+    for (const mediatorEndpointUri of mediatorEndpointUris) {
       try {
-        // Pack into a forward message
-        const packedMessage = await this.packForwardMessage(
-          basicMessage,
-          recipientDid,
-          senderDid,
-          secretsResolver,
-          mediatorEndpoint,
-        );
-
-        // Route message to mediator
-        const response = await fetch(mediatorEndpoint.uri, {
+        const response = await fetch(mediatorEndpointUri, {
           method: 'POST',
           headers: { 'Content-Type': ENCRYPTED_DIDCOMM_MESSAGE_TYPE },
           body: packedMessage,
@@ -124,7 +114,12 @@ export class MessageRouter {
     }
 
     // Save sent message
-    return await this.persistMessage(message, recipientDid, senderDid, basicMessage);
+    return await this.persistMessage(
+      message,
+      recipientDid,
+      senderDid,
+      basicMessage,
+    );
   }
 
   /**
@@ -179,9 +174,11 @@ export class MessageRouter {
     basicMessage: Message,
     recipientDid: string,
     senderDid: string,
-    secretsResolver: SecretsResolver,
-    mediatorEnpoint: MediatorServiceEndpoint,
   ): Promise<string> {
+    // Prepare secrets resolver
+    const secrets = await this.retrieveSenderDidSecrets(senderDid);
+    const secretsResolver = new StaticSecretsResolver(secrets);
+
     try {
       const [packedMessage] = await basicMessage.pack_encrypted(
         recipientDid,
@@ -192,14 +189,28 @@ export class MessageRouter {
         {},
       );
 
-      // TODO: Validate that the routing key selected by the didcomm library
-      // matches the URI we are considering for sending the message.
-
       return packedMessage;
     } catch (e) {
       console.error(e);
       throw new Error('Forward message packing failed');
     }
+  }
+
+  /**
+   * Recover mediator's endpoint URIs for routing packed message.
+   */
+  private async recoverMediatorEndpointUris(
+    packedMessage: string,
+    recipientDid: string,
+  ): Promise<string[]> {
+    const mediatorEndpoints = await this.extractMediatorEndpoints(recipientDid);
+
+    const jwm = JSON.parse(packedMessage);
+    const mediatorDid = jwm.recipients[0].header.kid;
+
+    return mediatorEndpoints
+      .filter((e) => e.routingKeys.some((key) => mediatorDid.startsWith(key)))
+      .map((e) => e.uri);
   }
 
   /**
@@ -237,8 +248,6 @@ export class MessageRouter {
     // Collect exposed DIDComm services
     const serviceEndpoints =
       await this.resolveDIDCommServiceEndpoints(recipientDid);
-
-    // TODO: Which service endpoint is the didcomm library considering?
 
     // Process service endpoints
     const mediatorEndpoints = await Promise.all(
@@ -295,7 +304,7 @@ export class MessageRouter {
   ): Promise<DIDCommMessagingService[]> {
     // Resolve DID to retrieve exposed services
     const diddoc = await this.didResolver.resolve(did);
-    let services = normalizeToArray(diddoc?.service);
+    const services = normalizeToArray(diddoc?.service);
 
     // Filter only DIDComm services
     return services
