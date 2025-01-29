@@ -23,7 +23,8 @@
     "packages/multiple-did-identities",
     "packages/qr-scanner",
     "packages/usePWA",
-    "packages/message-service"
+    "packages/message-service",
+    "packages/message-pickup"
   ],
   "author": "",
   "license": "ISC",
