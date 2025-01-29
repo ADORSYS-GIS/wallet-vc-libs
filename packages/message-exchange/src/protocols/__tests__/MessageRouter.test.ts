@@ -47,6 +47,6 @@ describe('MessageRouter', () => {
       senderDid,
     );
 
-    console.log({ messageModel });
+    console.log(messageModel);
   });
 });

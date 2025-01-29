@@ -1,12 +1,13 @@
 import { fetch } from 'cross-fetch';
+import { MediatorServiceEndpoint } from './types/routing';
+
 import {
   DIDCommMessagingService,
   DIDResolver,
   Message,
   Secret,
-  ServiceKind,
+  SecretsResolver,
 } from 'didcomm';
-import { MediatorServiceEndpoint } from './types/routing';
 
 import {
   Message as MessageModel,
@@ -68,7 +69,7 @@ export class MessageRouter {
     message: string,
     recipientDid: string,
     senderDid: string,
-  ): Promise<void> {
+  ): Promise<MessageModel> {
     // Construct formal basic message
     const basicMessage = this.buildBasicMessage(
       message,
@@ -76,22 +77,28 @@ export class MessageRouter {
       senderDid,
     );
 
+    // Prepare secrets resolver
+    const secrets = await this.retrieveSenderDidSecrets(senderDid);
+    const secretsResolver = new StaticSecretsResolver(secrets);
+
     // Identify DIDComm endpoints of the recipient's mediator
     const mediatorEndpoints = await this.extractMediatorEndpoints(recipientDid);
-    const mediatorEnpointUrls = mediatorEndpoints.flatMap((e) => e.uri);
 
-    // Pack into a forward message
-    const packedMessage = await this.packForwardMessage(
-      basicMessage,
-      recipientDid,
-      senderDid,
-    );
-
-    // Route message to mediator
+    // Pack and route message
     let messageWasRouted = false;
-    for (const url of mediatorEnpointUrls) {
+    for (const mediatorEndpoint of mediatorEndpoints) {
       try {
-        const response = await fetch(url, {
+        // Pack into a forward message
+        const packedMessage = await this.packForwardMessage(
+          basicMessage,
+          recipientDid,
+          senderDid,
+          secretsResolver,
+          mediatorEndpoint,
+        );
+
+        // Route message to mediator
+        const response = await fetch(mediatorEndpoint.uri, {
           method: 'POST',
           headers: { 'Content-Type': ENCRYPTED_DIDCOMM_MESSAGE_TYPE },
           body: packedMessage,
@@ -113,11 +120,11 @@ export class MessageRouter {
 
     // Throw error if message was not routed so far
     if (!messageWasRouted) {
-      throw new Error('Message could not be routed successfully');
+      throw new Error('Message could not be packed or routed successfully');
     }
 
     // Save sent message
-    await this.persistMessage(message, recipientDid, senderDid, basicMessage);
+    return await this.persistMessage(message, recipientDid, senderDid, basicMessage);
   }
 
   /**
@@ -166,18 +173,15 @@ export class MessageRouter {
   }
 
   /**
-   * Prepares and packs forward messages.
+   * Packs forward messages.
    */
   private async packForwardMessage(
     basicMessage: Message,
     recipientDid: string,
     senderDid: string,
+    secretsResolver: SecretsResolver,
+    mediatorEnpoint: MediatorServiceEndpoint,
   ): Promise<string> {
-    // Prepare secrets resolver
-    const secrets = await this.retrieveSenderDidSecrets(senderDid);
-    const secretsResolver = new StaticSecretsResolver(secrets);
-
-    // Attempting to pack message
     try {
       const [packedMessage] = await basicMessage.pack_encrypted(
         recipientDid,
@@ -187,6 +191,9 @@ export class MessageRouter {
         secretsResolver,
         {},
       );
+
+      // TODO: Validate that the routing key selected by the didcomm library
+      // matches the URI we are considering for sending the message.
 
       return packedMessage;
     } catch (e) {
@@ -243,12 +250,12 @@ export class MessageRouter {
           routingKeys.unshift(serviceEndpoint.uri);
         }
 
-        return { uri, routingKeys };
+        return uri.map((uri) => ({ uri, routingKeys }));
       }),
     );
 
-    // Filter out entries with no URLs
-    return mediatorEndpoints.filter((e) => e.uri.length > 0);
+    // Flatten and filter out entries with no URLs
+    return mediatorEndpoints.flat().filter((e) => e.uri.length > 0);
   }
 
   /**
