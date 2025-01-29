@@ -1,10 +1,9 @@
-import { describe, test, expect } from 'vitest';
+import { describe, expect, test } from 'vitest';
 
 import { MessageRepository } from '@adorsys-gis/message-service';
-import { MessageRouter } from '../MessageRouter';
-
-import { aliceDid, securityService, generateIdentity } from './helpers';
 import { DidRepository } from '@adorsys-gis/multiple-did-identities';
+import { MessageRouter } from '../MessageRouter';
+import { aliceDid, generateIdentity, securityService } from './helpers';
 
 describe('MessageRouter', () => {
   const secretPinNumber = 1234;
