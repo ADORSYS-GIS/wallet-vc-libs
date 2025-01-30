@@ -49,5 +49,5 @@ describe('MessageRouter', () => {
         direction: 'out',
       }),
     );
-  });
+  }, 50e3);
 });

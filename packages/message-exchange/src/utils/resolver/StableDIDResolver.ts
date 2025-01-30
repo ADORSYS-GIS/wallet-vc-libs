@@ -29,13 +29,25 @@ export enum PeerDIDResolverProfile {
  */
 export class StableDIDResolver extends PeerDIDResolver {
   /**
-   * Preconfigure mappings of matching DID documents to preset profiles.
-   * DID documents are matched based on an exposed service endpoint URI
-   * that includes the key in the map.
+   * @param peerDidResolverProfile - a key ID profile to apply for did:peer resolution
    */
-  private readonly peerDidDocPresetProfiles = {
-    rootsid: PeerDIDResolverProfile.RootsID,
-  };
+  constructor(
+    private readonly peerDidResolverProfile = PeerDIDResolverProfile.Default,
+  ) {
+    super();
+  }
+
+  /**
+   * Instantiates a mediator with the key ID profile matching a party.
+   */
+  async enforceProfileForParty(did: string): Promise<StableDIDResolver> {
+    const diddoc = await this.resolve(did);
+    const profile = diddoc
+      ? await this.resolvePeerDIDResolverProfile(diddoc)
+      : PeerDIDResolverProfile.Default;
+
+    return new StableDIDResolver(profile);
+  }
 
   /**
    * Resolves a DID document by the given DID.
@@ -50,7 +62,7 @@ export class StableDIDResolver extends PeerDIDResolver {
     diddoc.service = this.normalizeServices(diddoc.service);
 
     // Convert key IDs into the enabled profile
-    this.conformKeyIdFormatToProfile(diddoc);
+    await this.conformKeyIdFormatToProfile(diddoc);
 
     return diddoc;
   }
@@ -104,14 +116,12 @@ export class StableDIDResolver extends PeerDIDResolver {
   /**
    * Conforms key IDs to the format defined by the enabled profile.
    */
-  private conformKeyIdFormatToProfile(diddoc: DIDDoc): void {
+  private async conformKeyIdFormatToProfile(diddoc: DIDDoc): Promise<void> {
     if (!diddoc.id.startsWith('did:peer:')) {
       return;
     }
 
-    const profile = this.resolvePeerDIDResolverProfile(diddoc);
-
-    if (profile == PeerDIDResolverProfile.RootsID) {
+    if (this.peerDidResolverProfile == PeerDIDResolverProfile.RootsID) {
       const keyMapping = new Map();
 
       diddoc.verificationMethod.forEach((method) => {
@@ -139,11 +149,20 @@ export class StableDIDResolver extends PeerDIDResolver {
   }
 
   /**
-   * Resolves PeerDIDResolverProfile from preset mappings.
+   * Preconfigure mappings of matching DID documents to preset profiles.
+   * DID documents are matched based on an exposed service endpoint URI
+   * that includes the key in the map.
    */
-  private resolvePeerDIDResolverProfile(
+  private readonly peerDidDocPresetProfiles = {
+    rootsid: PeerDIDResolverProfile.RootsID,
+  };
+
+  /**
+   * Resolves PeerDIDResolverProfile matching DID document from preset mappings.
+   */
+  public async resolvePeerDIDResolverProfile(
     diddoc: DIDDoc,
-  ): PeerDIDResolverProfile {
+  ): Promise<PeerDIDResolverProfile> {
     const serviceEndpointUris = diddoc.service
       .map((s) => s.serviceEndpoint)
       .filter(isDIDCommMessagingServiceEndpoint)
@@ -157,8 +176,25 @@ export class StableDIDResolver extends PeerDIDResolver {
       serviceEndpointUris.some((uri) => uri.includes(presetKey)),
     );
 
-    return matchingPresetKey
-      ? this.peerDidDocPresetProfiles[matchingPresetKey]
-      : PeerDIDResolverProfile.Default;
+    if (!matchingPresetKey) {
+      const diddocs = await Promise.all(
+        serviceEndpointUris
+          .filter((uri) => uri.startsWith('did:'))
+          .map((did) => this.resolve(did)),
+      );
+
+      const profiles = await Promise.all(
+        diddocs
+          .filter((diddoc) => diddoc != null)
+          .map((diddoc) => this.resolvePeerDIDResolverProfile(diddoc)),
+      );
+
+      return (
+        profiles.find((p) => p != PeerDIDResolverProfile.Default) ??
+        PeerDIDResolverProfile.Default
+      );
+    }
+
+    return this.peerDidDocPresetProfiles[matchingPresetKey];
   }
 }

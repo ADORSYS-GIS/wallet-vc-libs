@@ -1,7 +1,6 @@
 import { fetch } from 'cross-fetch';
 import { MediatorServiceEndpoint } from './types/routing';
-
-import { DIDCommMessagingService, DIDResolver, Message, Secret } from 'didcomm';
+import { DIDCommMessagingService, Message, Secret } from 'didcomm';
 
 import {
   Message as MessageModel,
@@ -39,7 +38,7 @@ export class MessageRouter {
   /**
    * A DID resolver for resolving DID addresses
    */
-  private readonly didResolver: DIDResolver = new StableDIDResolver();
+  private readonly didResolver = new StableDIDResolver();
 
   /**
    * @param didRepository - A repository for retrieving wallet's secret keys.
@@ -85,41 +84,19 @@ export class MessageRouter {
     );
 
     // Route message to mediator
-    let messageWasRouted = false;
-    for (const mediatorEndpointUri of mediatorEndpointUris) {
-      try {
-        const response = await fetch(mediatorEndpointUri, {
-          method: 'POST',
-          headers: { 'Content-Type': ENCRYPTED_DIDCOMM_MESSAGE_TYPE },
-          body: packedMessage,
-        });
-
-        if (response.status == 202) {
-          console.log('Message successfully routed');
-          messageWasRouted = true;
-          break;
-        } else {
-          throw new Error(
-            `${response.status} ${response.statusText} ${await response.text()}`,
-          );
-        }
-      } catch (e) {
-        console.warn(e);
-      }
-    }
-
-    // Throw error if message was not routed so far
-    if (!messageWasRouted) {
-      throw new Error('Message could not be packed or routed successfully');
-    }
+    await this.postMessage(packedMessage, mediatorEndpointUris);
 
     // Save sent message
-    return await this.persistMessage(
+    const persistedMessage = await this.persistMessage(
       message,
       recipientDid,
       senderDid,
       basicMessage,
     );
+
+    // Log and return persisted message
+    console.log(`Message ${persistedMessage.id} successfully routed`);
+    return persistedMessage;
   }
 
   /**
@@ -175,16 +152,21 @@ export class MessageRouter {
     recipientDid: string,
     senderDid: string,
   ): Promise<string> {
+    // Get a DID resolver that enforces the recipient's profile
+    const didResolver =
+      await this.didResolver.enforceProfileForParty(recipientDid);
+
     // Prepare secrets resolver
     const secrets = await this.retrieveSenderDidSecrets(senderDid);
     const secretsResolver = new StaticSecretsResolver(secrets);
 
+    // Attempt packing the message
     try {
       const [packedMessage] = await basicMessage.pack_encrypted(
         recipientDid,
         senderDid,
         null,
-        this.didResolver,
+        didResolver,
         secretsResolver,
         {},
       );
@@ -194,6 +176,37 @@ export class MessageRouter {
       console.error(e);
       throw new Error('Forward message packing failed');
     }
+  }
+
+  /**
+   * Sends message payload over HTTP.
+   */
+  private async postMessage(
+    packedMessage: string,
+    mediatorEndpointUris: string[],
+  ): Promise<void> {
+    for (const mediatorEndpointUri of mediatorEndpointUris) {
+      try {
+        const response = await fetch(mediatorEndpointUri, {
+          method: 'POST',
+          headers: { 'Content-Type': ENCRYPTED_DIDCOMM_MESSAGE_TYPE },
+          body: packedMessage,
+        });
+
+        if (response.status == 202) {
+          return; // message was routed successfully
+        } else {
+          throw new Error(
+            `${response.status} ${response.statusText} ${await response.text()}`,
+          );
+        }
+      } catch (e) {
+        console.warn(e);
+      }
+    }
+
+    // message failed to be routed successfully
+    throw new Error('Failed to route packed message to mediator');
   }
 
   /**
