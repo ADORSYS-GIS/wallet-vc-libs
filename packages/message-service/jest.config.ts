@@ -1,4 +1,3 @@
-/* eslint-disable */
 export default {
   displayName: 'message-service',
   testEnvironment: 'node',

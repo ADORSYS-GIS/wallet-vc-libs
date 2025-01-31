@@ -1,15 +1,15 @@
 {
   "compilerOptions": {
-    "target": "ESNext", // Specify ECMAScript target version
-    "module": "ESNext", // Specify module code generation
-    "moduleResolution": "Node", // Specify module resolution strategy
-    "esModuleInterop": true, // Enables emit interoperability between CommonJS and ES Modules
-    "skipLibCheck": true, // Skip type checking of declaration files
+    "target": "ESNext",
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
-    "strict": true, // Enable all strict type-checking options
-    "outDir": "./dist", // Output directory for compiled files
-    "rootDir": "./src" // Root directory of input files
+    "strict": true,
+    "outDir": "./dist",
+    "rootDir": "./src"
   },
-  "include": ["src/**/*"], // Include all source files
-  "exclude": ["node_modules", "dist"] // Exclude unnecessary files
+  "include": ["src/**/*"],
+  "exclude": ["node_modules", "dist"]
 }

@@ -1,4 +1,3 @@
-/* eslint-disable */
 export default {
   displayName: 'usePWA',
   preset: 'ts-jest',
@@ -15,7 +14,7 @@ export default {
     ],
   },
   moduleNameMapper: {
-    '\\.(css|less|scss|sass)$': 'identity-obj-proxy', // Mock CSS imports
+    '\\.(css|less|scss|sass)$': 'identity-obj-proxy',
   },
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx'],
   coverageDirectory: '../../coverage/libs/usePWA',
