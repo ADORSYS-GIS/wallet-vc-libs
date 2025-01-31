@@ -13,7 +13,7 @@ const compat = new FlatCompat({
 });
 
 export default [
-  ...compat.extends('../../.eslintrc.json'),
+  ...compat.extends('../../.eslint.config.mjs'),
   {
     files: ['**/*.json'],
 

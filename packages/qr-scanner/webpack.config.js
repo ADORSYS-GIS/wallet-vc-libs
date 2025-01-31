@@ -4,7 +4,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 module.exports = {
   entry: './src/index.ts',
   output: {
-    path: path.resolve(__dirname, 'dist'),
+    path: path.resolve('dist'),
     filename: 'src/index.js',
     library: {
       name: 'QrScanner',
@@ -16,12 +16,9 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
     alias: {
-      react: path.resolve(__dirname, '../../node_modules/react'),
-      'react-dom': path.resolve(__dirname, '../../node_modules/react-dom'),
-      'react/jsx-runtime': path.resolve(
-        __dirname,
-        '../../node_modules/react/jsx-runtime',
-      ),
+      react: path.resolve('../../node_modules/react'),
+      'react-dom': path.resolve('../../node_modules/react-dom'),
+      'react/jsx-runtime': path.resolve('../../node_modules/react/jsx-runtime'),
     },
   },
   module: {

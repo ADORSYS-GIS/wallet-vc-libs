@@ -16,7 +16,7 @@
     "@babel/core": "^7.26.7",
     "@babel/preset-env": "^7.26.7",
     "@swc/cli": "0.6.0",
-    "@swc/core": "1.10.9",
+    "@swc/core": "1.10.12",
     "@swc/helpers": "~0.5.15",
     "@swc/jest": "0.2.37",
     "babel-jest": "^29.7.0",

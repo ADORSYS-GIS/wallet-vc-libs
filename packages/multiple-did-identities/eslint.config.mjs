@@ -17,10 +17,7 @@ export default [
   {
     ignores: ['!**/*', '**/node_modules/'],
   },
-  ...compat.extends(
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-  ),
+  ...compat.extends('../../.eslint.config.mjs'),
   {
     languageOptions: {
       parser: tsParser,

@@ -16,7 +16,7 @@ export default [
   {
     ignores: ['!**/*', '**/node_modules/'],
   },
-  ...compat.extends('../../.eslintrc.json'),
+  ...compat.extends('../../.eslint.config.mjs'),
   {
     files: ['**/*.json'],
 
