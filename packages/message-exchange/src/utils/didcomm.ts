@@ -1,11 +1,9 @@
 export { StableDIDResolver } from './resolver/StableDIDResolver';
 export { StaticSecretsResolver } from './resolver/StaticSecretsResolver';
 
-import { PrivateKeyJWK } from '@adorsys-gis/multiple-did-identities';
+import { JWKKeys as JWK } from '@adorsys-gis/multiple-did-identities';
 import { base58, base64urlnopad } from '@scure/base';
 import { DIDCommMessagingService } from 'didcomm';
-
-type JWK = PrivateKeyJWK['privateKeyJwk'];
 
 /**
  * Type guard for {@link DIDCommMessagingService}
@@ -13,7 +11,12 @@ type JWK = PrivateKeyJWK['privateKeyJwk'];
 export function isDIDCommMessagingServiceEndpoint(
   arg: unknown,
 ): arg is DIDCommMessagingService {
-  return arg != null && typeof arg == 'object' && 'uri' in arg;
+  return (
+    arg != null &&
+    typeof arg == 'object' &&
+    'uri' in arg &&
+    arg.uri !== undefined
+  );
 }
 
 /**

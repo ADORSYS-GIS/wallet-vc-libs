@@ -35,6 +35,15 @@ export class StaticSecretsResolver implements SecretsResolver {
   }
 
   async find_secrets(secretIds: string[]): Promise<string[]> {
-    return secretIds.filter((secretId) => this.get_secret(secretId));
+    const secrets = await Promise.all(
+      secretIds.map(async (secretId) => ({
+        secretId,
+        secret: await this.get_secret(secretId),
+      })),
+    );
+
+    return secrets
+      .filter(({ secret }) => secret)
+      .map(({ secretId }) => secretId);
   }
 }

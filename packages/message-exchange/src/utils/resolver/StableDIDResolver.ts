@@ -38,6 +38,13 @@ export class StableDIDResolver extends PeerDIDResolver {
   }
 
   /**
+   * Returns current key ID profile to apply for did:peer resolution
+   */
+  getPeerDidResolverProfile(): PeerDIDResolverProfile {
+    return this.peerDidResolverProfile;
+  }
+
+  /**
    * Instantiates a mediator with the key ID profile matching a party.
    */
   async enforceProfileForParty(did: string): Promise<StableDIDResolver> {
@@ -160,7 +167,7 @@ export class StableDIDResolver extends PeerDIDResolver {
   /**
    * Resolves PeerDIDResolverProfile matching DID document from preset mappings.
    */
-  public async resolvePeerDIDResolverProfile(
+  private async resolvePeerDIDResolverProfile(
     diddoc: DIDDoc,
   ): Promise<PeerDIDResolverProfile> {
     const serviceEndpointUris = diddoc.service
