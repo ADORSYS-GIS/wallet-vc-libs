@@ -10,11 +10,11 @@ import {
   generateKeyPairsX25519,
 } from '../utils/generateKeyPairs';
 import {
+  DID2Type,
   DIDKeyPairVariants,
   DIDMethodName,
   PeerGenerationMethod,
   PurposeCode,
-  DID2Type,
 } from './DidMethodFactory';
 import {
   DIDDocumentMethod2,
