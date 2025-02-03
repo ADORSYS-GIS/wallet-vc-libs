@@ -8,6 +8,7 @@ import {
 } from '@adorsys-gis/message-service';
 
 import {
+  DidIdentityWithDecryptedKeys,
   DidRepository,
   PrivateKeyJWK,
 } from '@adorsys-gis/multiple-did-identities';
@@ -230,14 +231,22 @@ export class MessageRouter {
    * Retrieves the private keys of the sender DID.
    */
   private async retrieveSenderDidSecrets(senderDid: string): Promise<Secret[]> {
-    const privateKeys =
-      await this.didRepository.getADidWithDecryptedPrivateKeys(
+    let privateKeys: DidIdentityWithDecryptedKeys | null;
+
+    try {
+      privateKeys = await this.didRepository.getADidWithDecryptedPrivateKeys(
         senderDid,
         this.secretPinNumber,
       );
+    } catch (e) {
+      console.error(e);
+      throw new Error(
+        'Repository failure while retrieving private keys for senderDid',
+      );
+    }
 
     if (!privateKeys) {
-      throw new Error('Could not retrieve private keys for senderDid');
+      throw new Error('Inexistent private keys for senderDid');
     }
 
     const secrets = Object.values(privateKeys.decryptedPrivateKeys).filter(
