@@ -12,3 +12,4 @@ export {
 export { DidPeerMethod } from './did-methods/DidPeerMethod';
 export { DidRepository } from './repository/DidRepository';
 export { SecurityService } from './security/SecurityService';
+export { PrivateKeyJWK } from './did-methods/IDidMethod';

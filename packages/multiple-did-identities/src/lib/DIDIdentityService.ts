@@ -48,13 +48,18 @@ export class DIDIdentityService {
       );
 
       // Call method to encrypt private keys based on the DID document
-      await encryptPrivateKeys(this.securityService, didDocument, pin, [
-        'privateKey',
-        'privateKeyV',
-        'privateKeyE',
-        'privateKey1',
-        'privateKey2',
-      ]);
+      await encryptPrivateKeys(
+        didDocument,
+        pin,
+        [
+          'privateKey',
+          'privateKeyV',
+          'privateKeyE',
+          'privateKey1',
+          'privateKey2',
+        ],
+        this.securityService,
+      );
 
       await this.didRepository.createDidId(didDocument);
 
@@ -204,6 +209,7 @@ export class DIDIdentityService {
    */
   private sharedErrorHandler(channel: DidEventChannel) {
     return (error: unknown) => {
+      console.error(`Error occurred in channel ${channel}:`, error); // capture the error details for debugging and monitoring
       const response: ServiceResponse<Error> = {
         status: ServiceResponseStatus.Error,
         payload: error instanceof Error ? error : new Error(String(error)),

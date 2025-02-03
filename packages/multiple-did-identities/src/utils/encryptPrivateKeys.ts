@@ -1,17 +1,16 @@
 import { DIDKeyPairVariants } from '../did-methods/DidMethodFactory';
 import { SecurityService } from '../security/SecurityService';
-
 import {
-    hasPrivateKey,
-    hasPrivateKey1and2,
-    hasPrivateKeyVandE,
-} from '../utils/typeGuards';
+  hasPrivateKey,
+  hasPrivateKey1and2,
+  hasPrivateKeyVandE,
+} from './typeGuards';
 
 export async function encryptPrivateKeys(
-  securityService: SecurityService,
   didDocument: DIDKeyPairVariants,
   pin: number,
   keys: string[],
+  securityService: SecurityService, // Pass securityService as a parameter
 ): Promise<void> {
   for (const key of keys) {
     if (
