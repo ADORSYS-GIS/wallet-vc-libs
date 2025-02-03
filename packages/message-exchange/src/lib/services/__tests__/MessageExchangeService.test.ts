@@ -1,8 +1,9 @@
-import { describe, expect, test } from 'vitest';
+import nock from 'nock';
+import { afterEach, beforeAll, describe, expect, test } from 'vitest';
 
 import { Message as MessageModel } from '@adorsys-gis/message-service';
-import { MessageExchangeEvent } from '../../events/MessageExchangeEvent';
-import { MessageExchangeService } from '../index';
+import { MessageExchangeEvent } from '../../events';
+import { MessageExchangeService } from '../../../index';
 
 import {
   ServiceResponse,
@@ -23,12 +24,21 @@ describe('MessageExchangeService', () => {
     secretPinNumber,
   );
 
+  beforeAll(() => {
+    nock.disableNetConnect();
+  });
+
+  afterEach(() => {
+    nock.cleanAll();
+  });
+
   test('should route messages successfully', async () => {
     /// Prepare
 
     const message = 'Hello, World!';
     const recipientDid = aliceDid;
     const senderDid = await generateIdentity(secretPinNumber);
+    nock('https://mediator.rootsid.cloud').post('/').reply(202);
 
     /// Act
 
@@ -54,7 +64,7 @@ describe('MessageExchangeService', () => {
         direction: 'out',
       }),
     );
-  }, 50e3);
+  });
 
   test('should report errors reliably', async () => {
     /// Prepare

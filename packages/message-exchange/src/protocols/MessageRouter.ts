@@ -174,7 +174,7 @@ export class MessageRouter {
 
       return packedMessage;
     } catch (e) {
-      console.error(e);
+      console.error(String(e));
       throw new Error('Forward message packing failed');
     }
   }
@@ -202,7 +202,7 @@ export class MessageRouter {
           );
         }
       } catch (e) {
-        console.warn(e);
+        console.warn(String(e));
       }
     }
 
@@ -222,9 +222,17 @@ export class MessageRouter {
     const jwm = JSON.parse(packedMessage);
     const mediatorDid = jwm.recipients[0].header.kid;
 
-    return mediatorEndpoints
+    const uris = mediatorEndpoints
       .filter((e) => e.routingKeys.some((key) => mediatorDid.startsWith(key)))
       .map((e) => e.uri);
+
+    if (uris.length == 0) {
+      throw new Error(
+        "No valid or supported mediator's endpoint URI was found",
+      );
+    }
+
+    return uris;
   }
 
   /**
