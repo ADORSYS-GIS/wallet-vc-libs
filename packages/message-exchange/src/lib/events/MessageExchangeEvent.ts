@@ -1,5 +1,5 @@
 /**
- * Event channels for {@link }
+ * Event channels for {@link MessageExchangeService}
  */
 export enum MessageExchangeEvent {
   // Listen for message routing acknowledgement
