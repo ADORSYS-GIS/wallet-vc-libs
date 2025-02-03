@@ -59,7 +59,7 @@ describe('utils (didcomm)', () => {
 
     it('should throw an error for missing key material', () => {
       const invalidJwk: Partial<JWK> = { crv: 'Ed25519' };
-      expect(() => jwkToPublicKeyBase58(invalidJwk as any)).toThrowError(
+      expect(() => jwkToPublicKeyBase58(invalidJwk as JWK)).toThrowError(
         'Invalid JWK: Missing key material',
       );
     });

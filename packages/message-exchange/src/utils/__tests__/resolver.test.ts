@@ -1,13 +1,12 @@
-import { describe, it, expect } from 'vitest';
+import { describe, expect, it } from 'vitest';
 
 import { StableDIDResolver, StaticSecretsResolver } from '../didcomm';
+import { PeerDIDResolverProfile } from '../resolver/StableDIDResolver';
 
 import {
   aliceDid,
   aliceDidInvalidServiceEndpoint,
 } from '../../protocols/__tests__/helpers';
-import { PeerDIDResolverProfile } from '../resolver/StableDIDResolver';
-import exp from 'constants';
 
 describe('utils (resolver)', () => {
   describe('StableDIDResolver', () => {
