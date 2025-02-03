@@ -100,6 +100,46 @@ export class DidRepository {
   }
 
   /**
+   * Retrieves all stored mediator DID identities.
+   * These identities are intended for communication with a mediator
+   * and will not be used for QR code generation on the frontend.
+   *
+   * @returns {Promise<DidIdentity[]>} A promise that resolves to an array of objects,
+   * each containing the did, type, and createdAt properties for mediator identities.
+   */
+  async getMediatorDidIds(): Promise<DidIdentity[]> {
+    const records = await this.storageFactory.findAll('dids');
+    return records
+      .map((record) => record.value)
+      .filter((value) => value.document.type === 'mediator')
+      .map((value) => ({
+        did: value.did,
+        type: value.document.type,
+        createdAt: value.createdAt,
+      }));
+  }
+
+  /**
+   * Retrieves all stored peer contact DID identities.
+   * These identities include a routing key and are intended for use
+   * where QR code generation is applicable on the frontend.
+   *
+   * @returns {Promise<DidIdentity[]>} A promise that resolves to an array of objects,
+   * each containing the did, type, and createdAt properties for peer contact identities.
+   */
+  async getPeerContactDidIds(): Promise<DidIdentity[]> {
+    const records = await this.storageFactory.findAll('dids');
+    return records
+      .map((record) => record.value)
+      .filter((value) => value.document.type === 'peer_contact')
+      .map((value) => ({
+        did: value.did,
+        type: value.document.type,
+        createdAt: value.createdAt,
+      }));
+  }
+
+  /**
    * Finds a DID identity by its DID string and decrypts the private keys.
    * @param did The DID string to find.
    * @param pin The pin used for decryption after successful authentication

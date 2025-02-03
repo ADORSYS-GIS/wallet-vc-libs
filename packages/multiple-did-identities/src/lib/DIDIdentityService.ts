@@ -215,6 +215,53 @@ export class DIDIdentityService {
   }
 
   /**
+   * Retrieves all mediator DID identities from the repository and emits the result on the designated event channel.
+   *
+   * This method queries the DID repository for identities that are classified as "mediator" (i.e., for communication with a mediator).
+   * It then constructs a service response with the retrieved data and emits that response on the DidEventChannel.GetMediatorDidIdentities channel.
+   *
+   * @returns {Promise<void>} A promise that resolves when the mediator DID identities event has been emitted.
+   */
+  public async findMediatorDidIdentities(): Promise<void> {
+    const findMediatorDidIdentitiesChannel =
+      DidEventChannel.GetMediatorDidIdentities;
+    try {
+      const didRecords = await this.didRepository.getMediatorDidIds();
+      const response: ServiceResponse<typeof didRecords> = {
+        status: ServiceResponseStatus.Success,
+        payload: didRecords,
+      };
+      this.eventBus.emit(findMediatorDidIdentitiesChannel, response);
+    } catch (error) {
+      this.sharedErrorHandler(findMediatorDidIdentitiesChannel)(error);
+    }
+  }
+
+  /**
+   * Retrieves all peer contact DID identities from the repository and emits the result on the designated event channel.
+   *
+   * This method queries the DID repository for identities that are classified as "peer_contact" (i.e., identities used for peer-to-peer communication,
+   * typically including a routing key for QR code generation on the frontend).
+   * It then constructs a service response with the retrieved data and emits that response on the DidEventChannel.GetPeerContactDidIdentities channel.
+   *
+   * @returns {Promise<void>} A promise that resolves when the peer contact DID identities event has been emitted.
+   */
+  public async findPeerContactDidIdentities(): Promise<void> {
+    const findPeerContactDidIdentitiesChannel =
+      DidEventChannel.GetPeerContactDidIdentities;
+    try {
+      const didRecords = await this.didRepository.getPeerContactDidIds();
+      const response: ServiceResponse<typeof didRecords> = {
+        status: ServiceResponseStatus.Success,
+        payload: didRecords,
+      };
+      this.eventBus.emit(findPeerContactDidIdentitiesChannel, response);
+    } catch (error) {
+      this.sharedErrorHandler(findPeerContactDidIdentitiesChannel)(error);
+    }
+  }
+
+  /**
    * Retrieve a DID identity with decrypted private keys and emit it via the event bus.
    * Emits a {@link DidEventChannel.GetDidWithDecryptedPrivateKeys} event upon successful retrieval.
    *
