@@ -8,5 +8,5 @@ export interface Message {
   sender: string; // Sender DID or anything identifying the sender
   contactId: string; // Contact DID (Receipient)
   timestamp: Date;
-  direction: 'in' | 'out'; // Tell sent and received messages apart
+  direction?: 'in' | 'out'; // Tell sent and received messages apart
 }
