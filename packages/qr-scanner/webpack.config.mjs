@@ -1,13 +1,17 @@
-const path = require('path');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
+import path from 'path';
+import MiniCssExtractPlugin from 'mini-css-extract-plugin';
+import { fileURLToPath } from 'url';
 
-module.exports = {
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+export default {
   entry: './src/index.ts',
   output: {
-    path: path.resolve('dist'),
+    path: path.resolve(__dirname, 'dist'),
     filename: 'src/index.js',
     library: {
-      name: 'QrScanner',
+      name: 'usePWA',
       type: 'umd',
     },
     globalObject: 'this',
@@ -16,9 +20,12 @@ module.exports = {
   resolve: {
     extensions: ['.ts', '.tsx', '.js'],
     alias: {
-      react: path.resolve('../../node_modules/react'),
-      'react-dom': path.resolve('../../node_modules/react-dom'),
-      'react/jsx-runtime': path.resolve('../../node_modules/react/jsx-runtime'),
+      react: path.resolve(__dirname, '../../node_modules/react'),
+      'react-dom': path.resolve(__dirname, '../../node_modules/react-dom'),
+      'react/jsx-runtime': path.resolve(
+        __dirname,
+        '../../node_modules/react/jsx-runtime',
+      ),
     },
   },
   module: {
@@ -43,11 +50,11 @@ module.exports = {
   },
   plugins: [
     new MiniCssExtractPlugin({
-      filename: 'src/lib/loading.css',
+      filename: 'src/lib/components/[name].css',
+      chunkFilename: '[name].css',
     }),
   ],
   externals: {
-    // Don't bundle react or react-dom
     react: {
       commonjs: 'react',
       commonjs2: 'react',
