@@ -4,9 +4,10 @@
   "dependencies": {
     "@adorsys-gis/cloning-decorator": "^1.0.1",
     "@adorsys-gis/event-bus": "^1.0.5",
+    "@adorsys-gis/status-service": "^1.0.0",
     "@adorsys-gis/storage": "^1.0.3",
     "@noble/curves": "^1.6.0",
-    "bs58": "^6.0.0",
+    "@scure/base": "^1.2.4",
     "jose": "^5.9.3",
     "json-canonicalize": "^1.0.6",
     "uuid": "^10.0.0"
