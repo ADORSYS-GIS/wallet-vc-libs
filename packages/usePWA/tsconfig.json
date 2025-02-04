@@ -3,10 +3,13 @@
   "compilerOptions": {
     "jsx": "react-jsx",
     "allowJs": false,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "resolveJsonModule": true
   },
-  "files": [],
-  "include": [],
+  "include": ["src/**/*"],
   "references": [
     {
       "path": "./tsconfig.lib.json"

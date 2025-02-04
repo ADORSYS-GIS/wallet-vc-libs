@@ -20,7 +20,6 @@ export function isIosOrSafariDesktop() {
 export function usePWA() {
   const { deferredPrompt, isInstalling, installPWADispatch } = useInstallPWA();
   useEffect(() => {
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     const handleBeforeInstallPrompt: EventHandler = (e) => {
       // Prevent the mini-infobar from appearing on mobile
       e.preventDefault();
