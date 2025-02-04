@@ -9,7 +9,7 @@
   "scripts": {
     "build": "tsc",
     "format": "prettier --write .",
-    "lint": "eslint . --ext .ts",
+    "lint": "eslint .",
     "test": "vitest --run"
   },
   "dependencies": {
