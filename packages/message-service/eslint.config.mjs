@@ -17,7 +17,7 @@ export default [
   {
     ignores: ['!**/*', '**/node_modules/'],
   },
-  ...compat.extends('./.eslint.config.mjs'),
+  ...compat.extends('../../.eslint.config.mjs'),
   {
     languageOptions: {
       parser: tsParser,
