@@ -4,10 +4,14 @@
     "jsx": "react-jsx",
     "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "rootDir": ".",
-    "module": "ESNext"
+    "module": "ESNext",
+    "moduleResolution": "Node",
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "rootDir": "src",
+    "outDir": "./dist",
+    "strict": true
   },
-  "files": [],
   "include": ["src/**/*"],
   "references": [
     {

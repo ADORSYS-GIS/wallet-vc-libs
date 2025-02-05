@@ -9,7 +9,7 @@ import {
 } from '@adorsys-gis/status-service';
 import fetch from 'cross-fetch';
 import { PeerDIDResolver } from 'did-resolver-lib';
-import { IMessage, Message, Secret, SecretsResolver } from 'didcomm-node';
+import { IMessage, Message, Secret, SecretsResolver } from 'didcomm';
 import { EventEmitter } from 'eventemitter3';
 import { v4 as uuidv4 } from 'uuid';
 import { MessageTyp, MessageType } from './DIDCommOOBInvitation';
