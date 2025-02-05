@@ -1,4 +1,4 @@
-import bs58 from 'bs58';
+import { base58 } from '@scure/base';
 import { createHash } from 'crypto';
 import { canonicalize } from 'json-canonicalize';
 import { base64UrlEncodeService } from '../utils/base64UrlEncode';
@@ -73,10 +73,11 @@ export class DidPeerMethod implements IDidMethod {
     const key = keyPair[0];
 
     const ED25519_PUB_CODE = new Uint8Array([0xed, 0x01]);
-    const publicKeyBase58 = bs58.encode([
-      ...ED25519_PUB_CODE,
-      ...key.rawPublicKey,
-    ]);
+
+    // Prefix and encode public key
+    const publicKeyBase58 = base58.encode(
+      new Uint8Array([...ED25519_PUB_CODE, ...key.rawPublicKey]),
+    );
 
     // Construct the DID:key identifier
     const did = `did:peer:0z${publicKeyBase58}`;
@@ -94,10 +95,11 @@ export class DidPeerMethod implements IDidMethod {
     const key = keyPair[0];
 
     const ED25519_PUB_CODE = new Uint8Array([0xed, 0x01]);
-    const publicKeyBase58 = bs58.encode([
-      ...ED25519_PUB_CODE,
-      ...key.rawPublicKey,
-    ]);
+
+    // Prefix and encode public key
+    const publicKeyBase58 = base58.encode(
+      new Uint8Array([...ED25519_PUB_CODE, ...key.rawPublicKey]),
+    );
     const publicKeyMultibase = `z${publicKeyBase58}`;
 
     // Create the genesis document (stored variant) without the DID
@@ -123,7 +125,9 @@ export class DidPeerMethod implements IDidMethod {
 
     // Convert SHA256 hash to base58
     const multicodecDescriptor = new Uint8Array([0x12, 0x20]);
-    const base58Encoded = bs58.encode([...multicodecDescriptor, ...sha256Hash]);
+    const base58Encoded = base58.encode(
+      new Uint8Array([...multicodecDescriptor, ...sha256Hash]),
+    );
     const did = `did:peer:1z${base58Encoded}`;
 
     // Return DID, key pair, and genesis document for reference
@@ -143,8 +147,8 @@ export class DidPeerMethod implements IDidMethod {
     const ED25519_PUB_CODE = new Uint8Array([0xed, 0x01]);
     const X25519_PUB_CODE = new Uint8Array([0xec, 0x01]);
 
-    const publicKeyMultibaseV = `z${bs58.encode([...ED25519_PUB_CODE, ...KeyV.rawPublicKey])}`;
-    const publicKeyMultibaseE = `z${bs58.encode([...X25519_PUB_CODE, ...KeyE.rawPublicKey])}`;
+    const publicKeyMultibaseV = `z${base58.encode(new Uint8Array([...ED25519_PUB_CODE, ...KeyV.rawPublicKey]))}`;
+    const publicKeyMultibaseE = `z${base58.encode(new Uint8Array([...X25519_PUB_CODE, ...KeyE.rawPublicKey]))}`;
 
     const purposepublicKeyMultibaseV = `.${PurposeCode.Verification}${publicKeyMultibaseV}`;
     const purposepublicKeyMultibaseE = `.${PurposeCode.Encryption}${publicKeyMultibaseE}`;
@@ -236,8 +240,8 @@ export class DidPeerMethod implements IDidMethod {
     const ED25519_PUB_CODE = new Uint8Array([0xed, 0x01]);
     const X25519_PUB_CODE = new Uint8Array([0xec, 0x01]);
 
-    const publicKeyMultibaseV = `z${bs58.encode([...ED25519_PUB_CODE, ...KeyV.rawPublicKey])}`;
-    const publicKeyMultibaseE = `z${bs58.encode([...X25519_PUB_CODE, ...KeyE.rawPublicKey])}`;
+    const publicKeyMultibaseV = `z${base58.encode(new Uint8Array([...ED25519_PUB_CODE, ...KeyV.rawPublicKey]))}`;
+    const publicKeyMultibaseE = `z${base58.encode(new Uint8Array([...X25519_PUB_CODE, ...KeyE.rawPublicKey]))}`;
 
     const purposepublicKeyMultibaseV = `.${PurposeCode.Verification}${publicKeyMultibaseV}`;
     const purposepublicKeyMultibaseE = `.${PurposeCode.Encryption}${publicKeyMultibaseE}`;
@@ -326,7 +330,7 @@ export class DidPeerMethod implements IDidMethod {
 
     const didWithoutPrefix = didMethod2.replace(/^did:peer:2/, '');
     const hashBuffer = createHash('sha256').update(didWithoutPrefix).digest();
-    const encodedHash = `z${bs58.encode(hashBuffer)}`;
+    const encodedHash = `z${base58.encode(hashBuffer)}`;
     const didMethod3 = `did:peer:3${encodedHash}`;
 
     return {
@@ -347,8 +351,8 @@ export class DidPeerMethod implements IDidMethod {
     const Key2 = keyPairs[1];
 
     const ED25519_PUB_CODE = new Uint8Array([0xed, 0x01]);
-    const publicKeyMultibaseKey1 = `z${bs58.encode([...ED25519_PUB_CODE, ...Key1.rawPublicKey])}`;
-    const publicKeyMultibaseKey2 = `z${bs58.encode([...ED25519_PUB_CODE, ...Key2.rawPublicKey])}`;
+    const publicKeyMultibaseKey1 = `z${base58.encode(new Uint8Array([...ED25519_PUB_CODE, ...Key1.rawPublicKey]))}`;
+    const publicKeyMultibaseKey2 = `z${base58.encode(new Uint8Array([...ED25519_PUB_CODE, ...Key2.rawPublicKey]))}`;
 
     // Define a service or services
     const service: Service[] = [
@@ -385,7 +389,7 @@ export class DidPeerMethod implements IDidMethod {
     const didDocumentString = canonicalize(didDocument);
     const jsonBytes = new TextEncoder().encode(didDocumentString);
     const prefixedBytes = new Uint8Array([0x80, 0x04, ...jsonBytes]);
-    const encodedDocument = bs58.encode(prefixedBytes);
+    const encodedDocument = base58.encode(prefixedBytes);
     const prefixedEncodedDocument = `z${encodedDocument}`; // encoded document
 
     // Hash the Dcocument
@@ -393,7 +397,7 @@ export class DidPeerMethod implements IDidMethod {
       .update(prefixedEncodedDocument)
       .digest();
     const prefixedHash = new Uint8Array([0x12, 0x20, ...hashedDocument]);
-    const encodedHashedDocument = bs58.encode(prefixedHash);
+    const encodedHashedDocument = base58.encode(prefixedHash);
     const prefixedEncodedHashedDocument = `z${encodedHashedDocument}`; // hashed document
 
     const didLongForm = `did:peer:4${prefixedEncodedHashedDocument}:${prefixedEncodedDocument}`;
