@@ -1,6 +1,6 @@
 {
   "name": "@adorsys-gis/contact-exchange",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "type": "commonjs",
   "main": "./dist/src/index.js",
   "typings": "./dist/src/index.d.ts",
@@ -26,6 +26,7 @@
     "@adorsys-gis/status-service": "^1.0.0",
     "cross-fetch": "^4.1.0",
     "did-resolver-lib": "https://gitpkg.vercel.app/adorsys/didcomm-messaging-clients-utilities/libs/did-resolver-lib?main",
+    "didcomm": "^0.4.1",
     "fake-indexeddb": "^6.0.0",
     "structured-clone": "^0.2.2"
   }
