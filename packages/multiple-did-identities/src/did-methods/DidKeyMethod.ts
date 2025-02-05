@@ -1,4 +1,4 @@
-import bs58 from 'bs58';
+import { base58 } from '@scure/base';
 import { generateKeyPairs } from '../utils/generateKeyPairs';
 import { DIDMethodName } from './DidMethodFactory';
 import { DIDKeyPair, IDidMethod } from './IDidMethod';
@@ -18,10 +18,9 @@ export class DidKeyMethod implements IDidMethod {
     const ED25519_PUB_CODE = new Uint8Array([0xed, 0x01]);
 
     // Encode the public key using bs58 directly
-    const publicKeyBase58 = bs58.encode([
-      ...ED25519_PUB_CODE,
-      ...key.rawPublicKey,
-    ]);
+    const publicKeyBase58 = base58.encode(
+      new Uint8Array([...ED25519_PUB_CODE, ...key.rawPublicKey]),
+    );
 
     // Construct the DID:key identifier
     const did = `did:key:z${publicKeyBase58}`;
