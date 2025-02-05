@@ -4,10 +4,10 @@ A library for implementing services to support message exchange between DIDComm 
 
 ## Features
 
-| **Protocol** | **Description** | **Status** |
-|--------------|-----------------|------------|
-| [DIDComm Message Routing](https://identity.foundation/didcomm-messaging/spec/#routing-protocol-20) | Send a message to a DIDComm agent via their mediators. | ✅ Implemented |
-| [Message Pickup](https://didcomm.org/messagepickup/3.0) | Pick up messages from mediators. | 🚧 Not yet implemented |
+| **Protocol**                                                                                       | **Description**                                        | **Status**             |
+| -------------------------------------------------------------------------------------------------- | ------------------------------------------------------ | ---------------------- |
+| [DIDComm Message Routing](https://identity.foundation/didcomm-messaging/spec/#routing-protocol-20) | Send a message to a DIDComm agent via their mediators. | ✅ Implemented         |
+| [Message Pickup](https://didcomm.org/messagepickup/3.0)                                            | Pick up messages from mediators.                       | 🚧 Not yet implemented |
 
 ## Installation
 
@@ -19,12 +19,15 @@ npm install @adorsys-gis/message-exchange
 
 ### Prerequisites
 
-Before using the library, you'll need a DID address for the sending party. This can be created using the `DIDIdentityService` from the peer library `@adorsys-gis/multiple-did-identities`. Here's an example of generating a DID using that library:
+Before using the library, you'll need a DID address for the sending party.
+This can be created using the `DIDIdentityService` from the peer library
+`@adorsys-gis/multiple-did-identities`. Here's an example of generating
+a DID using that library:
 
 ```ts
 export const generateIdentity = async (secretPinNumber: number) => {
   const createEvent = waitForEvent(DidEventChannel.CreateDidIdentity);
-  
+
   didIdentityService.createDidIdentity(
     DIDMethodName.Peer,
     secretPinNumber,
@@ -40,13 +43,17 @@ Once you have the `senderDid`, you can send messages using the `MessageExchangeS
 
 ### Using the `MessageExchangeService`
 
-The `MessageExchangeService` is designed to work seamlessly with an event bus architecture. Here's how to send a message from a sender to a recipient:
+The `MessageExchangeService` is designed to work seamlessly with an event
+bus architecture. Here's how to send a message from a sender to a recipient:
 
 ```ts
 import { MessageExchangeService } from '@adorsys-gis/message-exchange';
 import { MessageExchangeEvent } from '@adorsys-gis/message-exchange';
 
-const messageExchangeService = new MessageExchangeService(eventBus, secretPinNumber);
+const messageExchangeService = new MessageExchangeService(
+  eventBus,
+  secretPinNumber,
+);
 
 // Listen on the MessageExchangeEvent.RouteForwardMessages event
 
@@ -57,7 +64,8 @@ messageExchangeService.routeForwardMessage(message, recipientDid, senderDid);
 
 ### Using the `MessageRouter` Interface
 
-If your application does not use an event bus, you can interact directly with the `MessageRouter` interface:
+If your application does not use an event bus, you can interact directly with
+the `MessageRouter` interface:
 
 ```ts
 import { MessageRouter } from '@adorsys-gis/message-exchange';
@@ -77,4 +85,5 @@ const sentMessage = await messageRouter.routeForwardMessage(
 
 ### Additional Help
 
-For more examples and detailed scenarios, consider referring to the test cases in the project.
+For more examples and detailed scenarios, consider referring to the test
+cases in the project.
