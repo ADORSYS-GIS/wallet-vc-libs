@@ -40,6 +40,7 @@
     "typescript": "5.5.4"
   },
   "dependencies": {
-    "@adorsys-gis/cloning-decorator": "^1.0.1"
+    "@adorsys-gis/cloning-decorator": "^1.0.1",
+    "didcomm": "^1.0.0"
   }
 }

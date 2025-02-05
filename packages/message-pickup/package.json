@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "jest --passWithNoTests",
+    "test": "jest",
     "build": "tsc -p tsconfig.lib.json",
     "lint": "eslint ./src --ext .ts"
   },
@@ -18,5 +18,8 @@
     "jest": "^29.7.0",
     "ts-jest": "^29.2.5",
     "typescript": "^5.7.3"
+  },
+  "dependencies": {
+   "didcomm": "^0.4.1"
   }
 }
