@@ -1,4 +1,5 @@
-import { EventEmitter } from 'eventemitter3';
+import type { EventEmitter } from 'eventemitter3';
+
 import { CloningEventEmitter } from '../emitter/CloningEventEmitter';
 
 /**
