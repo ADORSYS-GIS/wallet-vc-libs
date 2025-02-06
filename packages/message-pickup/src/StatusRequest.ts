@@ -1,7 +1,7 @@
 import { Secret } from 'didcomm';
 
 import {
-    // DidIdentityWithDecryptedKeys,
+    DidIdentityWithDecryptedKeys,
     DidRepository,
     PrivateKeyJWK
 } from '@adorsys-gis/multiple-did-identities';
@@ -23,6 +23,8 @@ export async function processStatusRequest(
     } catch (error) {
         console.error('Error retrieving secrets:', error);
     }
+
+    
 }
 
 export class StatusRequestService {
@@ -35,7 +37,7 @@ export class StatusRequestService {
   }
 
   public async retrieveSenderDidSecrets(senderDid: string): Promise<Secret[]> {
-    let privateKeys;
+    let privateKeys: DidIdentityWithDecryptedKeys | null;
 
     try {
       privateKeys = await this.didRepository.getADidWithDecryptedPrivateKeys(
@@ -52,11 +54,9 @@ export class StatusRequestService {
     if (!privateKeys) {
       throw new Error('Inexistent private keys for senderDid');
     }
-
     console.log('privateKeys: ', privateKeys);
-
     const secrets = Object.values(privateKeys.decryptedPrivateKeys).filter(
-      (key): key is PrivateKeyJWK => (key as PrivateKeyJWK).privateKeyJwk !== undefined,
+      (key): key is PrivateKeyJWK => 'privateKeyJwk' in key,
     );
 
     if (secrets.length == 0) {

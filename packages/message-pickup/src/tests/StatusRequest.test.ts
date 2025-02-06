@@ -1,6 +1,5 @@
 import { DidService } from '@adorsys-gis/contact-exchange/src/services/MediatorCoordination';
 import { EventEmitter } from 'eventemitter3';
-// import { SecurityService } from '@adorsys-gis/multiple-did-identities/src/security/SecurityService';
 import { processStatusRequest } from '../StatusRequest'; // Import the new function
 import { DidEventChannel } from '@adorsys-gis/contact-exchange/src/services/MediatorCoordination'; // Import event channels
 import { DidRepository, SecurityService } from '@adorsys-gis/multiple-did-identities'; 
