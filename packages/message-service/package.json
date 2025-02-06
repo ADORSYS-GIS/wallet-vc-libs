@@ -33,7 +33,7 @@
   "scripts": {
     "test": "jest",
     "build": "tsc -p tsconfig.lib.json",
-    "lint": "eslint .",
+    "lint": "eslint . --no-error-on-unmatched-pattern",
     "lint:fix": "eslint . --fix"
   },
   "author": "adorsys",

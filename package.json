@@ -8,8 +8,8 @@
     "build": "npm run build --workspaces",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "eslint . --no-error-on-unmatched-pattern",
-    "lint:fix": "eslint packages/** --fix"
+    "lint": "npm run lint --workspaces",
+    "lint:fix": "npm run lint:fix --workspaces"
   },
   "keywords": [],
   "workspaces": [

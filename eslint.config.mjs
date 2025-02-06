@@ -58,7 +58,7 @@ export default tseslint.config(
     files: ['**/*.{ts,tsx,js,jsx}'],
     languageOptions: {
       parserOptions: {
-        project: ['./tsconfig.base.json'],
+        project: true,
         projectService: true,
         ecmaVersion: 'latest',
       },
