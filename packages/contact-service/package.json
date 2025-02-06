@@ -33,7 +33,8 @@
   "scripts": {
     "test": "jest",
     "build": "tsc -p tsconfig.lib.json",
-    "lint": "eslint ./src --ext .ts"
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
   },
   "keywords": [
     "contacts",

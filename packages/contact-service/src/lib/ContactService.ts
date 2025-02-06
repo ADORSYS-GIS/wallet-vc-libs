@@ -1,11 +1,14 @@
-import { EventEmitter } from 'eventemitter3';
-import {
-  ServiceResponse,
-  ServiceResponseStatus,
-} from '@adorsys-gis/status-service';
-import { Contact } from '../model/Contact';
+import type { EventEmitter } from 'eventemitter3';
+
+import type { Contact } from '../model/Contact';
 import { ContactEventChannel } from '../model/ContactEventChannel';
 import { ContactRepository } from '../repositories/ContactRepository';
+
+import type {
+  ServiceResponse} from '@adorsys-gis/status-service';
+import {
+  ServiceResponseStatus,
+} from '@adorsys-gis/status-service';
 
 /**
  * ContactService manages contacts and their interactions.
@@ -100,18 +103,27 @@ export class ContactService {
    */
   public updateContact(id: number, updatedFields: Partial<Contact>): void {
     const updateContactChannel = ContactEventChannel.UpdateContact;
-
+  
     this.contactRepository
       .update(id, updatedFields)
       .then((updatedContact) => {
-        const response: ServiceResponse<Contact> = {
-          status: ServiceResponseStatus.Success,
-          payload: updatedContact!,
-        };
-        this.eventBus.emit(updateContactChannel, response);
+        if (updatedContact) { // Null check added
+          const response: ServiceResponse<Contact> = {
+            status: ServiceResponseStatus.Success,
+            payload: updatedContact,
+          };
+          this.eventBus.emit(updateContactChannel, response);
+        } else {
+          // Handle the case when updatedContact is null/undefined
+          this.eventBus.emit(updateContactChannel, {
+            status: ServiceResponseStatus.Error,
+            error: 'Contact update failed. No contact returned.',
+          });
+        }
       })
       .catch(this.sharedErrorHandler(updateContactChannel));
   }
+  
 
   /**
    * Deletes a contact by its ID from the database.
