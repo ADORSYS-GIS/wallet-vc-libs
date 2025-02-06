@@ -1,7 +1,7 @@
 import { OOBServiceError } from '../lib/errors-logs/OOBServiceError';
 import { OutOfBandInvitationError } from '../lib/errors-logs/OutOfBandInvitation.errors';
-import { OutOfBandInvitation } from './DIDCommOOBInvitation';
 
+import type { OutOfBandInvitation } from './DIDCommOOBInvitation';
 export function parseOOBInvitation(url: string): OutOfBandInvitation | null {
   const urlPattern = /(_oob=)([A-Za-z0-9\-_+=/]+)$/;
   const match = url.match(urlPattern);

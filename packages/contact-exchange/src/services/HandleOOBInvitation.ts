@@ -1,8 +1,10 @@
 import { EventEmitter } from 'eventemitter3';
+
 import { logError } from '../lib/errors-logs/logger';
 import { validOutOfBandInvitation } from '../tests/OOBTestFixtures';
-import { OutOfBandInvitation } from './DIDCommOOBInvitation';
-import { Contact, Wallet } from './Wallet';
+
+import type { OutOfBandInvitation } from './DIDCommOOBInvitation';
+import type { Contact, Wallet } from './Wallet';
 
 const messageEmitter = new EventEmitter();
 

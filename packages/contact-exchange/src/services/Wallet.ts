@@ -1,6 +1,6 @@
+import { logError } from '../lib/errors-logs/logger';
 import { OOBServiceError } from '../lib/errors-logs/OOBServiceError';
 import { WalletError } from '../lib/errors-logs/Wallet.errors';
-import { logError } from '../lib/errors-logs/logger';
 
 export interface Contact {
   id: string;
