@@ -58,7 +58,7 @@ export default tseslint.config(
     files: ['**/*.{ts,tsx,js,jsx}'],
     languageOptions: {
       parserOptions: {
-        project: true,
+        project: ['./tsconfig.base.json'],
         projectService: true,
         ecmaVersion: 'latest',
       },
@@ -73,6 +73,7 @@ export default tseslint.config(
       '@typescript-eslint/no-floating-promises': 'off',
       '@typescript-eslint/await-thenable': 'off',
       '@typescript-eslint/no-misused-promises': 'off',
+      '@typescript-eslint/consistent-type-imports': 'off',
   },
   },
   {
