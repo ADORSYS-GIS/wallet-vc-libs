@@ -187,25 +187,32 @@ describe('DIDIdentityService', () => {
     const mockDIDPeer2 = mockDIDPeer2Fixture;
 
     // For PeerContact DID
-    const methodTypePeerContact = PeerGenerationMethod.Method2WithMediatorRoutingKey;
+    const methodTypePeerContact =
+      PeerGenerationMethod.Method2WithMediatorRoutingKey;
     const mockDIDPeer2PeerContact = mockDIDPeer2FixturePeerContact;
 
     // For mediator DID
     jest
       .spyOn(DidMethodFactory, 'generateDid')
       .mockResolvedValueOnce(mockDIDPeer2);
-    
+
     // For PeerContact DID
     jest
-    .spyOn(DidMethodFactory, 'generateDid')
-    .mockResolvedValueOnce(mockDIDPeer2PeerContact);
+      .spyOn(DidMethodFactory, 'generateDid')
+      .mockResolvedValueOnce(mockDIDPeer2PeerContact);
 
     const createEventMediator = waitForEvent(DidEventChannel.CreateDidIdentity);
     await didIdentityService.createDidIdentity(method, pin, methodTypeMeidator);
     await createEventMediator;
 
-    const createEventPeerContact = waitForEvent(DidEventChannel.CreateDidIdentity);
-    await didIdentityService.createDidIdentity(method, pin, methodTypePeerContact);
+    const createEventPeerContact = waitForEvent(
+      DidEventChannel.CreateDidIdentity,
+    );
+    await didIdentityService.createDidIdentity(
+      method,
+      pin,
+      methodTypePeerContact,
+    );
     await createEventPeerContact;
 
     const findEvent = waitForEvent(DidEventChannel.GetMediatorDidIdentities);
@@ -253,10 +260,10 @@ describe('DIDIdentityService', () => {
       .spyOn(DidMethodFactory, 'generateDid')
       .mockResolvedValueOnce(mockDIDPeer2);
 
-     // For mediator DID
-     jest
-     .spyOn(DidMethodFactory, 'generateDid')
-     .mockResolvedValueOnce(mockDIDPeerMediator);
+    // For mediator DID
+    jest
+      .spyOn(DidMethodFactory, 'generateDid')
+      .mockResolvedValueOnce(mockDIDPeerMediator);
 
     const createEvent = waitForEvent(DidEventChannel.CreateDidIdentity);
     await didIdentityService.createDidIdentity(method, pin, methodType);
