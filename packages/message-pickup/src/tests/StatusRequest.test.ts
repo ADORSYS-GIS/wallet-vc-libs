@@ -44,7 +44,7 @@ describe('StatusRequest', () => {
 
     // follow-up call
     const mediatorDid = eventData.payload.from;
-    const aliceDidForMediator = eventData.payload.to;
+    const aliceDidForMediator = eventData.payload.to[0];
 
     console.log('mediatorDid:', mediatorDid, 'aliceDidForMediator:', aliceDidForMediator);
 

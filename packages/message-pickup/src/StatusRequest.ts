@@ -53,6 +53,8 @@ export class StatusRequestService {
       throw new Error('Inexistent private keys for senderDid');
     }
 
+    console.log('privateKeys: ', privateKeys);
+
     const secrets = Object.values(privateKeys.decryptedPrivateKeys).filter(
       (key): key is PrivateKeyJWK => (key as PrivateKeyJWK).privateKeyJwk !== undefined,
     );
