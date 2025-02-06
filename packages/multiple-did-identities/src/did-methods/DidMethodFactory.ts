@@ -4,6 +4,7 @@ import {
   DIDKeyPair,
   DIDKeyPairMethod1,
   DIDKeyPairMethod2,
+  DIDKeyPairMethod3,
   DIDKeyPairMethod4,
   IDidMethod,
 } from './IDidMethod';
@@ -12,6 +13,12 @@ import {
 export enum DIDMethodName {
   Key = 'key',
   Peer = 'peer',
+}
+
+// Declare enum for the DID 2 type (mediator/peer_contact)
+export enum DID2Type {
+  Mediator = 'mediator',
+  PeerContact = 'peer_contact',
 }
 
 export enum PurposeCode {
@@ -27,6 +34,7 @@ export type DIDKeyPairVariants =
   | DIDKeyPair
   | DIDKeyPairMethod1
   | DIDKeyPairMethod2
+  | DIDKeyPairMethod3
   | DIDKeyPairMethod4;
 
 export enum PeerGenerationMethod {

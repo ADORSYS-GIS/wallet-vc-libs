@@ -10,9 +10,12 @@ import {
 } from '../did-methods/DidMethodFactory';
 import { DidIdentity, DIDKeyPair } from '../did-methods/IDidMethod';
 import { DIDIdentityService } from '../lib/DIDIdentityService';
-import { DidEventChannel } from '../utils/DidEventChannel';
-import { mockDIDPeer2Fixture } from './testFixtures';
 import { SecurityService } from '../security/SecurityService';
+import { DidEventChannel } from '../utils/DidEventChannel';
+import {
+  mockDIDPeer2Fixture,
+  mockDIDPeer2FixturePeerContact,
+} from './testFixtures';
 
 describe('DIDIdentityService', () => {
   let didIdentityService: DIDIdentityService;
@@ -173,6 +176,129 @@ describe('DIDIdentityService', () => {
         status: ServiceResponseStatus.Success,
         payload: expect.objectContaining(expectedPayload),
       }),
+    );
+  });
+
+  it('should find and return all mediator type DID identity  and emit the event', async () => {
+    const method = DIDMethodName.Peer;
+
+    // For mediator DID
+    const methodTypeMeidator = PeerGenerationMethod.Method2;
+    const mockDIDPeer2 = mockDIDPeer2Fixture;
+
+    // For PeerContact DID
+    const methodTypePeerContact =
+      PeerGenerationMethod.Method2WithMediatorRoutingKey;
+    const mockDIDPeer2PeerContact = mockDIDPeer2FixturePeerContact;
+
+    // For mediator DID
+    jest
+      .spyOn(DidMethodFactory, 'generateDid')
+      .mockResolvedValueOnce(mockDIDPeer2);
+
+    // For PeerContact DID
+    jest
+      .spyOn(DidMethodFactory, 'generateDid')
+      .mockResolvedValueOnce(mockDIDPeer2PeerContact);
+
+    const createEventMediator = waitForEvent(DidEventChannel.CreateDidIdentity);
+    await didIdentityService.createDidIdentity(method, pin, methodTypeMeidator);
+    await createEventMediator;
+
+    const createEventPeerContact = waitForEvent(
+      DidEventChannel.CreateDidIdentity,
+    );
+    await didIdentityService.createDidIdentity(
+      method,
+      pin,
+      methodTypePeerContact,
+    );
+    await createEventPeerContact;
+
+    const findEvent = waitForEvent(DidEventChannel.GetMediatorDidIdentities);
+    await didIdentityService.findMediatorDidIdentities();
+
+    const response = await findEvent;
+
+    const expectedPayload = {
+      createdAt: expect.any(Number),
+      did: mockDIDPeer2.did,
+      type: mockDIDPeer2.type,
+    };
+
+    expect(response).toEqual(
+      expect.objectContaining({
+        status: ServiceResponseStatus.Success,
+        payload: expect.objectContaining([expectedPayload]),
+      }),
+    );
+
+    // Assert that the PeerContact DID is not included in the response payload.
+    expect(response.payload).not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          did: mockDIDPeer2PeerContact.did,
+          type: mockDIDPeer2PeerContact.type,
+        }),
+      ]),
+    );
+  });
+
+  it('should find and return all peer_contact type DID identity  and emit the event', async () => {
+    const method = DIDMethodName.Peer;
+
+    // For PeerContact DID
+    const methodType = PeerGenerationMethod.Method2WithMediatorRoutingKey;
+    const mockDIDPeer2 = mockDIDPeer2FixturePeerContact;
+
+    // For mediator DID
+    const methodTypeMeidator = PeerGenerationMethod.Method2;
+    const mockDIDPeerMediator = mockDIDPeer2Fixture;
+
+    // For PeerContact DID
+    jest
+      .spyOn(DidMethodFactory, 'generateDid')
+      .mockResolvedValueOnce(mockDIDPeer2);
+
+    // For mediator DID
+    jest
+      .spyOn(DidMethodFactory, 'generateDid')
+      .mockResolvedValueOnce(mockDIDPeerMediator);
+
+    const createEvent = waitForEvent(DidEventChannel.CreateDidIdentity);
+    await didIdentityService.createDidIdentity(method, pin, methodType);
+    await createEvent;
+
+    const createEventMediator = waitForEvent(DidEventChannel.CreateDidIdentity);
+    await didIdentityService.createDidIdentity(method, pin, methodTypeMeidator);
+    await createEventMediator;
+
+    const findEvent = waitForEvent(DidEventChannel.GetPeerContactDidIdentities);
+    await didIdentityService.findPeerContactDidIdentities();
+
+    const response = await findEvent;
+
+    const expectedPayload = {
+      createdAt: expect.any(Number),
+      did: mockDIDPeer2.did,
+      type: mockDIDPeer2.type,
+    };
+
+    expect(response).toEqual(
+      expect.objectContaining({
+        status: ServiceResponseStatus.Success,
+        payload: expect.objectContaining([expectedPayload]),
+      }),
+    );
+
+    // Assert that the mediator DID is not included in the response payload.
+    expect(response.payload).not.toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          did: mockDIDPeerMediator.did,
+          type: mockDIDPeerMediator.type,
+        }),
+      ]),
     );
   });
 

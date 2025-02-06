@@ -1,7 +1,9 @@
+import { DID2Type } from '../did-methods/DidMethodFactory';
 import {
   DIDKeyPair,
   DIDKeyPairMethod1,
   DIDKeyPairMethod2,
+  DIDKeyPairMethod3,
   DIDKeyPairMethod4,
 } from '../did-methods/IDidMethod';
 
@@ -48,6 +50,7 @@ export const createMockDIDPeer1 = (did: string): DIDKeyPairMethod1 => ({
 
 export const mockDIDPeer2Fixture: DIDKeyPairMethod2 = {
   did: 'did:peer:2z1234567890',
+  type: DID2Type.Mediator,
   didDocument: {
     '@context': [
       'https://www.w3.org/ns/did/v1',
@@ -114,7 +117,76 @@ export const mockDIDPeer2Fixture: DIDKeyPairMethod2 = {
   },
 };
 
-export const mockDIDPeer3Fixture: DIDKeyPairMethod2 = {
+export const mockDIDPeer2FixturePeerContact: DIDKeyPairMethod2 = {
+  did: 'did:peer:2z1234567890',
+  type: DID2Type.PeerContact,
+  didDocument: {
+    '@context': [
+      'https://www.w3.org/ns/did/v1',
+      'https://w3id.org/security/multikey/v1',
+    ],
+    id: 'did:peer:2z1234567890',
+    verificationMethod: [
+      {
+        id: '#key-1',
+        controller: 'did:peer:2z1234567890',
+        type: 'Multikey',
+        publicKeyMultibase: 'z...publicKeyMultibaseV',
+      },
+      {
+        id: '#key-2',
+        controller: 'did:peer:2z1234567890',
+        type: 'Multikey',
+        publicKeyMultibase: 'z...publicKeyMultibaseE',
+      },
+    ],
+    authentication: [`#key-1`],
+    keyAgreement: [`#key-2`],
+    service: [
+      {
+        id: '#didcommmessaging',
+        type: 'DIDCommMessaging',
+        serviceEndpoint: {
+          uri: 'http://example.com/didcomm',
+          accept: ['didcomm/v2'],
+          routingKeys: [],
+        },
+      },
+    ],
+  },
+  privateKeyV: {
+    id: 'did:peer:2z1234567890#key-1',
+    type: 'JsonWebKey2020',
+    privateKeyJwk: {
+      kty: 'OKP',
+      crv: 'Ed25519',
+      d: 'mockPrivateKeyV',
+      x: 'mockPublicKeyV',
+    },
+  },
+  publicKeyV: {
+    kty: 'OKP',
+    crv: 'Ed25519',
+    x: 'mockPublicKeyV',
+  },
+  privateKeyE: {
+    id: 'did:peer:2z1234567890#key-2',
+    type: 'JsonWebKey2020',
+    privateKeyJwk: {
+      kty: 'OKP',
+      crv: 'X25519',
+      d: 'mockPrivateKeyE',
+      x: 'mockPublicKeyE',
+    },
+  },
+  publicKeyE: {
+    kty: 'OKP',
+    crv: 'X25519',
+    x: 'mockPublicKeyE',
+  },
+};
+
+export const mockDIDPeer3Fixture: DIDKeyPairMethod3 = {
   did: 'did:peer:3z1234567890',
   didDocument: {
     '@context': [

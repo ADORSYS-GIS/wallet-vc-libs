@@ -1,7 +1,7 @@
 import { StorageFactory } from '@adorsys-gis/storage';
 import { DBSchema } from 'idb';
 import { JWK } from 'jose';
-import { DIDKeyPairVariants } from '../did-methods/DidMethodFactory';
+import { DID2Type, DIDKeyPairVariants } from '../did-methods/DidMethodFactory';
 import {
   DidIdValue,
   DidIdentity,
@@ -97,6 +97,46 @@ export class DidRepository {
         createdAt,
       };
     });
+  }
+
+  /**
+   * Retrieves all stored mediator DID identities.
+   * These identities are intended for communication with a mediator
+   * and will not be used for QR code generation on the frontend.
+   *
+   * @returns {Promise<DidIdentity[]>} A promise that resolves to an array of objects,
+   * each containing the did, type, and createdAt properties for mediator identities.
+   */
+  async getMediatorDidIds(): Promise<DidIdentity[]> {
+    const records = await this.storageFactory.findAll('dids');
+    return records
+      .map((record) => record.value)
+      .filter((value) => value.document.type === DID2Type.Mediator)
+      .map((value) => ({
+        did: value.did,
+        type: value.document.type,
+        createdAt: value.createdAt,
+      }));
+  }
+
+  /**
+   * Retrieves all stored peer contact DID identities.
+   * These identities include a routing key and are intended for use
+   * where QR code generation is applicable on the frontend.
+   *
+   * @returns {Promise<DidIdentity[]>} A promise that resolves to an array of objects,
+   * each containing the did, type, and createdAt properties for peer contact identities.
+   */
+  async getPeerContactDidIds(): Promise<DidIdentity[]> {
+    const records = await this.storageFactory.findAll('dids');
+    return records
+      .map((record) => record.value)
+      .filter((value) => value.document.type === DID2Type.PeerContact)
+      .map((value) => ({
+        did: value.did,
+        type: value.document.type,
+        createdAt: value.createdAt,
+      }));
   }
 
   /**
