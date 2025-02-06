@@ -1,4 +1,4 @@
-import { JWKKeys, PrivateKeyJWK } from '../did-methods/IDidMethod';
+import type { JWKKeys, PrivateKeyJWK } from '../did-methods/IDidMethod';
 import { base64UrlEncode } from '../utils/base64UrlEncode';
 import {
   generateKeyPairs,

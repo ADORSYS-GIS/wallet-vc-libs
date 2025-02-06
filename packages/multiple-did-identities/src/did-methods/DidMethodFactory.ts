@@ -1,6 +1,6 @@
 import { DidKeyMethod } from './DidKeyMethod';
 import { DidPeerMethod } from './DidPeerMethod';
-import {
+import type {
   DIDKeyPair,
   DIDKeyPairMethod1,
   DIDKeyPairMethod2,

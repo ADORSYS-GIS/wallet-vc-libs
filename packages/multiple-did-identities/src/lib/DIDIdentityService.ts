@@ -1,17 +1,21 @@
-import {
-  ServiceResponse,
-  ServiceResponseStatus,
-} from '@adorsys-gis/status-service';
-import { EventEmitter } from 'eventemitter3';
-import {
-  DidMethodFactory,
+import type { EventEmitter } from 'eventemitter3';
+
+import type {
   DIDMethodName,
-  PeerGenerationMethod,
+  PeerGenerationMethod} from '../did-methods/DidMethodFactory';
+import {
+  DidMethodFactory
 } from '../did-methods/DidMethodFactory';
 import { DidRepository } from '../repository/DidRepository';
-import { SecurityService } from '../security/SecurityService';
+import type { SecurityService } from '../security/SecurityService';
 import { DidEventChannel } from '../utils/DidEventChannel';
 import { encryptPrivateKeys } from '../utils/encryptPrivateKeys';
+
+import type {
+  ServiceResponse} from '@adorsys-gis/status-service';
+import {
+  ServiceResponseStatus,
+} from '@adorsys-gis/status-service';
 
 export class DIDIdentityService {
   private didRepository: DidRepository;

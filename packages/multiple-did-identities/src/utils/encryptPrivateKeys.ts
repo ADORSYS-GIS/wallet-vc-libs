@@ -1,5 +1,6 @@
-import { DIDKeyPairVariants } from '../did-methods/DidMethodFactory';
-import { SecurityService } from '../security/SecurityService';
+import type { DIDKeyPairVariants } from '../did-methods/DidMethodFactory';
+import type { SecurityService } from '../security/SecurityService';
+
 import {
   hasPrivateKey,
   hasPrivateKey1and2,

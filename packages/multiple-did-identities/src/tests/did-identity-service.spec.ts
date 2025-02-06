@@ -1,16 +1,19 @@
-import {
-  ServiceResponse,
-  ServiceResponseStatus,
-} from '@adorsys-gis/status-service';
 import { EventEmitter } from 'eventemitter3';
+
 import {
   DidMethodFactory,
   DIDMethodName,
 } from '../did-methods/DidMethodFactory';
-import { DidIdentity, DIDKeyPair } from '../did-methods/IDidMethod';
+import type { DidIdentity, DIDKeyPair } from '../did-methods/IDidMethod';
 import { DIDIdentityService } from '../lib/DIDIdentityService';
-import { DidEventChannel } from '../utils/DidEventChannel';
 import { SecurityService } from '../security/SecurityService';
+import { DidEventChannel } from '../utils/DidEventChannel';
+
+import type {
+  ServiceResponse} from '@adorsys-gis/status-service';
+import {
+  ServiceResponseStatus,
+} from '@adorsys-gis/status-service';
 
 describe('DIDIdentityService', () => {
   let didIdentityService: DIDIdentityService;

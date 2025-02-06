@@ -1,5 +1,6 @@
-import { JWK } from 'jose';
-import { DIDKeyPairVariants, DIDMethodName } from './DidMethodFactory';
+import type { JWK } from 'jose';
+
+import type { DIDKeyPairVariants, DIDMethodName } from './DidMethodFactory';
 
 export interface Did {
   did: string;

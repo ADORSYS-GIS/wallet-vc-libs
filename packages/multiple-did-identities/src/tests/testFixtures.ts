@@ -1,4 +1,4 @@
-import {
+import type {
   DIDKeyPair,
   DIDKeyPairMethod1,
   DIDKeyPairMethod2,
