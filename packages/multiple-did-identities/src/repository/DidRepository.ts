@@ -109,9 +109,12 @@ export class DidRepository {
     did: string,
     pin: number,
   ): Promise<DidIdentityWithDecryptedKeys | null> {
+    console.log('did: ', did);
     const didsAll = await this.storageFactory.findAll('dids');
     console.log('didsAll: ', didsAll);
+
     const record = await this.storageFactory.findOne('dids', did);
+    console.log('record: ', record);
 
     const { did: storedDid, createdAt, document } = record.value;
 

@@ -2,10 +2,11 @@ import { Secret } from 'didcomm';
 
 import {
     // DidIdentityWithDecryptedKeys,
+    DidRepository,
     PrivateKeyJWK
 } from '@adorsys-gis/multiple-did-identities';
 
-import { DidRepository } from '@adorsys-gis/multiple-did-identities/src/repository/DidRepository'; 
+// import { DidRepository } from '@adorsys-gis/multiple-did-identities/src/repository/DidRepository'; 
 
 export async function processStatusRequest(
     mediatorDid: string,

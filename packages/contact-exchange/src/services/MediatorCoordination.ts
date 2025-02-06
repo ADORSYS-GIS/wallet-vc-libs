@@ -92,6 +92,7 @@ export class DidService {
       const didTo = decodedOob.from;
       const didPeerMethod = new DidPeerMethod();
       const didPeer = await didPeerMethod.generateMethod2();
+      await this.didRepository.createDidId(didPeer);
 
       const resolver = new PeerDIDResolver();
       const secrets = [didPeer.privateKeyE, didPeer.privateKeyV].filter(

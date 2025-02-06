@@ -4,6 +4,7 @@
   "main": "index.js",
   "scripts": {
     "test": "vitest --run",
+    "test:watch": "vitest",
     "build": "tsc -p tsconfig.lib.json",
     "lint": "eslint ./src --ext .ts"
   },
