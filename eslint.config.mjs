@@ -11,7 +11,7 @@ export default tseslint.config(
     '**/build/**', 
     '**/dist/**', 
     '**/node_modules/**',
-    '**/eslint.config.*',
+    '**/*.mjs'
   ],
   },
   eslint.configs.recommended,
