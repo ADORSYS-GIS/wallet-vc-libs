@@ -1,12 +1,15 @@
-import { eventBus } from '@adorsys-gis/event-bus';
-import {
-  ServiceResponse,
-  ServiceResponseStatus,
-} from '@adorsys-gis/status-service';
 import { v4 as uuidv4 } from 'uuid';
-import { Message } from '../../model/Message';
+
+import type { Message } from '../../model/Message';
 import { MessageEventChannel } from '../../model/MessageEventChannel';
 import { MessageService } from '../MessageService';
+
+import { eventBus } from '@adorsys-gis/event-bus';
+import type {
+  ServiceResponse} from '@adorsys-gis/status-service';
+import {
+  ServiceResponseStatus,
+} from '@adorsys-gis/status-service';
 
 describe('MessageService', () => {
   let messageService: MessageService;
@@ -19,22 +22,20 @@ describe('MessageService', () => {
   afterEach(async () => {
     // Clear all messages after each test
     const deleteAllMessagesEvent = new Promise<void>((resolve) => {
-      eventBus.once(
-        MessageEventChannel.GetAllByContactId,
-        async (response: ServiceResponse<Message[]>) => {
+      eventBus.once(MessageEventChannel.GetAllByContactId, (response) => {
+        (async () => {
           if (response.status === ServiceResponseStatus.Success) {
             const messages = response.payload;
             if (Array.isArray(messages)) {
               for (const message of messages) {
-                messageService.deleteMessage(message.id!);
+                messageService.deleteMessage(message.id); // fixes non-null assertion
               }
             }
           }
-          resolve();
-        },
-      );
+        })().finally(resolve);
+      });
 
-      messageService.getAllMessagesByContact('did:key:zKAJCbjwdhuhJBJWHBDSIs');
+      void messageService.getAllMessagesByContact('did:key:zKAJCbjwdhuhJBJWHBDSIs');
     });
 
     await deleteAllMessagesEvent;

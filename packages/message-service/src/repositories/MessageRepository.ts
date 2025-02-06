@@ -1,6 +1,8 @@
+import type { DBSchema } from 'idb';
+
+import type { Message } from '../model/Message';
+
 import { StorageFactory } from '@adorsys-gis/storage';
-import { DBSchema } from 'idb';
-import { Message } from '../model/Message';
 
 interface MyDatabase extends DBSchema {
   messages: {

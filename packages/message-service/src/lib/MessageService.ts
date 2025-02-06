@@ -1,11 +1,14 @@
-import {
-  ServiceResponse,
-  ServiceResponseStatus,
-} from '@adorsys-gis/status-service';
-import { EventEmitter } from 'eventemitter3';
-import { Message } from '../model/Message';
+import type { EventEmitter } from 'eventemitter3';
+
+import type { Message } from '../model/Message';
 import { MessageEventChannel } from '../model/MessageEventChannel';
 import { MessageRepository } from '../repositories/MessageRepository';
+
+import type {
+  ServiceResponse} from '@adorsys-gis/status-service';
+import {
+  ServiceResponseStatus,
+} from '@adorsys-gis/status-service';
 
 /**
  * MessageService manages messages and their interactions.
