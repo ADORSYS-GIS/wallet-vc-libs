@@ -119,7 +119,7 @@ export const mockDIDPeer2Fixture: DIDKeyPairMethod2 = {
 
 export const mockDIDPeer2FixturePeerContact: DIDKeyPairMethod2 = {
   did: 'did:peer:2z1234567890',
-  type: DID2Type.Peer_Contact,
+  type: DID2Type.PeerContact,
   didDocument: {
     '@context': [
       'https://www.w3.org/ns/did/v1',

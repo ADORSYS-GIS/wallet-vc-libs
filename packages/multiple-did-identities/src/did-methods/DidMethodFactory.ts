@@ -18,7 +18,7 @@ export enum DIDMethodName {
 // Declare enum for the DID 2 type (mediator/peer_contact)
 export enum DID2Type {
   Mediator = 'mediator',
-  Peer_Contact = 'peer_contact',
+  PeerContact = 'peer_contact',
 }
 
 export enum PurposeCode {

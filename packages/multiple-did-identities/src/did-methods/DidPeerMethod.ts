@@ -314,7 +314,7 @@ export class DidPeerMethod implements IDidMethod {
 
     return {
       did: did,
-      type: DID2Type.Peer_Contact,
+      type: DID2Type.PeerContact,
       didDocument: didDocument,
       privateKeyV: KeyV.privateKeyJwk,
       publicKeyV: KeyV.publicKeyJwk,

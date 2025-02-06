@@ -1,7 +1,7 @@
 import { StorageFactory } from '@adorsys-gis/storage';
 import { DBSchema } from 'idb';
 import { JWK } from 'jose';
-import { DIDKeyPairVariants } from '../did-methods/DidMethodFactory';
+import { DID2Type, DIDKeyPairVariants } from '../did-methods/DidMethodFactory';
 import {
   DidIdValue,
   DidIdentity,
@@ -111,7 +111,7 @@ export class DidRepository {
     const records = await this.storageFactory.findAll('dids');
     return records
       .map((record) => record.value)
-      .filter((value) => value.document.type === 'mediator')
+      .filter((value) => value.document.type === DID2Type.Mediator)
       .map((value) => ({
         did: value.did,
         type: value.document.type,
@@ -131,7 +131,7 @@ export class DidRepository {
     const records = await this.storageFactory.findAll('dids');
     return records
       .map((record) => record.value)
-      .filter((value) => value.document.type === 'peer_contact')
+      .filter((value) => value.document.type === DID2Type.PeerContact)
       .map((value) => ({
         did: value.did,
         type: value.document.type,

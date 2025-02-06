@@ -8,7 +8,7 @@ describe('DidPeerMethod', () => {
     didPeerMethod = new DidPeerMethod();
   });
 
-  test('should generate a valid DIDKeyPairMethod2 for method 3', async () => {
+  test('should generate a valid DIDKeyPairMethod3 for method 3', async () => {
     // Generate method 3 DID
     const result: DIDKeyPairMethod3 = await didPeerMethod.generateMethod3();
 
