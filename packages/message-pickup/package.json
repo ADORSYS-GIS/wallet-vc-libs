@@ -3,7 +3,7 @@
   "version": "1.0.0",
   "main": "index.js",
   "scripts": {
-    "test": "jest",
+    "test": "vitest --run",
     "build": "tsc -p tsconfig.lib.json",
     "lint": "eslint ./src --ext .ts"
   },
@@ -17,9 +17,11 @@
     "eslint": "^9.19.0",
     "jest": "^29.7.0",
     "ts-jest": "^29.2.5",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "vite-plugin-wasm": "^3.4.1",
+    "vitest": "^3.0.5"
   },
   "dependencies": {
-   "didcomm": "^0.4.1"
+    "didcomm": "^0.4.1"
   }
 }

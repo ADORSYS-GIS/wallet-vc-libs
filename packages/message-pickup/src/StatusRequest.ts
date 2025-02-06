@@ -1,7 +1,7 @@
 import { Secret } from 'didcomm';
 
 import {
-    DidIdentityWithDecryptedKeys,
+    // DidIdentityWithDecryptedKeys,
     PrivateKeyJWK
 } from '@adorsys-gis/multiple-did-identities';
 
@@ -34,7 +34,7 @@ export class StatusRequestService {
   }
 
   public async retrieveSenderDidSecrets(senderDid: string): Promise<Secret[]> {
-    let privateKeys: DidIdentityWithDecryptedKeys | null;
+    let privateKeys;
 
     try {
       privateKeys = await this.didRepository.getADidWithDecryptedPrivateKeys(
