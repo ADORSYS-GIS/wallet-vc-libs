@@ -1,5 +1,6 @@
-import { ReactNode } from 'react';
 import './iconTooltip.css';
+
+import type { ReactNode } from 'react';
 
 export default function IconTooltip({
   children,

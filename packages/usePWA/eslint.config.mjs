@@ -1,29 +1,31 @@
-import parser from 'jsonc-eslint-parser';
-import path from 'node:path';
-import { fileURLToPath } from 'node:url';
-import js from '@eslint/js';
-import { FlatCompat } from '@eslint/eslintrc';
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-  recommendedConfig: js.configs.recommended,
-  allConfig: js.configs.all,
-});
+import rootConfig from '../../eslint.config.mjs';
+import jsoncParser from 'jsonc-eslint-parser';
 
 export default [
+  ...rootConfig,
   {
-    ignores: ['!**/*', '**/node_modules/'],
+    languageOptions: {
+      parserOptions: {
+        ecmaVersion: 'latest',
+        project: ['./tsconfig.json'],
+      },
+    },
   },
-  ...compat.extends('../../.eslint.config.mjs'),
   {
     files: ['**/*.json'],
-
     languageOptions: {
-      parser: parser,
+      parser: jsoncParser,
     },
-
-    rules: {},
+    rules: {
+      '@typescript-eslint/consistent-type-imports': 'off',
+      '@typescript-eslint/no-unused-vars': 'off',
+    },
+  },
+  {
+    files: ['**/*.ts', '**/*.tsx'],
+    rules: {
+      '@typescript-eslint/no-floating-promises': 'off',
+      '@typescript-eslint/no-misused-promises': 'off',
+    },
   },
 ];

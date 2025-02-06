@@ -1,9 +1,10 @@
+import './banner.css';
+
+import IconTooltip from './IconTooltip';
 import add from '@iconify/icons-fluent/add-square-24-regular';
 import dismiss from '@iconify/icons-fluent/dismiss-circle-24-regular';
 import share from '@iconify/icons-fluent/share-ios-48-filled';
 import { Icon } from '@iconify/react';
-import IconTooltip from './IconTooltip';
-import './banner.css';
 
 export default function Banner({
   installApp,
