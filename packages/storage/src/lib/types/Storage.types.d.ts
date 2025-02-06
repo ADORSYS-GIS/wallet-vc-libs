@@ -5,6 +5,7 @@ import type {
   StoreNames,
   StoreValue,
 } from 'idb';
+
 import type { StorageFactory } from '../../core/StorageFactory';
 
 type StoreRecordKey<T, S extends StoreNames<T> = StoreNames<T>> = StoreKey<

@@ -1,5 +1,6 @@
-import { DBSchema, StoreNames } from 'idb';
-import {
+import type { DBSchema, StoreNames } from 'idb';
+
+import type {
   StoreRecord,
   StoreRecordValue,
   TransactionCallback,
