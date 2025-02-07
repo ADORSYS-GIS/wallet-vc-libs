@@ -14,6 +14,8 @@ import {
   mockDIDPeer2Fixture,
   mockDIDPeer2FixturePeerContact,
 } from './testFixtures';
+import type { ServiceResponse } from '@adorsys-gis/status-service';
+import { ServiceResponseStatus } from '@adorsys-gis/status-service';
 
 describe('DIDIdentityService', () => {
   let didIdentityService: DIDIdentityService;
