@@ -9,6 +9,10 @@ import { CloneMethodArgs } from '@adorsys-gis/cloning-decorator';
 // passed to any method of the class it decorates, except
 // when it is an instance of `EventEmitter` to preserve
 // the same event bus instance between layers.
+// --------------------------------------------------------------------
+// FIXME!!! SecurityService is excluded here simply because the cloning
+// decorator would make it unusable by discarding its methods. Fix the
+// cloning decorator or intended behavior?
 const decorate = CloneMethodArgs({ exclude: [EventEmitter, SecurityService] });
 
 export const DIDIdentityService = decorate(_DIDIdentityService);

@@ -1,5 +1,5 @@
 import { DidPeerMethod } from '../did-methods/DidPeerMethod';
-import type { DIDKeyPairMethod2 } from '../did-methods/IDidMethod';
+import type { DIDKeyPairMethod3 } from '../did-methods/IDidMethod';
 
 describe('DidPeerMethod', () => {
   let didPeerMethod: DidPeerMethod;
@@ -8,9 +8,9 @@ describe('DidPeerMethod', () => {
     didPeerMethod = new DidPeerMethod();
   });
 
-  test('should generate a valid DIDKeyPairMethod2 for method 3', async () => {
+  test('should generate a valid DIDKeyPairMethod3 for method 3', async () => {
     // Generate method 3 DID
-    const result: DIDKeyPairMethod2 = await didPeerMethod.generateMethod3();
+    const result: DIDKeyPairMethod3 = await didPeerMethod.generateMethod3();
 
     // Assertions for method 3
     expect(result).toHaveProperty('did');

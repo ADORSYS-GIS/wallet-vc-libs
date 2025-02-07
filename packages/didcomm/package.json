@@ -1,5 +1,5 @@
 {
-  "name": "didcomm",
+  "name": "@adorsys-gis/didcomm",
   "version": "1.0.0",
   "main": "./dist/index.js",
   "typings": "./dist/index.d.ts",

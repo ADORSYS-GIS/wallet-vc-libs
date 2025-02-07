@@ -13,6 +13,7 @@ describe('DidPeerMethod', () => {
 
     // Assertions
     expect(result).toHaveProperty('did');
+    expect(result).toHaveProperty('type');
     expect(result).toHaveProperty('didDocument');
     expect(result).toHaveProperty('privateKeyV');
     expect(result).toHaveProperty('publicKeyV');
@@ -28,6 +29,8 @@ describe('DidPeerMethod', () => {
       expect.arrayContaining(['https://www.w3.org/ns/did/v1']),
     );
     expect(result.didDocument).toHaveProperty('id', result.did);
+    console.log(result.type); // should output mediator
+    expect(result).toHaveProperty('type', result.type);
 
     // Validate verificationMethod
     if (result.didDocument.verificationMethod) {
@@ -65,6 +68,7 @@ describe('DidPeerMethod', () => {
 
     // Assertions for the result
     expect(result).toHaveProperty('did');
+    expect(result).toHaveProperty('type');
     expect(result).toHaveProperty('didDocument');
     expect(result).toHaveProperty('privateKeyV');
     expect(result).toHaveProperty('publicKeyV');
@@ -80,6 +84,8 @@ describe('DidPeerMethod', () => {
       expect.arrayContaining(['https://www.w3.org/ns/did/v1']),
     );
     expect(result.didDocument).toHaveProperty('id', result.did);
+    console.log(result.type); // should output peer_contact
+    expect(result).toHaveProperty('type', result.type);
 
     // Validate verificationMethod
     if (result.didDocument.verificationMethod) {
