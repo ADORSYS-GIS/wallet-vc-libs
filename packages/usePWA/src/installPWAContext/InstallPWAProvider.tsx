@@ -1,12 +1,5 @@
-import type {
-  JSX,
-  Reducer} from 'react';
-import {
-  useContext,
-  useEffect,
-  useReducer,
-  useState,
-} from 'react';
+import type { JSX, Reducer } from 'react';
+import { useContext, useEffect, useReducer, useState } from 'react';
 
 import Banner from '../lib/components/Banner';
 import Tooltip from '../lib/components/Tooltip';

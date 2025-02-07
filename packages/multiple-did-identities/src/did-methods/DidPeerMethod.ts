@@ -12,11 +12,9 @@ import {
 
 import type {
   DIDKeyPairVariants,
-  PeerGenerationMethod} from './DidMethodFactory';
-import {
-  DIDMethodName,
-  PurposeCode,
+  PeerGenerationMethod,
 } from './DidMethodFactory';
+import { DIDMethodName, PurposeCode } from './DidMethodFactory';
 import type {
   DIDDocumentMethod2,
   DIDDocumentMethod4,

@@ -1,12 +1,5 @@
-import type {
-  DBSchema,
-  IDBPDatabase,
-  IndexNames,
-  StoreNames} from 'idb';
-import {
-  openDB,
-  type OpenDBCallbacks,
-} from 'idb';
+import type { DBSchema, IDBPDatabase, IndexNames, StoreNames } from 'idb';
+import { openDB, type OpenDBCallbacks } from 'idb';
 
 import { StorageError } from '../lib/errors/StorageError';
 import type {

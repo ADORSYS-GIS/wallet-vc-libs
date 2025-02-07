@@ -11,11 +11,8 @@ import { DidPeerMethod } from '@adorsys-gis/multiple-did-identities/src/did-meth
 import type { PrivateKeyJWK } from '@adorsys-gis/multiple-did-identities/src/did-methods/IDidMethod';
 import { DidRepository } from '@adorsys-gis/multiple-did-identities/src/repository/DidRepository';
 import type { SecurityService } from '@adorsys-gis/multiple-did-identities/src/security/SecurityService';
-import type {
-  ServiceResponse} from '@adorsys-gis/status-service';
-import {
-  ServiceResponseStatus,
-} from '@adorsys-gis/status-service';
+import type { ServiceResponse } from '@adorsys-gis/status-service';
+import { ServiceResponseStatus } from '@adorsys-gis/status-service';
 
 // Define event channels
 export enum DidEventChannel {

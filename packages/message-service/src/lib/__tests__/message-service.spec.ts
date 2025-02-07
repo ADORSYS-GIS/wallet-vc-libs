@@ -5,11 +5,8 @@ import { MessageEventChannel } from '../../model/MessageEventChannel';
 import { MessageService } from '../MessageService';
 
 import { eventBus } from '@adorsys-gis/event-bus';
-import type {
-  ServiceResponse} from '@adorsys-gis/status-service';
-import {
-  ServiceResponseStatus,
-} from '@adorsys-gis/status-service';
+import type { ServiceResponse } from '@adorsys-gis/status-service';
+import { ServiceResponseStatus } from '@adorsys-gis/status-service';
 
 describe('MessageService', () => {
   let messageService: MessageService;
@@ -35,7 +32,9 @@ describe('MessageService', () => {
         })().finally(resolve);
       });
 
-      void messageService.getAllMessagesByContact('did:key:zKAJCbjwdhuhJBJWHBDSIs');
+      void messageService.getAllMessagesByContact(
+        'did:key:zKAJCbjwdhuhJBJWHBDSIs',
+      );
     });
 
     await deleteAllMessagesEvent;

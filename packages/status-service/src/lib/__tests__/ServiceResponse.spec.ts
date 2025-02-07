@@ -1,4 +1,4 @@
-import type { ServiceResponse} from '../ServiceResponse';
+import type { ServiceResponse } from '../ServiceResponse';
 import { ServiceResponseStatus } from '../ServiceResponse';
 
 describe('ServiceResponse', () => {

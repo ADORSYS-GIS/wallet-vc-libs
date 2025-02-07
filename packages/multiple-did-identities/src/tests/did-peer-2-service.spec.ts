@@ -11,11 +11,8 @@ import { SecurityService } from '../security/SecurityService';
 import { DidEventChannel } from '../utils/DidEventChannel';
 
 import { mockDIDPeer2Fixture } from './testFixtures';
-import type {
-  ServiceResponse} from '@adorsys-gis/status-service';
-import {
-  ServiceResponseStatus,
-} from '@adorsys-gis/status-service';
+import type { ServiceResponse } from '@adorsys-gis/status-service';
+import { ServiceResponseStatus } from '@adorsys-gis/status-service';
 
 describe('DIDIdentityService', () => {
   let didIdentityService: DIDIdentityService;

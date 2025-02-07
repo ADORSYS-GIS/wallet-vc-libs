@@ -1,4 +1,4 @@
-import type { AbbreviatedService,Service } from '../did-methods/IDidMethod';
+import type { AbbreviatedService, Service } from '../did-methods/IDidMethod';
 
 export function convertServiceToAbbreviatedFormat(
   service: Service,

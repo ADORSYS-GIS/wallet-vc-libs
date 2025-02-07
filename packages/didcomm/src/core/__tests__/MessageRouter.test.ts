@@ -1,4 +1,9 @@
-import type { DIDDoc, DIDResolver, Secret, SecretsResolver } from 'didcomm-node';
+import type {
+  DIDDoc,
+  DIDResolver,
+  Secret,
+  SecretsResolver,
+} from 'didcomm-node';
 
 import { MessageTyp, MessageType } from '../Messages.types';
 

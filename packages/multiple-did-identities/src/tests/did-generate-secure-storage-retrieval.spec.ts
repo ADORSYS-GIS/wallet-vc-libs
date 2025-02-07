@@ -11,11 +11,8 @@ import { SecurityService } from '../security/SecurityService';
 import { DidEventChannel } from '../utils/DidEventChannel';
 
 import { createMockDIDPeer1, mockDIDPeer2Fixture } from './testFixtures';
-import type {
-  ServiceResponse} from '@adorsys-gis/status-service';
-import {
-  ServiceResponseStatus,
-} from '@adorsys-gis/status-service';
+import type { ServiceResponse } from '@adorsys-gis/status-service';
+import { ServiceResponseStatus } from '@adorsys-gis/status-service';
 
 describe('Create DID Identity, Encrypt and Decrypt', () => {
   let didIdentityService: DIDIdentityService;

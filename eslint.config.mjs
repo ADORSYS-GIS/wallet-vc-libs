@@ -6,13 +6,13 @@ import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
   {
-   ignores: [
-    'node_modules', 
-    '**/build/**', 
-    '**/dist/**', 
-    '**/node_modules/**',
-    '**/*.mjs'
-  ],
+    ignores: [
+      'node_modules',
+      '**/build/**',
+      '**/dist/**',
+      '**/node_modules/**',
+      '**/*.mjs',
+    ],
   },
   eslint.configs.recommended,
   tseslint.configs.recommended,
@@ -38,13 +38,13 @@ export default tseslint.config(
         'error',
         {
           groups: [
-            ['^\\u0000'],          // Side effect imports
-            ['^react', '^next'],   // React & Next.js imports (if applicable)
-            ['^@/'],               // Project-specific aliases (like '@/components')
-            ['^[a-z]'],            // External packages
-            ['^\\.\\.(?!/?$)'],    // Parent imports (../)
+            ['^\\u0000'], // Side effect imports
+            ['^react', '^next'], // React & Next.js imports (if applicable)
+            ['^@/'], // Project-specific aliases (like '@/components')
+            ['^[a-z]'], // External packages
+            ['^\\.\\.(?!/?$)'], // Parent imports (../)
             ['^\\./(?=.*/)(?!/?$)'], // Sibling imports with subfolders
-            ['^\\./?$'],           // Same-folder imports (./)    
+            ['^\\./?$'], // Same-folder imports (./)
           ],
         },
       ],
@@ -66,15 +66,15 @@ export default tseslint.config(
   },
   {
     files: ['**/*.json'],
-      languageOptions: {
-        parser: jsoncParser,
-      },
+    languageOptions: {
+      parser: jsoncParser,
+    },
     rules: {
       '@typescript-eslint/no-floating-promises': 'off',
       '@typescript-eslint/await-thenable': 'off',
       '@typescript-eslint/no-misused-promises': 'off',
       '@typescript-eslint/consistent-type-imports': 'off',
-  },
+    },
   },
   {
     files: ['**/*.d.ts', '**/*.test.ts', '**/*.test.js', '**/*.spec.ts'],

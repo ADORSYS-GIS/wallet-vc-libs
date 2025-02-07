@@ -4,11 +4,8 @@ import type { Contact } from '../model/Contact';
 import { ContactEventChannel } from '../model/ContactEventChannel';
 import { ContactRepository } from '../repositories/ContactRepository';
 
-import type {
-  ServiceResponse} from '@adorsys-gis/status-service';
-import {
-  ServiceResponseStatus,
-} from '@adorsys-gis/status-service';
+import type { ServiceResponse } from '@adorsys-gis/status-service';
+import { ServiceResponseStatus } from '@adorsys-gis/status-service';
 
 /**
  * ContactService manages contacts and their interactions.
@@ -103,11 +100,12 @@ export class ContactService {
    */
   public updateContact(id: number, updatedFields: Partial<Contact>): void {
     const updateContactChannel = ContactEventChannel.UpdateContact;
-  
+
     this.contactRepository
       .update(id, updatedFields)
       .then((updatedContact) => {
-        if (updatedContact) { // Null check added
+        if (updatedContact) {
+          // Null check added
           const response: ServiceResponse<Contact> = {
             status: ServiceResponseStatus.Success,
             payload: updatedContact,
@@ -123,7 +121,6 @@ export class ContactService {
       })
       .catch(this.sharedErrorHandler(updateContactChannel));
   }
-  
 
   /**
    * Deletes a contact by its ID from the database.

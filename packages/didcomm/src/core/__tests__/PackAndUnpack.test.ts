@@ -2,10 +2,9 @@ import type {
   DIDDoc,
   DIDResolver,
   Secret,
-  SecretsResolver} from 'didcomm-node';
-import {
-  Message
+  SecretsResolver,
 } from 'didcomm-node';
+import { Message } from 'didcomm-node';
 
 import {
   ALICE_DID,

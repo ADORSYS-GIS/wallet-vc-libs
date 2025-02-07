@@ -9,11 +9,8 @@ import { DIDIdentityService } from '../lib/DIDIdentityService';
 import { SecurityService } from '../security/SecurityService';
 import { DidEventChannel } from '../utils/DidEventChannel';
 
-import type {
-  ServiceResponse} from '@adorsys-gis/status-service';
-import {
-  ServiceResponseStatus,
-} from '@adorsys-gis/status-service';
+import type { ServiceResponse } from '@adorsys-gis/status-service';
+import { ServiceResponseStatus } from '@adorsys-gis/status-service';
 
 describe('DIDIdentityService', () => {
   let didIdentityService: DIDIdentityService;
