@@ -45,8 +45,8 @@ describe('StatusRequest', () => {
     const mediatorDid = eventData.payload.from;
     const aliceDidForMediator = eventData.payload.to[0];
 
-    console.log('mediatorDid:', mediatorDid, 'aliceDidForMediator:', aliceDidForMediator);
-
+    console.log('mediatorDid:', mediatorDid);
+    console.log('aliceDidForMediator:', aliceDidForMediator);
     // Pass the DidRepository instance to processStatusRequest
     await processStatusRequest(mediatorDid, aliceDidForMediator, didRepository);
   });
