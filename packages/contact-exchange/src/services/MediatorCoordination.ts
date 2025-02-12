@@ -36,6 +36,15 @@ function sharedErrorHandler(channel: DidEventChannel, eventBus: EventEmitter) {
   };
 }
 
+// A helper function to convert base64Url to base64
+function base64UrlToBase64(str: string): string {
+  let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+  while (base64.length % 4 !== 0) {
+    base64 += '=';
+  }
+  return base64;
+}
+
 // Class to resolve secrets based on known secrets
 export class DidcommSecretsResolver implements SecretsResolver {
   private knownSecrets: Secret[];
@@ -82,7 +91,7 @@ export class DidService {
 
       const oobUrl = oobParts[1];
       const decodedOob = JSON.parse(
-        Buffer.from(oobUrl, 'base64url').toString('utf-8'),
+        Buffer.from(base64UrlToBase64(oobUrl), 'base64').toString('utf-8'),
       );
 
       if (!decodedOob.from) {
