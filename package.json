@@ -33,7 +33,7 @@
     "@jridgewell/sourcemap-codec": "^1.5.0",
     "@rollup/plugin-terser": "^0.4.4",
     "@types/jest": "^29.5.14",
-    "@types/node": "^22.13.0",
+    "@types/node": "^22.13.1",
     "@typescript-eslint/eslint-plugin": "^8.22.0",
     "@typescript-eslint/parser": "^8.22.0",
     "eslint": "^9.19.0",
@@ -48,6 +48,9 @@
     "@adorsys-gis/cloning-decorator": "^1.0.1",
     "typescript-eslint": "^8.22.0",
     "uuid": "^11.0.5",
-    "workbox-background-sync": "^7.3.0"
+    "workbox-background-sync": "^7.3.0",
+    "workbox-build": "^7.3.0",
+    "workbox-cacheable-response": "^7.3.0",
+    "workbox-google-analytics": "^7.3.0"
   }
 }
