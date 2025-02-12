@@ -110,46 +110,46 @@ export class DidRepository {
     pin: number,
   ): Promise<DidIdentityWithDecryptedKeys | null> {
     console.log('did: ', did);
-    const didsAll = await this.storageFactory.findAll('dids');
-    console.log('didsAll: ', didsAll);
 
     const record = await this.storageFactory.findOne('dids', did);
-    console.log('record: ', record);
+    if (!record) {
+      console.error('No record found for DID:', did);
+      return null;
+    }
+    // console.log('record!: ', record.value.document);
 
     const { did: storedDid, createdAt, document } = record.value;
+    console.log('Document keys:', Object.keys(document));
 
-    // Helper function to decrypt an encrypted key
     const decryptKey = async (encryptedKey: {
       salt: Uint8Array;
       ciphertext: string;
       iv: Uint8Array;
     }) => {
+      console.log('Decrypting key:', encryptedKey);
       const { salt, ciphertext, iv } = encryptedKey;
-      return await this.securityService.decrypt(pin, salt, iv, ciphertext);
+      const decrypted = await this.securityService.decrypt(pin, salt, iv, ciphertext);
+      console.log('Decrypted key:', decrypted);
+      return decrypted;
     };
 
-    // Initialize the decrypted private keys object
     const decryptedPrivateKeys: Record<string, JWK | PrivateKeyJWK> = {};
 
-    // Define the mapping of document keys to decrypted keys
     const keyMappings = [
-      { documentKey: 'encryptedPrivateKey', resultKey: 'privateKey' },
-      { documentKey: 'encryptedPrivateKeyV', resultKey: 'privateKeyV' },
-      { documentKey: 'encryptedPrivateKeyE', resultKey: 'privateKeyE' },
-      { documentKey: 'encryptedPrivateKey1', resultKey: 'privateKey1' },
-      { documentKey: 'encryptedPrivateKey2', resultKey: 'privateKey2' },
+      { documentKey: 'privateKeyV', resultKey: 'privateKeyV' },
+      { documentKey: 'privateKeyE', resultKey: 'privateKeyE' },
     ];
 
-    // Iterate over the key mappings and decrypt if the key exists
     for (const { documentKey, resultKey } of keyMappings) {
       if (document[documentKey]) {
-        decryptedPrivateKeys[resultKey] = await decryptKey(
-          document[documentKey],
-        );
+        decryptedPrivateKeys[resultKey] = document[documentKey];
+      } else {
+        console.warn(`Document key ${documentKey} not found.`);
       }
     }
 
-    // Return the DID identity with decrypted private keys
+    console.log('Decrypted private keys:', decryptedPrivateKeys);
+
     const didIdentityWithDecryptedKeys: DidIdentityWithDecryptedKeys = {
       did: storedDid,
       createdAt,

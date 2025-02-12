@@ -144,4 +144,21 @@ describe('MessageRouter', () => {
       await messageRouter.routeForwardMessage(message, recipientDid, senderDid);
     }).rejects.toThrow('Cannot proceed with no sender secrets');
   });
+
+
+
+
+
+  test('should fail if secrets cannot be found (bis)', async () => {
+    const message = 'Hello, World!';
+    const recipientDid = 'did:peer:2.Ez6LSkp92WbQQ8sAnfHbypfUXuT6C78zVRpNsAzpQ7HNktti3.Vz6MkjTNDKnEvcx2EytfL8BeZvdGUfE153Sbe4U729M2xdH5H.SeyJ0IjoiZG0iLCJzIjp7InVyaSI6Imh0dHBzOi8vbWVkaWF0b3Iuc29jaW91cy5pbyIsImEiOlsiZGlkY29tbS92MiJdfX0.SeyJ0IjoiZG0iLCJzIjp7InVyaSI6IndzczovL21lZGlhdG9yLnNvY2lvdXMuaW8vd3MiLCJhIjpbImRpZGNvbW0vdjIiXX19';
+    const senderDid = await generateIdentity(secretPinNumber);
+
+      const test = await messageRouter.routeForwardMessage(message, recipientDid, senderDid);
+      console.log('test: ', test);
+
+  });
+
+
+
 });

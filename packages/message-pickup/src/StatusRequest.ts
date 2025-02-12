@@ -1,15 +1,12 @@
 import {Secret, IMessage, Message, SecretsResolver} from 'didcomm';
-// import { IMessage, Message, Secret} from 'didcomm';
-
-// import fetch from 'cross-fetch'; // Use cross-fetch for HTTP requests
 import { PeerDIDResolver } from 'did-resolver-lib';
-// import { StaticSecretsResolver } from '@adorsys-gis/message-exchange/src/utils/resolver/StaticSecretsResolver';
 import { DidRepository } from '@adorsys-gis/multiple-did-identities';
 
 import {
     DidIdentityWithDecryptedKeys,
     PrivateKeyJWK
 } from '@adorsys-gis/multiple-did-identities';
+import { secretsTest } from './tests/helpers';
 
 export async function processStatusRequest(
     mediatorDid: string,
@@ -21,12 +18,15 @@ export async function processStatusRequest(
     const statusRequestService = new StatusRequestService(didRepository, secretPinNumber);
 
     try {
-        const secrets = await statusRequestService.retrieveSenderDidSecrets(aliceDidForMediator);
+        // const secrets = await statusRequestService.retrieveSenderDidSecrets(aliceDidForMediator);
+        // For local testing:
+        const secrets = secretsTest;
+
         console.log('Retrieved Secrets:', secrets);
 
         const val: IMessage = {
           id: generateUuid(),
-          typ: 'https://didcomm.org/messagepickup/3.0/status-request',
+          typ: 'application/didcomm-plain+json',
           type:'https://didcomm.org/messagepickup/3.0/status-request',
           body: {  },
           from: aliceDidForMediator,
@@ -39,7 +39,6 @@ export async function processStatusRequest(
 
         const resolver = new PeerDIDResolver();
         
-
         const mediationRequest = new Message(val);
        
         const secretsResolver = new DidcommSecretsResolver(secrets);
@@ -57,8 +56,6 @@ export async function processStatusRequest(
 
         const mediatorDIDDoc = await resolver.resolve(mediatorDid);
 
-        console.log('mediatorDIDDoc: ', mediatorDIDDoc);
-
       if (
         !mediatorDIDDoc ||
         !mediatorDIDDoc.service ||
@@ -70,31 +67,46 @@ export async function processStatusRequest(
 
       console.log('mediatorEndpoint: ', mediatorEndpoint);
 
-        // // Send the packed message to the mediator endpoint
+        // Log the request details
         const headers = { "Content-Type": "application/didcomm-encrypted+json" };
+        console.log('Sending request to:', mediatorEndpoint.uri);
+        console.log('Request headers:', headers);
+        console.log('Request body:', packedMediationRequest);
+
+        // Send the packed message to the mediator endpoint
         const resp3 = await fetch(mediatorEndpoint.uri, {
             method: 'POST',
             headers: headers,
             body: packedMediationRequest
         });
 
-        console.log('resp3: ', resp3);
+        console.log('Response status:', resp3.status);
+        console.log('Response status text:', resp3.statusText);
+        console.log('Response headers:', resp3.headers.get('Content-Type'));
+
+        // Log the response body for more details
+        const responseBody = await resp3.text();
+        console.log('Response body:', responseBody);
 
         if (!resp3.ok) {
-            throw new Error(`Failed to send message: ${resp3.statusText}`);
+            throw new Error(`Failed to send message: ${resp3.statusText} - ${responseBody}`);
         }
 
-        // Unpack the response
-        const responseJson = await resp3.json();
+        if (!responseBody) {
+            throw new Error('Response body is empty');
+        }
 
-      const [unpackedMessage] = await Message.unpack(
-        JSON.stringify(responseJson),
-        resolver,
-        secretsResolver,
-        {},
-      );
+        const responseJson = JSON.parse(responseBody);
+        console.log('Response JSON:', responseJson);
 
-      console.log('unpackedMessage: ', unpackedMessage.as_value());
+        const [unpackedMessage] = await Message.unpack(
+            JSON.stringify(responseJson),
+            resolver,
+            secretsResolver,
+            {},
+        );
+
+        console.log('unpackedMessage: ', unpackedMessage.as_value());
 
     } catch (error) {
         console.error('Error processing status request:', error);
