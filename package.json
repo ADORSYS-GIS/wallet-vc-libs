@@ -33,6 +33,7 @@
     "rimraf": "^6.0.1",
     "abab": "^2.0.5",
     "jsdom": "^26.0.0",
+    "@jridgewell/sourcemap-codec": "^1.5.0",
     "workbox-build": "^7.3.0",
     "workbox-google-analytics": "^7.3.0",
     "workbox-cacheable-response": "^7.3.0"
@@ -49,6 +50,7 @@
   },
   "dependencies": {
     "@adorsys-gis/cloning-decorator": "^1.0.1",
+    "@jridgewell/sourcemap-codec": "^1.5.0",
     "typescript-eslint": "^8.22.0",
     "uuid": "^11.0.5",
     "workbox-background-sync": "^7.3.0",
