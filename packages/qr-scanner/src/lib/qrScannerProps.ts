@@ -1,4 +1,4 @@
-import { QRCode } from 'jsqr';
+import type { QRCode } from 'jsqr';
 
 export interface IQrScannerProps<T = unknown> {
   /**

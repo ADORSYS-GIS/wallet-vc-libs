@@ -1,5 +1,5 @@
 import { createContext } from 'react';
-import { InstallPWA } from './installPWA.interface';
+import type { InstallPWA } from './installPWA.interface';
 
 export const initialState: InstallPWA = {
   deferredPrompt: null,

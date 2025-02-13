@@ -9,14 +9,12 @@ import {
   generateKeyPairsED25519,
   generateKeyPairsX25519,
 } from '../utils/generateKeyPairs';
-import {
-  DID2Type,
+import type {
   DIDKeyPairVariants,
-  DIDMethodName,
   PeerGenerationMethod,
-  PurposeCode,
 } from './DidMethodFactory';
-import {
+import { DID2Type, DIDMethodName, PurposeCode } from './DidMethodFactory';
+import type {
   DIDDocumentMethod2,
   DIDDocumentMethod4,
   DIDKeyPair,

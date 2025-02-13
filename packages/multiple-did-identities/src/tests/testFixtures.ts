@@ -1,5 +1,5 @@
 import { DID2Type } from '../did-methods/DidMethodFactory';
-import {
+import type {
   DIDKeyPair,
   DIDKeyPairMethod1,
   DIDKeyPairMethod2,

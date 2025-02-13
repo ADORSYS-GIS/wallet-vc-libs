@@ -5,7 +5,9 @@
   "typings": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "lint": "eslint . --no-error-on-unmatched-pattern",
+    "lint:fix": "eslint . --fix"
   },
   "keywords": [],
   "author": "",

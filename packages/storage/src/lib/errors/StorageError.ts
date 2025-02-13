@@ -1,4 +1,4 @@
-import { MethodNames } from '../types';
+import type { MethodNames } from '../types';
 
 /**
  * Storage Error class

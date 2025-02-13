@@ -1,6 +1,11 @@
-import { DIDDoc, DIDResolver, Secret, SecretsResolver } from 'didcomm-node';
+import type {
+  DIDDoc,
+  DIDResolver,
+  Secret,
+  SecretsResolver,
+} from 'didcomm-node';
+import { MessageTyp, MessageType } from '../Messages.types';
 import { createRoutedMessage } from './../MessageRouter';
-
 import {
   ALICE_DID,
   ALICE_DID_DOC,
@@ -8,7 +13,6 @@ import {
   BOB_DID,
   BOB_DID_DOC,
 } from './fixtures/PackAndUnpackFixtures';
-import { MessageTyp, MessageType } from '../Messages.types';
 
 // Mock DIDs and Secrets (you can replace these with actual test data)
 const MESSAGE_BODY = { attribute: 'value' };

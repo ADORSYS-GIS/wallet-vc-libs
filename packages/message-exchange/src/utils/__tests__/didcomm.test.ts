@@ -1,11 +1,9 @@
-import { describe, it, expect } from 'vitest';
-
 import { JWKKeys as JWK } from '@adorsys-gis/multiple-did-identities';
 import { DIDCommMessagingService } from 'didcomm';
-
+import { describe, expect, it } from 'vitest';
 import {
-  jwkToPublicKeyBase58,
   isDIDCommMessagingServiceEndpoint,
+  jwkToPublicKeyBase58,
 } from '../didcomm';
 
 describe('utils (didcomm)', () => {

@@ -22,7 +22,8 @@
   },
   "scripts": {
     "build": "tsc -p ./tsconfig.lib.json",
-    "lint": "eslint ./src --ext .ts",
+    "lint": "eslint . --no-error-on-unmatched-pattern",
+    "lint:fix": "eslint . --fix",
     "test": "jest",
     "depcheck": "depcheck || true"
   },

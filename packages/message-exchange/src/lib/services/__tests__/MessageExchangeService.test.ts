@@ -1,21 +1,18 @@
-import nock from 'nock';
-import { afterEach, beforeAll, describe, expect, test } from 'vitest';
-
 import { Message as MessageModel } from '@adorsys-gis/message-service';
-import { MessageExchangeEvent } from '../../events';
-import { MessageExchangeService } from '../../../index';
-
 import {
   ServiceResponse,
   ServiceResponseStatus,
 } from '@adorsys-gis/status-service';
-
+import nock from 'nock';
+import { afterEach, beforeAll, describe, expect, test } from 'vitest';
+import { MessageExchangeService } from '../../../index';
 import {
   aliceDid,
   eventBus,
   generateIdentity,
   waitForEvent,
 } from '../../../protocols/__tests__/helpers';
+import { MessageExchangeEvent } from '../../events';
 
 describe('MessageExchangeService', () => {
   const secretPinNumber = 1234;

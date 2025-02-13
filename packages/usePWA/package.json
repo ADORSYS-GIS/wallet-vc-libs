@@ -46,7 +46,8 @@
   "scripts": {
     "test": "jest",
     "build": "rimraf dist && webpack --config webpack.config.mjs",
-    "lint": "eslint ./src --ext .ts"
+    "lint": "eslint . --no-error-on-unmatched-pattern",
+    "lint:fix": "eslint . --fix"
   },
   "keywords": [],
   "author": "adorsys",

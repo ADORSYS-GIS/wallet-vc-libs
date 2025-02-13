@@ -1,8 +1,8 @@
 // OOBTestFixtures.ts
 // Base64 Encoded URL fixtures
 import { Buffer } from 'buffer';
-import { OutOfBandInvitation } from '../services/DIDCommOOBInvitation';
-import { Contact } from '../services/Wallet';
+import type { OutOfBandInvitation } from '../services/DIDCommOOBInvitation';
+import type { Contact } from '../services/Wallet';
 
 // Update the validEncodedUrl in OOBTestFixtures to match the new URL format
 // For example:

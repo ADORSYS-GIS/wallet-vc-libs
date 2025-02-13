@@ -20,7 +20,8 @@
   "scripts": {
     "test": "jest",
     "build": "tsc -p tsconfig.lib.json",
-    "lint": "eslint ./src --ext .ts"
+    "lint": "eslint . --no-error-on-unmatched-pattern",
+    "lint:fix": "eslint . --fix"
   },
   "keywords": [
     "event-bus",

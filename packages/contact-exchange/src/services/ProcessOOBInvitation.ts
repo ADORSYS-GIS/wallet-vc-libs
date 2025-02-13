@@ -1,8 +1,11 @@
+import { logError } from '../lib/errors-logs/logger';
 import { OOBServiceError } from '../lib/errors-logs/OOBServiceError';
 import { ProcessOOBInvitationError } from '../lib/errors-logs/ProcessOOBInvitation.errors';
-import { DIDCommMessage, OutOfBandInvitation } from './DIDCommOOBInvitation';
+import type {
+  DIDCommMessage,
+  OutOfBandInvitation,
+} from './DIDCommOOBInvitation';
 import { parseOOBInvitation } from './OOBParser';
-import { logError } from '../lib/errors-logs/logger';
 
 /**
  * Process an out-of-band invitation and return a DIDComm message.
