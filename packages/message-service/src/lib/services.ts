@@ -1,6 +1,5 @@
 import { CloneMethodArgs } from '@adorsys-gis/cloning-decorator';
 import EventEmitter from 'eventemitter3';
-
 import { MessageService as _MessageService } from './MessageService';
 
 // This decorator function will deep clone every argument

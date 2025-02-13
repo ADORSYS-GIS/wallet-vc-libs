@@ -1,7 +1,7 @@
 import jsQR from 'jsqr';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Loading } from './Loading';
-import { IQrScannerProps } from './qrScannerProps';
+import type { IQrScannerProps } from './qrScannerProps';
 
 export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
   const videoRef = useRef<HTMLVideoElement>(null);

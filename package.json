@@ -8,8 +8,8 @@
     "build": "npm run build --workspaces",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
-    "lint": "eslint . --no-error-on-unmatched-pattern",
-    "lint:fix": "eslint packages/** --fix"
+    "lint": "npm run lint --workspaces",
+    "lint:fix": "npm run lint:fix --workspaces"
   },
   "keywords": [],
   "workspaces": [
@@ -29,18 +29,12 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
-    "@eslint/eslintrc": "^3.2.0",
-    "@jridgewell/sourcemap-codec": "^1.5.0",
-    "@rollup/plugin-terser": "^0.4.4",
+    "@eslint/js": "^9.19.0",
     "@types/jest": "^29.5.14",
-    "@types/node": "^22.13.0",
-    "@typescript-eslint/eslint-plugin": "^8.22.0",
-    "@typescript-eslint/parser": "^8.22.0",
+    "@types/node": "^22.8.0",
     "eslint": "^9.19.0",
-    "eslint-plugin-jsonc": "^2.19.1",
-    "glob": "^11.0.1",
     "jsonc-eslint-parser": "^2.4.0",
-    "prettier": "^3.4.2",
+    "prettier": "^3.3.3",
     "rimraf": "^6.0.1",
     "typescript": "^5.7.3"
   },
@@ -52,5 +46,6 @@
     "workbox-build": "^7.3.0",
     "workbox-cacheable-response": "^7.3.0",
     "workbox-google-analytics": "^7.3.0"
+    "typescript-eslint": "^8.23.0"
   }
 }

@@ -1,11 +1,10 @@
-import {
-  Message,
+import type {
   DIDDoc,
   DIDResolver,
   Secret,
   SecretsResolver,
 } from 'didcomm-node';
-
+import { Message } from 'didcomm-node';
 import {
   ALICE_DID,
   ALICE_DID_DOC,

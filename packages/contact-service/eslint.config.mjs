@@ -22,11 +22,9 @@ export default [
     },
   },
   {
-    files: ['**/*.ts', '**/*.tsx'],
+    files: ['**/*.test.ts', '**/*.spec.ts'],
     rules: {
-      '@typescript-eslint/no-extraneous-class': 'off',
-      '@typescript-eslint/no-floating-promises': 'off',
-      '@typescript-eslint/await-thenable': 'off',
+      '@typescript-eslint/no-non-null-assertion': 'off',
       '@typescript-eslint/no-misused-promises': 'off',
     },
   },

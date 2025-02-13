@@ -9,7 +9,8 @@
   "scripts": {
     "build": "tsc",
     "format": "prettier --write .",
-    "lint": "eslint .",
+    "lint": "eslint . --no-error-on-unmatched-pattern",
+    "lint:fix": "eslint . --fix",
     "test": "vitest --run"
   },
   "dependencies": {

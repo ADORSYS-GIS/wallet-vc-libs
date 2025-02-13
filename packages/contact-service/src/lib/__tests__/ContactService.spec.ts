@@ -1,9 +1,7 @@
 import { eventBus } from '@adorsys-gis/event-bus';
-import {
-  ServiceResponse,
-  ServiceResponseStatus,
-} from '@adorsys-gis/status-service';
-import { Contact } from '../../model/Contact';
+import type { ServiceResponse } from '@adorsys-gis/status-service';
+import { ServiceResponseStatus } from '@adorsys-gis/status-service';
+import type { Contact } from '../../model/Contact';
 import { ContactEventChannel } from '../../model/ContactEventChannel';
 import { ContactService } from '../ContactService';
 

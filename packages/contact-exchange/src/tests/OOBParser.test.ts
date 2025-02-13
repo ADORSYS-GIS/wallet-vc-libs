@@ -1,6 +1,6 @@
-import { parseOOBInvitation } from '../services/OOBParser';
 import { OOBServiceError } from '../lib/errors-logs/OOBServiceError';
 import { OutOfBandInvitationError } from '../lib/errors-logs/OutOfBandInvitation.errors';
+import { parseOOBInvitation } from '../services/OOBParser';
 
 describe('parseOOBInvitation', () => {
   it('should throw MissingIdOrType error for an invitation with a missing type', () => {

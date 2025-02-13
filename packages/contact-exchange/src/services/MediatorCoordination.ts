@@ -1,15 +1,14 @@
 import { CloneMethodArgs } from '@adorsys-gis/cloning-decorator';
 import { DidPeerMethod } from '@adorsys-gis/multiple-did-identities/src/did-methods/DidPeerMethod';
-import { PrivateKeyJWK } from '@adorsys-gis/multiple-did-identities/src/did-methods/IDidMethod';
+import type { PrivateKeyJWK } from '@adorsys-gis/multiple-did-identities/src/did-methods/IDidMethod';
 import { DidRepository } from '@adorsys-gis/multiple-did-identities/src/repository/DidRepository';
-import { SecurityService } from '@adorsys-gis/multiple-did-identities/src/security/SecurityService';
-import {
-  ServiceResponse,
-  ServiceResponseStatus,
-} from '@adorsys-gis/status-service';
+import type { SecurityService } from '@adorsys-gis/multiple-did-identities/src/security/SecurityService';
+import type { ServiceResponse } from '@adorsys-gis/status-service';
+import { ServiceResponseStatus } from '@adorsys-gis/status-service';
 import fetch from 'cross-fetch';
 import { PeerDIDResolver } from 'did-resolver-lib';
-import { IMessage, Message, Secret, SecretsResolver } from 'didcomm';
+import type { IMessage, Secret, SecretsResolver } from 'didcomm';
+import { Message } from 'didcomm';
 import { EventEmitter } from 'eventemitter3';
 import { v4 as uuidv4 } from 'uuid';
 import { MessageTyp, MessageType } from './DIDCommOOBInvitation';
