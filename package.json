@@ -46,6 +46,5 @@
     "workbox-build": "^7.3.0",
     "workbox-cacheable-response": "^7.3.0",
     "workbox-google-analytics": "^7.3.0"
-    "typescript-eslint": "^8.23.0"
   }
 }
