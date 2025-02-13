@@ -1,6 +1,5 @@
 import { PeerDIDResolver } from 'did-resolver-lib';
 import type { DIDDoc, Service } from 'didcomm';
-
 import { DIDCOMM_MESSAGING_SERVICE_TYPE } from '../../protocols/types/constants';
 import { isDIDCommMessagingServiceEndpoint } from '../didcomm';
 import { normalizeToArray } from '../misc';

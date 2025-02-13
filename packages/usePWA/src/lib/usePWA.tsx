@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-
 import type { BeforeInstallPromptEvent } from '../installPWAContext/installPWA.interface';
 import { useInstallPWA } from '../installPWAContext/InstallPWAProvider';
 

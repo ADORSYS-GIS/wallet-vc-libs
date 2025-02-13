@@ -1,6 +1,5 @@
 import { parseOOBInvitation } from '../services/OOBParser';
 import { processOOBInvitation } from '../services/ProcessOOBInvitation';
-
 import {
   invalidEncodedUrl,
   validEncodedUrl,

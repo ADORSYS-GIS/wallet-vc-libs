@@ -1,7 +1,6 @@
 import { logError } from '../lib/errors-logs/logger';
 import { OOBServiceError } from '../lib/errors-logs/OOBServiceError';
 import { ProcessOOBInvitationError } from '../lib/errors-logs/ProcessOOBInvitation.errors';
-
 import type {
   DIDCommMessage,
   OutOfBandInvitation,

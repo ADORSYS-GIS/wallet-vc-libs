@@ -1,11 +1,9 @@
 import type { JWK } from 'jose';
-
 import type {
   DID2Type,
   DIDKeyPairVariants,
   DIDMethodName,
 } from './DidMethodFactory';
-
 export interface Did {
   did: string;
 }

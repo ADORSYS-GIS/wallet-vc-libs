@@ -1,7 +1,6 @@
 // handleOOBInvitation.test.ts
 import { handleOOBInvitation } from '../services/HandleOOBInvitation';
 import { Wallet } from '../services/Wallet';
-
 import { invalidEncodedUrl, validOutOfBandInvitation } from './OOBTestFixtures';
 
 beforeEach(() => {

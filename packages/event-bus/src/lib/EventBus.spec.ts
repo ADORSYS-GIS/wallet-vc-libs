@@ -1,7 +1,5 @@
 import EventEmitter from 'eventemitter3';
-
 import { testEmit } from '../emitter/CloningEventEmitter.spec';
-
 import { eventBus } from './EventBus';
 
 enum Events {

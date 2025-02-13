@@ -1,5 +1,4 @@
 import type { JWK } from 'jose';
-
 import { SecurityService } from '../security/SecurityService';
 
 describe('Crypto Utilities', () => {

@@ -1,5 +1,4 @@
 import { createContext } from 'react';
-
 import type { InstallPWA } from './installPWA.interface';
 
 export const initialState: InstallPWA = {

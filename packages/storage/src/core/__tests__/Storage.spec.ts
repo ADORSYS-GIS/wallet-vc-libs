@@ -1,5 +1,4 @@
 import type { DBSchema, StoreNames } from 'idb';
-
 import type {
   StoreRecord,
   StoreRecordValue,

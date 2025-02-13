@@ -1,6 +1,5 @@
-import { InstallPWAContextProvider, usePWA } from '../index';
-
 import { render } from '@testing-library/react';
+import { InstallPWAContextProvider, usePWA } from '../index';
 
 // Mock window.matchMedia
 describe('usePWA', () => {

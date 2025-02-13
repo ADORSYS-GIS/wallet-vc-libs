@@ -1,7 +1,6 @@
 // OOBTestFixtures.ts
 // Base64 Encoded URL fixtures
 import { Buffer } from 'buffer';
-
 import type { OutOfBandInvitation } from '../services/DIDCommOOBInvitation';
 import type { Contact } from '../services/Wallet';
 

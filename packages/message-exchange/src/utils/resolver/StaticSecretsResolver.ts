@@ -1,5 +1,4 @@
 import type { Secret, SecretsResolver } from 'didcomm';
-
 import { jwkToPublicKeyBase58 } from '../didcomm';
 
 /**

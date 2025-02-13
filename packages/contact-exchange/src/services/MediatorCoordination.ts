@@ -1,11 +1,3 @@
-import fetch from 'cross-fetch';
-import { PeerDIDResolver } from 'did-resolver-lib';
-import type { IMessage, Secret, SecretsResolver } from 'didcomm';
-import { Message } from 'didcomm';
-import { EventEmitter } from 'eventemitter3';
-import { v4 as uuidv4 } from 'uuid';
-
-import { MessageTyp, MessageType } from './DIDCommOOBInvitation';
 import { CloneMethodArgs } from '@adorsys-gis/cloning-decorator';
 import { DidPeerMethod } from '@adorsys-gis/multiple-did-identities/src/did-methods/DidPeerMethod';
 import type { PrivateKeyJWK } from '@adorsys-gis/multiple-did-identities/src/did-methods/IDidMethod';
@@ -13,6 +5,13 @@ import { DidRepository } from '@adorsys-gis/multiple-did-identities/src/reposito
 import type { SecurityService } from '@adorsys-gis/multiple-did-identities/src/security/SecurityService';
 import type { ServiceResponse } from '@adorsys-gis/status-service';
 import { ServiceResponseStatus } from '@adorsys-gis/status-service';
+import fetch from 'cross-fetch';
+import { PeerDIDResolver } from 'did-resolver-lib';
+import type { IMessage, Secret, SecretsResolver } from 'didcomm';
+import { Message } from 'didcomm';
+import { EventEmitter } from 'eventemitter3';
+import { v4 as uuidv4 } from 'uuid';
+import { MessageTyp, MessageType } from './DIDCommOOBInvitation';
 
 // Define event channels
 export enum DidEventChannel {

@@ -1,6 +1,5 @@
 // Wallet.test.ts
 import { Wallet } from '../services/Wallet';
-
 import {
   invalidContact,
   secondValidContact,

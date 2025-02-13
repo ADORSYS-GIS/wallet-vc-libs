@@ -1,5 +1,4 @@
 import eslint from '@eslint/js';
-import pluginSimpleImportSort from 'eslint-plugin-simple-import-sort';
 import globals from 'globals';
 import jsoncParser from 'jsonc-eslint-parser';
 import tseslint from 'typescript-eslint';
@@ -7,7 +6,6 @@ import tseslint from 'typescript-eslint';
 export default tseslint.config(
   {
     ignores: [
-      'node_modules',
       '**/build/**',
       '**/dist/**',
       '**/node_modules/**',
@@ -21,7 +19,6 @@ export default tseslint.config(
   {
     plugins: {
       '@typescript-eslint': tseslint.plugin,
-      'simple-import-sort': pluginSimpleImportSort,
     },
     languageOptions: {
       parser: tseslint.parser,
@@ -35,24 +32,12 @@ export default tseslint.config(
     rules: {
       '@typescript-eslint/no-unused-vars': 'warn',
       '@typescript-eslint/consistent-type-imports': 'error',
-      'simple-import-sort/imports': [
-        'error',
-        {
-          groups: [
-            ['^\\u0000'], // Side effect imports
-            ['^react', '^next'], // React & Next.js imports (if applicable)
-            ['^@/'], // Project-specific aliases (like '@/components')
-            ['^[a-z]'], // External packages
-            ['^\\.\\.(?!/?$)'], // Parent imports (../)
-            ['^\\./(?=.*/)(?!/?$)'], // Sibling imports with subfolders
-            ['^\\./?$'], // Same-folder imports (./)
-          ],
-        },
-      ],
+
       // Rules for better TypeScript safety
       '@typescript-eslint/no-floating-promises': 'error', // Ensures Promises are handled
       '@typescript-eslint/await-thenable': 'error', // Ensures `await` is only used on Promises
       '@typescript-eslint/no-misused-promises': 'error', // Prevents misuse of Promises in logical expressions
+      '@typescript-eslint/no-explicit-any': 'warn',
     },
   },
   {

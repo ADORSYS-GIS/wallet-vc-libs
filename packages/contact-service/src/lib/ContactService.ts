@@ -1,11 +1,9 @@
+import type { ServiceResponse } from '@adorsys-gis/status-service';
+import { ServiceResponseStatus } from '@adorsys-gis/status-service';
 import type { EventEmitter } from 'eventemitter3';
-
 import type { Contact } from '../model/Contact';
 import { ContactEventChannel } from '../model/ContactEventChannel';
 import { ContactRepository } from '../repositories/ContactRepository';
-
-import type { ServiceResponse } from '@adorsys-gis/status-service';
-import { ServiceResponseStatus } from '@adorsys-gis/status-service';
 
 /**
  * ContactService manages contacts and their interactions.

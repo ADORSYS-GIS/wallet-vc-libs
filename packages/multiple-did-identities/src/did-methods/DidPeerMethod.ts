@@ -1,6 +1,6 @@
+import { base58 } from '@scure/base';
 import { createHash } from 'crypto';
 import { canonicalize } from 'json-canonicalize';
-
 import { base64UrlEncodeService } from '../utils/base64UrlEncode';
 import { concatenateKeyStrings } from '../utils/concatenateKeyStrings';
 import { convertServiceToAbbreviatedFormat } from '../utils/convertServiceToAbbreviatedFormat';
@@ -9,13 +9,11 @@ import {
   generateKeyPairsED25519,
   generateKeyPairsX25519,
 } from '../utils/generateKeyPairs';
-
 import type {
   DIDKeyPairVariants,
   PeerGenerationMethod,
 } from './DidMethodFactory';
-import { DID2Type } from './DidMethodFactory';
-import { DIDMethodName, PurposeCode } from './DidMethodFactory';
+import { DID2Type, DIDMethodName, PurposeCode } from './DidMethodFactory';
 import type {
   DIDDocumentMethod2,
   DIDDocumentMethod4,
@@ -30,7 +28,6 @@ import type {
   VerificationMethod2,
   VerificationMethod4,
 } from './IDidMethod';
-import { base58 } from '@scure/base';
 
 /**
  * DID:peer Method Implementation

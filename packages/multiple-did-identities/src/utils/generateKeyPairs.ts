@@ -1,7 +1,6 @@
+import { ed25519, x25519 } from '@noble/curves/ed25519';
 import type { JWKKeys, PrivateKeyJWK } from '../did-methods/IDidMethod';
 import { base64UrlEncode } from '../utils/base64UrlEncode';
-
-import { ed25519, x25519 } from '@noble/curves/ed25519';
 
 export const validateNumKeys = (numKeys: number) => {
   if (!Number.isInteger(numKeys) || numKeys <= 0) {

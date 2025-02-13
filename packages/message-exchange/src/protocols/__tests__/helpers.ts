@@ -1,6 +1,3 @@
-import { EventEmitter } from 'eventemitter3';
-import { ServiceResponse } from '@adorsys-gis/status-service';
-
 import {
   DidEventChannel,
   DIDIdentityService,
@@ -8,6 +5,8 @@ import {
   PeerGenerationMethod,
   SecurityService,
 } from '@adorsys-gis/multiple-did-identities';
+import { ServiceResponse } from '@adorsys-gis/status-service';
+import { EventEmitter } from 'eventemitter3';
 
 export const waitForEvent = (channel: string) => {
   return new Promise((resolve) => {

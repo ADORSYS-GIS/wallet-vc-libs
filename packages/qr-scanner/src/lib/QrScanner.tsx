@@ -1,7 +1,5 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-
 import jsQR from 'jsqr';
-
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Loading } from './Loading';
 import type { IQrScannerProps } from './qrScannerProps';
 

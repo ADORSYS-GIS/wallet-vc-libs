@@ -1,10 +1,8 @@
 import type { JSX, Reducer } from 'react';
 import { useContext, useEffect, useReducer, useState } from 'react';
-
 import Banner from '../lib/components/Banner';
 import Tooltip from '../lib/components/Tooltip';
 import { isIosOrSafariDesktop } from '../lib/usePWA';
-
 import type {
   Action,
   InstallPWA,

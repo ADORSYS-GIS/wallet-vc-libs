@@ -1,5 +1,4 @@
 import { EventEmitter } from 'eventemitter3';
-
 import {
   DidMethodFactory,
   DIDMethodName,
@@ -10,9 +9,9 @@ import { DIDIdentityService } from '../lib/DIDIdentityService';
 import { SecurityService } from '../security/SecurityService';
 import { DidEventChannel } from '../utils/DidEventChannel';
 
-import { mockDidKeyPair } from './testFixtures';
 import type { ServiceResponse } from '@adorsys-gis/status-service';
 import { ServiceResponseStatus } from '@adorsys-gis/status-service';
+import { mockDidKeyPair } from './testFixtures';
 
 describe('DIDIdentityService', () => {
   let didIdentityService: DIDIdentityService;

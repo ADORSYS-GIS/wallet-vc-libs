@@ -1,5 +1,4 @@
 import type { JWK } from 'jose';
-
 import type { PrivateKeyJWK } from '../did-methods/IDidMethod';
 import { base64ToArrayBuffer } from '../utils/base64ToArrayBuffer';
 

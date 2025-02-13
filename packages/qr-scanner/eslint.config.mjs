@@ -1,5 +1,5 @@
-import rootConfig from '../../eslint.config.mjs';
 import jsoncParser from 'jsonc-eslint-parser';
+import rootConfig from '../../eslint.config.mjs';
 
 export default [
   ...rootConfig,

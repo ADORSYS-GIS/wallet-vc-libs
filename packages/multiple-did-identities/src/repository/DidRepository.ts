@@ -1,6 +1,6 @@
+import { StorageFactory } from '@adorsys-gis/storage';
 import type { DBSchema } from 'idb';
 import type { JWK } from 'jose';
-
 import type { DIDKeyPairVariants } from '../did-methods/DidMethodFactory';
 import { DID2Type } from '../did-methods/DidMethodFactory';
 import type {
@@ -11,8 +11,6 @@ import type {
 } from '../did-methods/IDidMethod';
 import type { SecurityService } from '../security/SecurityService';
 import { sanitizeDidDoc } from '../utils/sanitizeDidDoc';
-
-import { StorageFactory } from '@adorsys-gis/storage';
 interface DidSchema extends DBSchema {
   dids: {
     key: string; // DID string

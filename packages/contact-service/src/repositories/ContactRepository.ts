@@ -1,8 +1,6 @@
-import type { DBSchema } from 'idb';
-
-import type { Contact } from '../model/Contact';
-
 import { StorageFactory } from '@adorsys-gis/storage';
+import type { DBSchema } from 'idb';
+import type { Contact } from '../model/Contact';
 
 /**
  * Database schema for storing contacts in IndexedDB. This schema defines

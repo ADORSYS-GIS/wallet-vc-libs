@@ -1,11 +1,9 @@
+import { DidPeerMethod } from '@adorsys-gis/multiple-did-identities/src/did-methods/DidPeerMethod';
+import { SecurityService } from '@adorsys-gis/multiple-did-identities/src/security/SecurityService';
 import fetch from 'cross-fetch';
 import { PeerDIDResolver } from 'did-resolver-lib';
 import { EventEmitter } from 'eventemitter3';
-
 import { DidService } from '../services/MediatorCoordination';
-
-import { DidPeerMethod } from '@adorsys-gis/multiple-did-identities/src/did-methods/DidPeerMethod';
-import { SecurityService } from '@adorsys-gis/multiple-did-identities/src/security/SecurityService';
 
 // Mocking dependencies
 jest.mock('@adorsys-gis/multiple-did-identities/src/repository/DidRepository');

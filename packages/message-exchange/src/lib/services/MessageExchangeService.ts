@@ -1,8 +1,3 @@
-import type { EventEmitter } from 'eventemitter3';
-
-import { MessageRouter } from '../../protocols/MessageRouter';
-import { MessageExchangeEvent } from '../events/MessageExchangeEvent';
-
 import type { Message as MessageModel } from '@adorsys-gis/message-service';
 import { MessageRepository } from '@adorsys-gis/message-service';
 import {
@@ -11,6 +6,9 @@ import {
 } from '@adorsys-gis/multiple-did-identities';
 import type { ServiceResponse } from '@adorsys-gis/status-service';
 import { ServiceResponseStatus } from '@adorsys-gis/status-service';
+import type { EventEmitter } from 'eventemitter3';
+import { MessageRouter } from '../../protocols/MessageRouter';
+import { MessageExchangeEvent } from '../events/MessageExchangeEvent';
 
 /**
  * Handles exchange of DIDComm messages between parties.

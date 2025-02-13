@@ -1,25 +1,3 @@
-import { fetch } from 'cross-fetch';
-import type { DIDCommMessagingService, Secret } from 'didcomm';
-import { Message } from 'didcomm';
-
-import {
-  currentTimestampInSecs,
-  generateUuid,
-  isDIDCommMessagingServiceEndpoint,
-  isHttpUrl,
-  normalizeToArray,
-  StableDIDResolver,
-  StaticSecretsResolver,
-} from '../utils';
-
-import {
-  BASIC_MESSAGE_TYPE_URI,
-  DIDCOMM_MESSAGING_SERVICE_TYPE,
-  ENCRYPTED_DIDCOMM_MESSAGE_TYPE,
-  PLAIN_DIDCOMM_MESSAGE_TYPE,
-} from './types/constants';
-import type { MediatorServiceEndpoint } from './types/routing';
-
 import type {
   Message as MessageModel,
   MessageRepository,
@@ -29,6 +7,25 @@ import type {
   DidRepository,
   PrivateKeyJWK,
 } from '@adorsys-gis/multiple-did-identities';
+import { fetch } from 'cross-fetch';
+import type { DIDCommMessagingService, Secret } from 'didcomm';
+import { Message } from 'didcomm';
+import {
+  currentTimestampInSecs,
+  generateUuid,
+  isDIDCommMessagingServiceEndpoint,
+  isHttpUrl,
+  normalizeToArray,
+  StableDIDResolver,
+  StaticSecretsResolver,
+} from '../utils';
+import {
+  BASIC_MESSAGE_TYPE_URI,
+  DIDCOMM_MESSAGING_SERVICE_TYPE,
+  ENCRYPTED_DIDCOMM_MESSAGE_TYPE,
+  PLAIN_DIDCOMM_MESSAGE_TYPE,
+} from './types/constants';
+import type { MediatorServiceEndpoint } from './types/routing';
 
 /**
  * Routes messages as governed by the DIDComm Routing Protocol.

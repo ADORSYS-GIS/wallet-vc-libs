@@ -1,12 +1,10 @@
-import { v4 as uuidv4 } from 'uuid';
-
-import type { Message } from '../../model/Message';
-import { MessageEventChannel } from '../../model/MessageEventChannel';
-import { MessageService } from '../MessageService';
-
 import { eventBus } from '@adorsys-gis/event-bus';
 import type { ServiceResponse } from '@adorsys-gis/status-service';
 import { ServiceResponseStatus } from '@adorsys-gis/status-service';
+import { v4 as uuidv4 } from 'uuid';
+import type { Message } from '../../model/Message';
+import { MessageEventChannel } from '../../model/MessageEventChannel';
+import { MessageService } from '../MessageService';
 
 describe('MessageService', () => {
   let messageService: MessageService;

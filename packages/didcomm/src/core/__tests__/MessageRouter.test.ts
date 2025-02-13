@@ -4,9 +4,7 @@ import type {
   Secret,
   SecretsResolver,
 } from 'didcomm-node';
-
 import { MessageTyp, MessageType } from '../Messages.types';
-
 import { createRoutedMessage } from './../MessageRouter';
 import {
   ALICE_DID,

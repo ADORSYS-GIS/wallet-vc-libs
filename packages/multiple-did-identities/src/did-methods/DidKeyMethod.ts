@@ -1,8 +1,7 @@
+import { base58 } from '@scure/base';
 import { generateKeyPairs } from '../utils/generateKeyPairs';
-
 import { DIDMethodName } from './DidMethodFactory';
 import type { DIDKeyPair, IDidMethod } from './IDidMethod';
-import { base58 } from '@scure/base';
 
 /**
  * DID:key Method Implementation

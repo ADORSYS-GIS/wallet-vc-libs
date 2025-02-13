@@ -1,10 +1,9 @@
-import type { Contact } from '../../model/Contact';
-import { ContactEventChannel } from '../../model/ContactEventChannel';
-import { ContactService } from '../ContactService';
-
 import { eventBus } from '@adorsys-gis/event-bus';
 import type { ServiceResponse } from '@adorsys-gis/status-service';
 import { ServiceResponseStatus } from '@adorsys-gis/status-service';
+import type { Contact } from '../../model/Contact';
+import { ContactEventChannel } from '../../model/ContactEventChannel';
+import { ContactService } from '../ContactService';
 
 describe('ContactService', () => {
   let contactService: ContactService;
