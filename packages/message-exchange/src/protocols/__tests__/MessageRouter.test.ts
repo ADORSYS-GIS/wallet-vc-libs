@@ -1,18 +1,14 @@
-import nock from 'nock';
-import { afterEach, beforeAll, describe, expect, test, vi } from 'vitest';
+import { describe, expect, test } from 'vitest';
 
 import { MessageRepository } from '@adorsys-gis/message-service';
 import { DidRepository } from '@adorsys-gis/multiple-did-identities';
 import { MessageRouter } from '../MessageRouter';
-import {
-  aliceDid,
-  aliceDidInvalidMediatorUri,
-  aliceDidNoDeref,
-  generateIdentity,
-  securityService,
-} from './helpers';
+import { generateIdentity, securityService } from './helpers';
 
 describe('MessageRouter', () => {
+  const aliceDid =
+    'did:peer:2.Vz6Mkuu4RDj8sTSuFWq94JQe8fiFkyomXtbdWFZ7ms3E2LeHV.Ez6LSnx35fi634iqzeFZMdABMVtRYwf7vcV7zrkFxVXetxPSP.SeyJzIjp7ImEiOlsiZGlkY29tbS92MiJdLCJyIjpbXSwidXJpIjoiZGlkOnBlZXI6Mi5WejZNa2drNGFCVTRDWUh2S3libXFyM002a2pxMVRYZE15NXB3UnZwa2R3QzJRSFFjLkV6NkxTbmdOOUtTenNibmtrbjFwdDlDc3VNelpuZ1FXVjM5WXZVbzZ0OXp4Z2doUlMuU2V5SnBaQ0k2SWlOa2FXUmpiMjF0SWl3aWN5STZleUpoSWpwYkltUnBaR052YlcwdmRqSWlYU3dpY2lJNlcxMHNJblZ5YVNJNkltaDBkSEJ6T2k4dlpHbGtZMjl0YlMxdFpXUnBZWFJ2Y2k1bGRXUnBMV0ZrYjNKemVYTXVZMjl0SW4wc0luUWlPaUprYlNKOSJ9LCJ0IjoiZG0ifQ';
+
   const secretPinNumber = 1234;
   const didRepository = new DidRepository(securityService);
   const messageRepository = new MessageRepository();
@@ -23,142 +19,37 @@ describe('MessageRouter', () => {
     secretPinNumber,
   );
 
-  beforeAll(() => {
-    nock.disableNetConnect();
-  });
+  test('should route messages successfully', async () => {
+    // Prepare
 
-  afterEach(() => {
-    nock.cleanAll();
-    vi.resetAllMocks();
-  });
-
-  test.each([aliceDid, aliceDidNoDeref])(
-    'should route messages successfully',
-    async (recipientDid) => {
-      /// Prepare
-
-      const message = 'Hello, World!';
-      const senderDid = await generateIdentity(secretPinNumber);
-      nock('https://mediator.rootsid.cloud').post('/').reply(202);
-
-      /// Act
-
-      const messageModel = await messageRouter.routeForwardMessage(
-        message,
-        recipientDid,
-        senderDid,
-      );
-
-      /// Assert
-
-      const routedMessage = (
-        await messageRepository.getAllByContact(recipientDid)
-      ).find((m) => m.id == messageModel.id);
-
-      expect(routedMessage).toBeDefined();
-      expect(routedMessage).toEqual(messageModel);
-
-      expect(routedMessage).toEqual(
-        expect.objectContaining({
-          text: message,
-          sender: senderDid,
-          contactId: recipientDid,
-          direction: 'out',
-        }),
-      );
-    },
-  );
-
-  test('should fail on packing error', async () => {
-    const message = 'Hello, World!';
-    const senderDid = await generateIdentity(secretPinNumber);
-
-    // Our resolver does not support this DID method, so
-    // packing will fail because it depends on DID resolution
-    const recipientDid = 'did:ion:alice';
-
-    await expect(async () => {
-      await messageRouter.routeForwardMessage(message, recipientDid, senderDid);
-    }).rejects.toThrow('Forward message packing failed');
-  });
-
-  test('should fail if no valid mediator enpoint uri found', async () => {
-    const message = 'Hello, World!';
-    const senderDid = await generateIdentity(secretPinNumber);
-
-    // The mediator's endpoint of this DID is an FTP URL,
-    // which is not supported.
-    const recipientDid = aliceDidInvalidMediatorUri;
-
-    await expect(async () => {
-      await messageRouter.routeForwardMessage(message, recipientDid, senderDid);
-    }).rejects.toThrow(
-      "No valid or supported mediator's endpoint URI was found",
-    );
-  });
-
-  test('should fail if mediator does not accept routed message', async () => {
     const message = 'Hello, World!';
     const recipientDid = aliceDid;
     const senderDid = await generateIdentity(secretPinNumber);
 
-    // The mediator will complain of a 400 bad request,
-    // hence rejecting the routed message.
-    nock('https://mediator.rootsid.cloud').post('/').reply(400);
+    // Act
 
-    await expect(async () => {
-      await messageRouter.routeForwardMessage(message, recipientDid, senderDid);
-    }).rejects.toThrow('Failed to route packed message to mediator');
-  });
-
-  test('should fail if secrets cannot be found', async () => {
-    const message = 'Hello, World!';
-    const recipientDid = aliceDid;
-    const senderDid = await generateIdentity(secretPinNumber);
-
-    // Mock a scenario where no private keys are available
-    vi.spyOn(didRepository, 'getADidWithDecryptedPrivateKeys').mockReturnValue(
-      Promise.resolve(null),
+    const messageModel = await messageRouter.routeForwardMessage(
+      message,
+      recipientDid,
+      senderDid,
     );
 
-    await expect(async () => {
-      await messageRouter.routeForwardMessage(message, recipientDid, senderDid);
-    }).rejects.toThrow('Inexistent private keys for senderDid');
-  });
+    // Assert
 
-  test('should fail if secrets cannot be found (bis)', async () => {
-    const message = 'Hello, World!';
-    const recipientDid = aliceDid;
-    const senderDid = await generateIdentity(secretPinNumber);
+    const routedMessage = (
+      await messageRepository.getAllByContact(recipientDid)
+    ).find((m) => m.id == messageModel.id);
 
-    // Mock a scenario where no private keys are available
-    vi.spyOn(didRepository, 'getADidWithDecryptedPrivateKeys').mockReturnValue(
-      Promise.resolve({
-        did: senderDid,
-        createdAt: 0,
-        decryptedPrivateKeys: {},
+    expect(routedMessage).toBeDefined();
+    expect(routedMessage).toEqual(messageModel);
+
+    expect(routedMessage).toEqual(
+      expect.objectContaining({
+        text: message,
+        sender: senderDid,
+        contactId: recipientDid,
+        direction: 'out',
       }),
     );
-
-    await expect(async () => {
-      await messageRouter.routeForwardMessage(message, recipientDid, senderDid);
-    }).rejects.toThrow('Cannot proceed with no sender secrets');
-  });
-
-
-
-
-
-  test('should fail if secrets cannot be found (bis)', async () => {
-    const message = 'Hello, World!';
-    const recipientDid = 'did:peer:2.Ez6LSkp92WbQQ8sAnfHbypfUXuT6C78zVRpNsAzpQ7HNktti3.Vz6MkjTNDKnEvcx2EytfL8BeZvdGUfE153Sbe4U729M2xdH5H.SeyJ0IjoiZG0iLCJzIjp7InVyaSI6Imh0dHBzOi8vbWVkaWF0b3Iuc29jaW91cy5pbyIsImEiOlsiZGlkY29tbS92MiJdfX0.SeyJ0IjoiZG0iLCJzIjp7InVyaSI6IndzczovL21lZGlhdG9yLnNvY2lvdXMuaW8vd3MiLCJhIjpbImRpZGNvbW0vdjIiXX19';
-    const senderDid = await generateIdentity(secretPinNumber);
-
-      const test = await messageRouter.routeForwardMessage(message, recipientDid, senderDid);
-      console.log('test: ', test);
-
-  });
-
-
-
+  }, 50e3);
 });

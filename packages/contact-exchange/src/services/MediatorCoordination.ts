@@ -172,7 +172,7 @@ export class DidService {
       if (!mediatorRoutingKey || !mediatorNewDID) {
         throw new Error('Mediation Response missing required fields');
       }
-
+      console.log('mediatorRoutingKey: ', mediatorRoutingKey);
       const newDid =
         await didPeerMethod.generateMethod2RoutingKey(mediatorRoutingKey);
 
@@ -200,6 +200,8 @@ export class DidService {
         created_time: Math.round(Date.now() / 1000),
         return_route: 'all',
       };
+
+      console.log('keyupdate: ', keyupdate);
 
       const keylistUpdate = new Message(keyupdate);
 
