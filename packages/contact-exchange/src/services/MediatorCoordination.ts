@@ -109,7 +109,7 @@ export class DidService {
 
       const secretsResolver = new DidcommSecretsResolver(updatedSecrets);
 
-      const val: IMessage = {
+      const mediationRequest = new Message({
         id: uuidv4(),
         typ: MessageTyp.Didcomm,
         type: MessageType.MediationRequest,
@@ -118,9 +118,8 @@ export class DidService {
         to: [didTo],
         created_time: Math.round(Date.now() / 1000),
         return_route: 'all',
-      };
+      });
 
-      const mediationRequest = new Message(val);
       const [packedMediationRequest] = await mediationRequest.pack_encrypted(
         didTo,
         didPeer.did,
