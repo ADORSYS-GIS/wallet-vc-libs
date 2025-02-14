@@ -126,7 +126,7 @@ class StatusRequestService {
         let privateKeys: DidIdentityWithDecryptedKeys | null;
         console.log('senderDid: ', senderDid);
         try {
-            privateKeys = await this.didRepository.getADidWithDecryptedPrivateKeys(
+            privateKeys = await this.didRepository.getADidWithDecryptedPrivateKeysTEST(
                 senderDid,
                 this.secretPinNumber,
             );

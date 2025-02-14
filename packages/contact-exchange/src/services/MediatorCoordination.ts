@@ -201,7 +201,7 @@ export class DidService {
         return_route: 'all',
       };
 
-      console.log('keyupdate: ', keyupdate);
+      console.log('keyupdate out message: ', keyupdate);
 
       const keylistUpdate = new Message(keyupdate);
 
@@ -222,12 +222,15 @@ export class DidService {
 
       // Unpack the keylist update response message
       const keylistResponseJson = await keylistResponse.json();
+
       const [unpackedKeylistResponse] = await Message.unpack(
         JSON.stringify(keylistResponseJson),
         resolver,
         secretsResolver,
         {},
       );
+      console.log('unpackedKeylistResponse: ', JSON.stringify(unpackedKeylistResponse.as_value(), null, 2));
+
       return unpackedKeylistResponse;
     } catch (error: unknown) {
       this.sharedErrorHandler(channel)(error);

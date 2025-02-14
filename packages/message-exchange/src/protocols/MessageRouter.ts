@@ -74,7 +74,7 @@ export class MessageRouter {
     // Pack into a forward message
     const packedMessage = await this.packForwardMessage(
       basicMessage,
-      'did:peer:2.Vz6Mkgk4aBU4CYHvKybmqr3M6kjq1TXdMy5pwRvpkdwC2QHQc.Ez6LSngN9KSzsbnkkn1pt9CsuMzZngQWV39YvUo6t9zxgghRS.SeyJpZCI6IiNkaWRjb21tIiwicyI6eyJhIjpbImRpZGNvbW0vdjIiXSwiciI6W10sInVyaSI6Imh0dHBzOi8vZGlkY29tbS1tZWRpYXRvci5ldWRpLWFkb3JzeXMuY29tIn0sInQiOiJkbSJ9',
+      recipientDid,
       senderDid,
     );
 

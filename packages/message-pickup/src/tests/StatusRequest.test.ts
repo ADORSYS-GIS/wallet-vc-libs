@@ -33,7 +33,7 @@ describe('StatusRequest', () => {
   };
 
   it('should work!', async () => {
-    // const oobString = 'https://didcomm-mediator.eudi-adorsys.com?_oob=eyJ0eXBlIjoiaHR0cHM6Ly9kaWRjb21tLm9yZy9vdXQtb2YtYmFuZC8yLjAvaW52aXRhdGlvbiIsImlkIjoiNDc3MDkwOWQtZjg5YS00MDRmLTk5NzMtN2Q3ZWU1ZjIxNjE0IiwiZnJvbSI6ImRpZDpwZWVyOjIuVno2TWt3OVRNeTIxVGhwNkdKcEpBalVqVmFnNm5uWXgyb0RMU2tKSmV0bXNYR1VkTC5FejZMU2dnV1d0OXhVUTdtOVFEbVJyWm94cTZvU3lCSmNtd0Z4VWpiOVpLTUpQekh0LlNleUpwWkNJNklpTmthV1JqYjIxdElpd2ljeUk2ZXlKaElqcGJJbVJwWkdOdmJXMHZkaklpWFN3aWNpSTZXMTBzSW5WeWFTSTZJbWgwZEhCek9pOHZaR2xrWTI5dGJTMXRaV1JwWVhSdmNpNWxkV1JwTFdGa2IzSnplWE11WTI5dEluMHNJblFpT2lKa2JTSjkiLCJib2R5Ijp7ImdvYWxfY29kZSI6InJlcXVlc3QtbWVkaWF0ZSIsImdvYWwiOiJSZXF1ZXN0IE1lZGlhdGUiLCJsYWJlbCI6Ik1lZGlhdG9yIiwiYWNjZXB0IjpbImRpZGNvbW0vdjIiXX19';
+    // const oobString = 'https://mediator.socious.io?_oob=eyJpZCI6ImY2Y2M0NTZlLTU1OTYtNDI4Mi1hOGNmLTIyMmU3OWI5NWFmMCIsInR5cGUiOiJodHRwczovL2RpZGNvbW0ub3JnL291dC1vZi1iYW5kLzIuMC9pbnZpdGF0aW9uIiwiZnJvbSI6ImRpZDpwZWVyOjIuRXo2TFNrcDkyV2JRUThzQW5mSGJ5cGZVWHVUNkM3OHpWUnBOc0F6cFE3SE5rdHRpMy5WejZNa2pUTkRLbkV2Y3gyRXl0Zkw4QmVadmRHVWZFMTUzU2JlNFU3MjlNMnhkSDVILlNleUowSWpvaVpHMGlMQ0p6SWpwN0luVnlhU0k2SW1oMGRIQnpPaTh2YldWa2FXRjBiM0l1YzI5amFXOTFjeTVwYnlJc0ltRWlPbHNpWkdsa1kyOXRiUzkyTWlKZGZYMC5TZXlKMElqb2laRzBpTENKeklqcDdJblZ5YVNJNkluZHpjem92TDIxbFpHbGhkRzl5TG5OdlkybHZkWE11YVc4dmQzTWlMQ0poSWpwYkltUnBaR052YlcwdmRqSWlYWDE5IiwiYm9keSI6eyJnb2FsX2NvZGUiOiJyZXF1ZXN0LW1lZGlhdGUiLCJnb2FsIjoiUmVxdWVzdE1lZGlhdGUiLCJhY2NlcHQiOlsiZGlkY29tbS92MiJdfSwidHlwIjoiYXBwbGljYXRpb24vZGlkY29tbS1wbGFpbitqc29uIn0';
     // console.log('Start!');
     
     // const processEvent = waitForEvent(DidEventChannel.MediationResponseReceived);
@@ -49,8 +49,8 @@ describe('StatusRequest', () => {
     const mediatorDid = mediatorDidTest;
     const aliceDidForMediator = aliceDidTest;
 
-    // console.log('mediatorDid:', mediatorDid);
-    // console.log('aliceDidForMediator:', aliceDidForMediator);
+    console.log('mediatorDid:', mediatorDid);
+    console.log('aliceDidForMediator:', aliceDidForMediator);
     // Pass the DidRepository instance to processStatusRequest
     await processStatusRequest(mediatorDid, aliceDidForMediator, didRepository);
   });
