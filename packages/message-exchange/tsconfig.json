@@ -5,6 +5,6 @@
     "outDir": "./dist",
     "types": ["node"]
   },
-  "include": ["src"],
+  "include": ["src", "**/*config.ts", "**/*setup.ts"],
   "exclude": ["src/**/*.spec.ts", "src/**/*.test.ts", "src/**/__tests__"]
 }

@@ -9,18 +9,18 @@ import {
   generateKeyPairsED25519,
   generateKeyPairsX25519,
 } from '../utils/generateKeyPairs';
-import {
+import type {
   DIDKeyPairVariants,
-  DIDMethodName,
   PeerGenerationMethod,
-  PurposeCode,
 } from './DidMethodFactory';
-import {
+import { DID2Type, DIDMethodName, PurposeCode } from './DidMethodFactory';
+import type {
   DIDDocumentMethod2,
   DIDDocumentMethod4,
   DIDKeyPair,
   DIDKeyPairMethod1,
   DIDKeyPairMethod2,
+  DIDKeyPairMethod3,
   DIDKeyPairMethod4,
   GenesisDocument,
   IDidMethod,
@@ -219,6 +219,7 @@ export class DidPeerMethod implements IDidMethod {
 
     return {
       did: did,
+      type: DID2Type.Mediator,
       didDocument: didDocument,
       privateKeyV: KeyV.privateKeyJwk,
       publicKeyV: KeyV.publicKeyJwk,
@@ -311,6 +312,7 @@ export class DidPeerMethod implements IDidMethod {
 
     return {
       did: did,
+      type: DID2Type.PeerContact,
       didDocument: didDocument,
       privateKeyV: KeyV.privateKeyJwk,
       publicKeyV: KeyV.publicKeyJwk,
@@ -320,7 +322,7 @@ export class DidPeerMethod implements IDidMethod {
   }
 
   // DID PEER METHOD 3 (did:peer:3)
-  public async generateMethod3(): Promise<DIDKeyPairMethod2> {
+  public async generateMethod3(): Promise<DIDKeyPairMethod3> {
     const method2Result = await this.generateMethod2();
     const didMethod2 = method2Result.did;
 

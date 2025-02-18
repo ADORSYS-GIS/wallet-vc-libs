@@ -1,6 +1,7 @@
-import { DIDResolver, Message, SecretsResolver } from 'didcomm-node';
+import type { DIDResolver, SecretsResolver } from 'didcomm-node';
+import { Message } from 'didcomm-node';
 import { v4 as uuidv4 } from 'uuid';
-import { MessageTyp, MessageType } from './Messages.types';
+import type { MessageTyp, MessageType } from './Messages.types';
 
 // Function to create a routed message for any sender, recipient, and mediator
 export async function createRoutedMessage(

@@ -1,20 +1,14 @@
-import {
-  DBSchema,
-  IDBPDatabase,
-  IndexNames,
-  StoreNames,
-  openDB,
-  type OpenDBCallbacks,
-} from 'idb';
-import {
+import type { DBSchema, IDBPDatabase, IndexNames, StoreNames } from 'idb';
+import { openDB, type OpenDBCallbacks } from 'idb';
+import { StorageError } from '../lib/errors/StorageError';
+import type {
+  QueryStore,
+  StorageTransaction,
   StoreRecord,
   StoreRecordKey,
   StoreRecordValue,
-  QueryStore,
-  StorageTransaction,
   TransactionCallback,
 } from '../lib/types';
-import { StorageError } from '../lib/errors/StorageError';
 
 /**
  * A factory class for indexedDB's common CRUD operations

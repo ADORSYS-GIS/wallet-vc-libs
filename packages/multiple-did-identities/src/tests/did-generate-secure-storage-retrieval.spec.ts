@@ -1,18 +1,16 @@
-import {
-  ServiceResponse,
-  ServiceResponseStatus,
-} from '@adorsys-gis/status-service';
+import type { ServiceResponse } from '@adorsys-gis/status-service';
+import { ServiceResponseStatus } from '@adorsys-gis/status-service';
 import { EventEmitter } from 'eventemitter3';
 import {
   DidMethodFactory,
   DIDMethodName,
   PeerGenerationMethod,
 } from '../did-methods/DidMethodFactory';
-import { DidIdentity, DIDKeyPair } from '../did-methods/IDidMethod';
+import type { DidIdentity, DIDKeyPair } from '../did-methods/IDidMethod';
 import { DIDIdentityService } from '../lib/DIDIdentityService';
+import { SecurityService } from '../security/SecurityService';
 import { DidEventChannel } from '../utils/DidEventChannel';
 import { createMockDIDPeer1, mockDIDPeer2Fixture } from './testFixtures';
-import { SecurityService } from '../security/SecurityService';
 
 describe('Create DID Identity, Encrypt and Decrypt', () => {
   let didIdentityService: DIDIdentityService;

@@ -1,15 +1,13 @@
-import {
-  ServiceResponse,
-  ServiceResponseStatus,
-} from '@adorsys-gis/status-service';
-import { EventEmitter } from 'eventemitter3';
-import {
-  DidMethodFactory,
+import type { ServiceResponse } from '@adorsys-gis/status-service';
+import { ServiceResponseStatus } from '@adorsys-gis/status-service';
+import type { EventEmitter } from 'eventemitter3';
+import type {
   DIDMethodName,
   PeerGenerationMethod,
 } from '../did-methods/DidMethodFactory';
+import { DidMethodFactory } from '../did-methods/DidMethodFactory';
 import { DidRepository } from '../repository/DidRepository';
-import { SecurityService } from '../security/SecurityService';
+import type { SecurityService } from '../security/SecurityService';
 import { DidEventChannel } from '../utils/DidEventChannel';
 import { encryptPrivateKeys } from '../utils/encryptPrivateKeys';
 
@@ -156,6 +154,53 @@ export class DIDIdentityService {
       this.eventBus.emit(findAllDidIdentitiesChannel, response);
     } catch (error) {
       this.sharedErrorHandler(findAllDidIdentitiesChannel)(error);
+    }
+  }
+
+  /**
+   * Retrieves all mediator DID identities from the repository and emits the result on the designated event channel.
+   *
+   * This method queries the DID repository for identities that are classified as "mediator" (i.e., for communication with a mediator).
+   * It then constructs a service response with the retrieved data and emits that response on the DidEventChannel.GetMediatorDidIdentities channel.
+   *
+   * @returns {Promise<void>} A promise that resolves when the mediator DID identities event has been emitted.
+   */
+  public async findMediatorDidIdentities(): Promise<void> {
+    const findMediatorDidIdentitiesChannel =
+      DidEventChannel.GetMediatorDidIdentities;
+    try {
+      const didRecords = await this.didRepository.getMediatorDidIds();
+      const response: ServiceResponse<typeof didRecords> = {
+        status: ServiceResponseStatus.Success,
+        payload: didRecords,
+      };
+      this.eventBus.emit(findMediatorDidIdentitiesChannel, response);
+    } catch (error) {
+      this.sharedErrorHandler(findMediatorDidIdentitiesChannel)(error);
+    }
+  }
+
+  /**
+   * Retrieves all peer contact DID identities from the repository and emits the result on the designated event channel.
+   *
+   * This method queries the DID repository for identities that are classified as "peer_contact" (i.e., identities used for peer-to-peer communication,
+   * typically including a routing key for QR code generation on the frontend).
+   * It then constructs a service response with the retrieved data and emits that response on the DidEventChannel.GetPeerContactDidIdentities channel.
+   *
+   * @returns {Promise<void>} A promise that resolves when the peer contact DID identities event has been emitted.
+   */
+  public async findPeerContactDidIdentities(): Promise<void> {
+    const findPeerContactDidIdentitiesChannel =
+      DidEventChannel.GetPeerContactDidIdentities;
+    try {
+      const didRecords = await this.didRepository.getPeerContactDidIds();
+      const response: ServiceResponse<typeof didRecords> = {
+        status: ServiceResponseStatus.Success,
+        payload: didRecords,
+      };
+      this.eventBus.emit(findPeerContactDidIdentitiesChannel, response);
+    } catch (error) {
+      this.sharedErrorHandler(findPeerContactDidIdentitiesChannel)(error);
     }
   }
 

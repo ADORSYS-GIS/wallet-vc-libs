@@ -1,16 +1,16 @@
 import { StorageFactory } from '@adorsys-gis/storage';
-import { DBSchema } from 'idb';
-import { JWK } from 'jose';
-import { DIDKeyPairVariants } from '../did-methods/DidMethodFactory';
-import {
-  DidIdValue,
+import type { DBSchema } from 'idb';
+import type { JWK } from 'jose';
+import type { DIDKeyPairVariants } from '../did-methods/DidMethodFactory';
+import { DID2Type } from '../did-methods/DidMethodFactory';
+import type {
   DidIdentity,
   DidIdentityWithDecryptedKeys,
+  DidIdValue,
   PrivateKeyJWK,
 } from '../did-methods/IDidMethod';
-import { SecurityService } from '../security/SecurityService';
+import type { SecurityService } from '../security/SecurityService';
 import { sanitizeDidDoc } from '../utils/sanitizeDidDoc';
-
 interface DidSchema extends DBSchema {
   dids: {
     key: string; // DID string
@@ -99,6 +99,7 @@ export class DidRepository {
     });
   }
 
+<<<<<<< HEAD
   // /**
   //  * Finds a DID identity by its DID string and decrypts the private keys.
   //  * @param did The DID string to find.
@@ -106,6 +107,55 @@ export class DidRepository {
   //  * @returns The corresponding DIDDocument with decrypted private keys, or null if not found.
   //  */
   async getADidWithDecryptedPrivateKeysTEST(
+=======
+  /**
+   * Retrieves all stored mediator DID identities.
+   * These identities are intended for communication with a mediator
+   * and will not be used for QR code generation on the frontend.
+   *
+   * @returns {Promise<DidIdentity[]>} A promise that resolves to an array of objects,
+   * each containing the did, type, and createdAt properties for mediator identities.
+   */
+  async getMediatorDidIds(): Promise<DidIdentity[]> {
+    const records = await this.storageFactory.findAll('dids');
+    return records
+      .map((record) => record.value)
+      .filter((value) => value.document.type === DID2Type.Mediator)
+      .map((value) => ({
+        did: value.did,
+        type: value.document.type,
+        createdAt: value.createdAt,
+      }));
+  }
+
+  /**
+   * Retrieves all stored peer contact DID identities.
+   * These identities include a routing key and are intended for use
+   * where QR code generation is applicable on the frontend.
+   *
+   * @returns {Promise<DidIdentity[]>} A promise that resolves to an array of objects,
+   * each containing the did, type, and createdAt properties for peer contact identities.
+   */
+  async getPeerContactDidIds(): Promise<DidIdentity[]> {
+    const records = await this.storageFactory.findAll('dids');
+    return records
+      .map((record) => record.value)
+      .filter((value) => value.document.type === DID2Type.PeerContact)
+      .map((value) => ({
+        did: value.did,
+        type: value.document.type,
+        createdAt: value.createdAt,
+      }));
+  }
+
+  /**
+   * Finds a DID identity by its DID string and decrypts the private keys.
+   * @param did The DID string to find.
+   * @param pin The pin used for decryption after successful authentication
+   * @returns The corresponding DIDDocument with decrypted private keys, or null if not found.
+   */
+  async getADidWithDecryptedPrivateKeys(
+>>>>>>> main
     did: string,
     pin: number,
   ): Promise<DidIdentityWithDecryptedKeys | null> {

@@ -1,5 +1,5 @@
 import { DidPeerMethod } from '../did-methods/DidPeerMethod'; // Adjust the import based on your file structure
-import { DIDKeyPair } from '../did-methods/IDidMethod';
+import type { DIDKeyPair } from '../did-methods/IDidMethod';
 
 describe('DID Peer Method 0', () => {
   let didPeerMethod: DidPeerMethod;

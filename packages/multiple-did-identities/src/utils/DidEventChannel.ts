@@ -9,4 +9,6 @@ export enum DidEventChannel {
   GetSingleDidIdentity = 'get-single-did-identity',
   GetAllDidIdentities = 'get-all-did-identities',
   GetDidWithDecryptedPrivateKeys = 'get-did-with-decrypted-private-keys',
+  GetMediatorDidIdentities = 'get-mediator-did-identities',
+  GetPeerContactDidIdentities = 'get-peer-contact-did-identities',
 }

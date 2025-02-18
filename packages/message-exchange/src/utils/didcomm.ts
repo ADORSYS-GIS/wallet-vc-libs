@@ -1,9 +1,8 @@
 export { StableDIDResolver } from './resolver/StableDIDResolver';
 export { StaticSecretsResolver } from './resolver/StaticSecretsResolver';
-
-import { JWKKeys as JWK } from '@adorsys-gis/multiple-did-identities';
+import type { JWKKeys as JWK } from '@adorsys-gis/multiple-did-identities';
 import { base58, base64urlnopad } from '@scure/base';
-import { DIDCommMessagingService } from 'didcomm';
+import type { DIDCommMessagingService } from 'didcomm';
 
 /**
  * Type guard for {@link DIDCommMessagingService}

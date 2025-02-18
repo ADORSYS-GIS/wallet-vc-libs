@@ -1,7 +1,12 @@
+<<<<<<< HEAD
 import { describe, expect, test } from 'vitest';
 
+=======
+>>>>>>> main
 import { MessageRepository } from '@adorsys-gis/message-service';
 import { DidRepository } from '@adorsys-gis/multiple-did-identities';
+import nock from 'nock';
+import { afterEach, beforeAll, describe, expect, test, vi } from 'vitest';
 import { MessageRouter } from '../MessageRouter';
 import { generateIdentity, securityService } from './helpers';
 

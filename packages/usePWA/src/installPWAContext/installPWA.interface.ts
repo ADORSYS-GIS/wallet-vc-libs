@@ -1,4 +1,4 @@
-import { JSX, ReactNode } from 'react';
+import type { JSX, ReactNode } from 'react';
 
 export interface InstallPWAContextProviderProps {
   children: ReactNode;

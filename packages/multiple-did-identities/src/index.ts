@@ -1,4 +1,5 @@
 export {
+  DID2Type,
   DIDMethodName,
   PeerGenerationMethod,
 } from './did-methods/DidMethodFactory';

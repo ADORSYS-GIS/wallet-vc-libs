@@ -1,6 +1,9 @@
-import { JWK } from 'jose';
-import { DIDKeyPairVariants, DIDMethodName } from './DidMethodFactory';
-
+import type { JWK } from 'jose';
+import type {
+  DID2Type,
+  DIDKeyPairVariants,
+  DIDMethodName,
+} from './DidMethodFactory';
 export interface Did {
   did: string;
 }
@@ -28,6 +31,7 @@ export interface DidIdValue {
 
 export interface DidIdentity {
   did: string;
+  type?: DID2Type;
   methodType?: string;
   createdAt: number;
 }
@@ -42,6 +46,25 @@ export interface GenesisDocument {
 }
 
 export interface DIDKeyPairMethod2 extends Did {
+  type: DID2Type;
+  didDocument: DIDDocumentMethod2;
+  privateKeyV?: PrivateKeyJWK;
+  publicKeyV: JWK;
+  privateKeyE?: PrivateKeyJWK;
+  publicKeyE: JWK;
+  encryptedPrivateKeyV?: {
+    salt: Uint8Array;
+    ciphertext: string;
+    iv: Uint8Array;
+  };
+  encryptedPrivateKeyE?: {
+    salt: Uint8Array;
+    ciphertext: string;
+    iv: Uint8Array;
+  };
+}
+
+export interface DIDKeyPairMethod3 extends Did {
   didDocument: DIDDocumentMethod2;
   privateKeyV?: PrivateKeyJWK;
   publicKeyV: JWK;

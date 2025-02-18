@@ -1,15 +1,14 @@
 import { CloneMethodArgs } from '@adorsys-gis/cloning-decorator';
 import { DidPeerMethod } from '@adorsys-gis/multiple-did-identities/src/did-methods/DidPeerMethod';
-import { PrivateKeyJWK } from '@adorsys-gis/multiple-did-identities/src/did-methods/IDidMethod';
+import type { PrivateKeyJWK } from '@adorsys-gis/multiple-did-identities/src/did-methods/IDidMethod';
 import { DidRepository } from '@adorsys-gis/multiple-did-identities/src/repository/DidRepository';
-import { SecurityService } from '@adorsys-gis/multiple-did-identities/src/security/SecurityService';
-import {
-  ServiceResponse,
-  ServiceResponseStatus,
-} from '@adorsys-gis/status-service';
+import type { SecurityService } from '@adorsys-gis/multiple-did-identities/src/security/SecurityService';
+import type { ServiceResponse } from '@adorsys-gis/status-service';
+import { ServiceResponseStatus } from '@adorsys-gis/status-service';
 import fetch from 'cross-fetch';
 import { PeerDIDResolver } from 'did-resolver-lib';
-import { IMessage, Message, Secret, SecretsResolver } from 'didcomm';
+import type { IMessage, Secret, SecretsResolver } from 'didcomm';
+import { Message } from 'didcomm';
 import { EventEmitter } from 'eventemitter3';
 import { v4 as uuidv4 } from 'uuid';
 import { MessageTyp, MessageType } from './DIDCommOOBInvitation';
@@ -34,6 +33,15 @@ function sharedErrorHandler(channel: DidEventChannel, eventBus: EventEmitter) {
     };
     eventBus.emit(channel, response);
   };
+}
+
+// A helper function to convert base64Url to base64
+function base64UrlToBase64(str: string): string {
+  let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+  while (base64.length % 4 !== 0) {
+    base64 += '=';
+  }
+  return base64;
 }
 
 // Class to resolve secrets based on known secrets
@@ -82,7 +90,7 @@ export class DidService {
 
       const oobUrl = oobParts[1];
       const decodedOob = JSON.parse(
-        Buffer.from(oobUrl, 'base64url').toString('utf-8'),
+        Buffer.from(base64UrlToBase64(oobUrl), 'base64').toString('utf-8'),
       );
 
       if (!decodedOob.from) {
@@ -102,7 +110,7 @@ export class DidService {
 
       const secretsResolver = new DidcommSecretsResolver(updatedSecrets);
 
-      const val: IMessage = {
+      const mediationRequest = new Message({
         id: uuidv4(),
         typ: MessageTyp.Didcomm,
         type: MessageType.MediationRequest,
@@ -111,9 +119,8 @@ export class DidService {
         to: [didTo],
         created_time: Math.round(Date.now() / 1000),
         return_route: 'all',
-      };
+      });
 
-      const mediationRequest = new Message(val);
       const [packedMediationRequest] = await mediationRequest.pack_encrypted(
         didTo,
         didPeer.did,

@@ -1,4 +1,4 @@
-import { AbbreviatedService, Service } from '../did-methods/IDidMethod';
+import type { AbbreviatedService, Service } from '../did-methods/IDidMethod';
 import { convertServiceToAbbreviatedFormat } from '../utils/convertServiceToAbbreviatedFormat';
 
 describe('convertServiceToAbbreviatedFormat', () => {
