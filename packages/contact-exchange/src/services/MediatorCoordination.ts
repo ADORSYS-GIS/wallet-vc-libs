@@ -178,10 +178,7 @@ export class DidService {
 
       await this.didRepository.createDidId(newDid);
       console.log('routingDid: ', newDid.did);
-      this.eventBus.emit(DidEventChannel.MediationResponseReceived, {
-        status: ServiceResponseStatus.Success,
-        payload: unpackedContent,
-      });
+      
 
       const keyupdate: IMessage = {
         id: uuidv4(),
@@ -229,7 +226,12 @@ export class DidService {
         secretsResolver,
         {},
       );
-      console.log('unpackedKeylistResponse: ', JSON.stringify(unpackedKeylistResponse.as_value(), null, 2));
+      console.log('unpackedKeylistResponse - Get values from here: (from = mediator) ', JSON.stringify(unpackedKeylistResponse.as_value(), null, 2));
+      
+      this.eventBus.emit(DidEventChannel.MediationResponseReceived, {
+        status: ServiceResponseStatus.Success,
+        payload: unpackedKeylistResponse.as_value(),
+      });
 
       return unpackedKeylistResponse;
     } catch (error: unknown) {
