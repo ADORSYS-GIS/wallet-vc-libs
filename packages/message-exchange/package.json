@@ -1,6 +1,6 @@
 {
   "name": "@adorsys-gis/message-exchange",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A library for DIDComm message routing.",
   "license": "ISC",
   "author": "adorsys",
@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@adorsys-gis/cloning-decorator": "^1.0.1",
-    "@adorsys-gis/message-service": "^1.0.1",
+    "@adorsys-gis/message-service": "^1.0.2",
     "@adorsys-gis/multiple-did-identities": "^1.0.2",
     "@adorsys-gis/status-service": "^1.0.0",
     "@scure/base": "^1.2.4",
