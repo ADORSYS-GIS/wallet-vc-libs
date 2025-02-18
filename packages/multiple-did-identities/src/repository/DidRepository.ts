@@ -99,16 +99,7 @@ export class DidRepository {
     });
   }
 
-<<<<<<< HEAD
-  // /**
-  //  * Finds a DID identity by its DID string and decrypts the private keys.
-  //  * @param did The DID string to find.
-  //  * @param pin The pin used for decryption after successful authentication
-  //  * @returns The corresponding DIDDocument with decrypted private keys, or null if not found.
-  //  */
-  async getADidWithDecryptedPrivateKeysTEST(
-=======
-  /**
+   /**
    * Retrieves all stored mediator DID identities.
    * These identities are intended for communication with a mediator
    * and will not be used for QR code generation on the frontend.
@@ -116,7 +107,7 @@ export class DidRepository {
    * @returns {Promise<DidIdentity[]>} A promise that resolves to an array of objects,
    * each containing the did, type, and createdAt properties for mediator identities.
    */
-  async getMediatorDidIds(): Promise<DidIdentity[]> {
+   async getMediatorDidIds(): Promise<DidIdentity[]> {
     const records = await this.storageFactory.findAll('dids');
     return records
       .map((record) => record.value)
@@ -148,14 +139,14 @@ export class DidRepository {
       }));
   }
 
-  /**
-   * Finds a DID identity by its DID string and decrypts the private keys.
-   * @param did The DID string to find.
-   * @param pin The pin used for decryption after successful authentication
-   * @returns The corresponding DIDDocument with decrypted private keys, or null if not found.
-   */
-  async getADidWithDecryptedPrivateKeys(
->>>>>>> main
+
+  // /**
+  //  * Finds a DID identity by its DID string and decrypts the private keys.
+  //  * @param did The DID string to find.
+  //  * @param pin The pin used for decryption after successful authentication
+  //  * @returns The corresponding DIDDocument with decrypted private keys, or null if not found.
+  //  */
+  async getADidWithDecryptedPrivateKeysTEST(
     did: string,
     pin: number,
   ): Promise<DidIdentityWithDecryptedKeys | null> {

@@ -57,7 +57,7 @@ describe('StatusRequest', () => {
     await processStatusRequest(mediatorDid, aliceDidForMediator, didRepository, false, aliceRecipientDid);
   });
 
-  it('processStatusRequest - local values', async () => {
+  it.only('processStatusRequest - local values', async () => {
 
     const mediatorDid = mediatorDidTest;
     const aliceDidForMediator = aliceDidTest;

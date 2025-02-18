@@ -1,8 +1,3 @@
-<<<<<<< HEAD
-import { describe, expect, test } from 'vitest';
-
-=======
->>>>>>> main
 import { MessageRepository } from '@adorsys-gis/message-service';
 import { DidRepository } from '@adorsys-gis/multiple-did-identities';
 import nock from 'nock';
@@ -27,7 +22,7 @@ describe('MessageRouter', () => {
   test('should route messages successfully', async () => {
     // Prepare
 
-    const message = 'Hello, World!';
+    const message = 'Por fin!';
     const recipientDid = aliceDid;
     const senderDid = await generateIdentity(secretPinNumber);
 
