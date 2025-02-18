@@ -3,7 +3,7 @@ import { EventEmitter } from 'eventemitter3';
 import { processDeliveryRequest, processStatusRequest } from '../StatusRequest'; // Import the new function
 import { DidEventChannel } from '@adorsys-gis/contact-exchange/src/services/MediatorCoordination'; // Import event channels
 import { DidRepository, SecurityService } from '@adorsys-gis/multiple-did-identities'; 
-import { mediatorDidTest, aliceDidTest } from './helpers';
+import { mediatorDidTest, aliceDidTest } from '../utils/helpers';
 // Define the EventData interface
 interface EventData {
   payload: {
@@ -68,7 +68,7 @@ describe('StatusRequest', () => {
     await processStatusRequest(mediatorDid, aliceDidForMediator, didRepository, true);
   });
 
-  it('processDeliveryRequest', async () => {
+  it.only('processDeliveryRequest', async () => {
     const mediatorDid = mediatorDidTest;
     const aliceDidForMediator = aliceDidTest;
 
