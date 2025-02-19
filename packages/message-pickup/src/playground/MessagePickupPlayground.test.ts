@@ -1,6 +1,6 @@
 import { DidService } from '@adorsys-gis/contact-exchange/src/services/MediatorCoordination';
 import { EventEmitter } from 'eventemitter3';
-import { StatusRequestHandler } from '../StatusRequest'; // Import the class
+import { MessagePickup } from '../protocols/MessagePickup'; // Import the class
 import { DidEventChannel } from '@adorsys-gis/contact-exchange/src/services/MediatorCoordination'; // Import event channels
 import { DidRepository, SecurityService } from '@adorsys-gis/multiple-did-identities'; 
 import { mediatorDidTest, aliceDidTest } from '../utils/helpers';
@@ -27,7 +27,7 @@ describe('StatusRequest', () => {
 
   // Create an instance of DidService
   const didService = new DidService(eventBus, securityService);
-  const statusRequestHandler = new StatusRequestHandler(didRepository, 1234, messageRepository); // Initialize with the repository and secret pin
+  const messagePickup = new MessagePickup(didRepository, 1234, messageRepository); 
 
   beforeEach(() => {
   });
@@ -58,7 +58,7 @@ describe('StatusRequest', () => {
     console.log('aliceDidForMediator:', aliceDidForMediator);
     console.log('aliceRecipientDid:', aliceRecipientDid);
 
-    await statusRequestHandler.processStatusRequest(mediatorDid, aliceDidForMediator, false, aliceRecipientDid);
+    await messagePickup.processStatusRequest(mediatorDid, aliceDidForMediator, false, aliceRecipientDid);
   });
 
   it('processStatusRequest - local values', async () => {
@@ -69,7 +69,8 @@ describe('StatusRequest', () => {
     console.log('mediatorDid:', mediatorDid);
     console.log('aliceDidForMediator:', aliceDidForMediator);
 
-    await statusRequestHandler.processStatusRequest(mediatorDid, aliceDidForMediator, true);
+    const messageCount = await messagePickup.processStatusRequest(mediatorDid, aliceDidForMediator, true);
+    console.log('messageCount: ', messageCount);
   });
 
   it('processDeliveryRequest', async () => {
@@ -79,7 +80,7 @@ describe('StatusRequest', () => {
     console.log('mediatorDid:', mediatorDid);
     console.log('aliceDidForMediator:', aliceDidForMediator);
 
-    await statusRequestHandler.processDeliveryRequest(mediatorDid, aliceDidForMediator);
+    await messagePickup.processDeliveryRequest(mediatorDid, aliceDidForMediator);
   });
 
 });

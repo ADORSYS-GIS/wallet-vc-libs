@@ -24,6 +24,8 @@
   },
   "dependencies": {
     "@adorsys-gis/message-service": "^1.0.1",
-    "didcomm": "^0.4.1"
+    "@adorsys-gis/status-service": "^1.0.0",
+    "didcomm": "^0.4.1",
+    "eventemitter3": "^5.0.1"
   }
 }

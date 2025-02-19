@@ -10,15 +10,15 @@ import {
 import { PeerDIDResolver } from 'did-resolver-lib';
 import type { DidRepository, DidIdentityWithDecryptedKeys, PrivateKeyJWK } from '@adorsys-gis/multiple-did-identities';
 
-import { secretsTest } from './utils/helpers';
-import { currentTimestampInSecs, generateUuid } from './utils/misc';
+import { secretsTest } from '../utils/helpers';
+import { currentTimestampInSecs, generateUuid } from '../utils/misc';
 import { DELIVERY_REQUEST_TYPE_URI, ENCRYPTED_DIDCOMM_MESSAGE_TYPE, PLAIN_DIDCOMM_MESSAGE_TYPE, STATUS_REQUEST_TYPE_URI } from './types/constants';
 import type {
   Message as MessageModel,
   MessageRepository,
 } from '@adorsys-gis/message-service';
 
-export class StatusRequestHandler {
+export class MessagePickup {
   private readonly didRepository: DidRepository;
   private readonly secretPinNumber: number;
   private readonly messageRepository: MessageRepository;
@@ -113,6 +113,7 @@ export class StatusRequestHandler {
     );
 
     console.log('unpackedMessage: ', unpackedMessage.as_value());
+    return unpackedMessage.as_value().body.message_count;
   }
 
   public async processDeliveryRequest(
@@ -257,7 +258,7 @@ export class StatusRequestHandler {
     }
     return mediatorDIDDoc.service[0].serviceEndpoint;
   }
-  
+
   /**
    * Persists sent message.
    */
