@@ -146,33 +146,18 @@ export class DidRepository {
   //  * @param pin The pin used for decryption after successful authentication
   //  * @returns The corresponding DIDDocument with decrypted private keys, or null if not found.
   //  */
-  async getADidWithDecryptedPrivateKeysTEST(
+  async getADidPrivateKeysMini(
     did: string,
     pin: number,
   ): Promise<DidIdentityWithDecryptedKeys | null> {
-    console.log('did: ', did);
 
     const record = await this.storageFactory.findOne('dids', did);
     if (!record) {
       console.error('No record found for DID:', did);
       return null;
     }
-    // console.log('record!: ', record.value.document);
 
     const { did: storedDid, createdAt, document } = record.value;
-    console.log('Document keys:', Object.keys(document));
-
-    const decryptKey = async (encryptedKey: {
-      salt: Uint8Array;
-      ciphertext: string;
-      iv: Uint8Array;
-    }) => {
-      console.log('Decrypting key:', encryptedKey);
-      const { salt, ciphertext, iv } = encryptedKey;
-      const decrypted = await this.securityService.decrypt(pin, salt, iv, ciphertext);
-      console.log('Decrypted key:', decrypted);
-      return decrypted;
-    };
 
     const decryptedPrivateKeys: Record<string, JWK | PrivateKeyJWK> = {};
 

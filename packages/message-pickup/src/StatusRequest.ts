@@ -11,27 +11,37 @@ import { PeerDIDResolver } from 'did-resolver-lib';
 import type { DidRepository, DidIdentityWithDecryptedKeys, PrivateKeyJWK } from '@adorsys-gis/multiple-did-identities';
 
 import { secretsTest } from './utils/helpers';
-import { generateUuid } from './utils/misc';
+import { currentTimestampInSecs, generateUuid } from './utils/misc';
 import { DELIVERY_REQUEST_TYPE_URI, ENCRYPTED_DIDCOMM_MESSAGE_TYPE, PLAIN_DIDCOMM_MESSAGE_TYPE, STATUS_REQUEST_TYPE_URI } from './types/constants';
+import type {
+  Message as MessageModel,
+  MessageRepository,
+} from '@adorsys-gis/message-service';
 
-export async function processStatusRequest(
-  mediatorDid: string,
-  aliceDidForMediator: string,
-  didRepository: DidRepository,
-  test: boolean,
-  aliceRecipientDid: string = '' 
-) {
-  console.log('processStatusRequest');
-  const secretPinNumber = 1234; // Replace with the actual pin number
-  const statusRequestService = new StatusRequestService(didRepository, secretPinNumber);
+export class StatusRequestHandler {
+  private readonly didRepository: DidRepository;
+  private readonly secretPinNumber: number;
+  private readonly messageRepository: MessageRepository;
 
-  try {
+  constructor(didRepository: DidRepository, secretPinNumber: number, messageRepository: MessageRepository) {
+    this.didRepository = didRepository;
+    this.secretPinNumber = secretPinNumber;
+    this.messageRepository = messageRepository
+  }
+
+  public async processStatusRequest(
+    mediatorDid: string,
+    aliceDidForMediator: string,
+    test: boolean,
+    aliceRecipientDid: string = ''
+  ) {
+    console.log('processStatusRequest');
     let secrets, secrets2;
     if (test) {
       secrets = secretsTest;
     } else {
-      secrets = await statusRequestService.retrieveSenderDidSecrets(aliceDidForMediator);
-      secrets2 = await statusRequestService.retrieveSenderDidSecrets(aliceRecipientDid);
+      secrets = await this.retrieveSenderDidSecrets(aliceDidForMediator);
+      secrets2 = await this.retrieveSenderDidSecrets(aliceRecipientDid);
     }
 
     console.log('Retrieved Secrets:', secrets);
@@ -63,13 +73,7 @@ export async function processStatusRequest(
       { forward: false },
     );
 
-    const mediatorDIDDoc = await resolver.resolve(mediatorDid);
-
-    if (!mediatorDIDDoc || !mediatorDIDDoc.service || !mediatorDIDDoc.service[0].serviceEndpoint) {
-      throw new Error('Invalid mediator DID or service endpoint');
-    }
-    const mediatorEndpoint = mediatorDIDDoc.service[0].serviceEndpoint;
-
+    const mediatorEndpoint = await this.resolveMediatorEndpoint(resolver, mediatorDid);
     console.log('mediatorEndpoint: ', mediatorEndpoint);
 
     const headers = { 'Content-Type': ENCRYPTED_DIDCOMM_MESSAGE_TYPE };
@@ -109,27 +113,19 @@ export async function processStatusRequest(
     );
 
     console.log('unpackedMessage: ', unpackedMessage.as_value());
-  } catch (error) {
-    console.error('Error processing status request:', error);
   }
-}
 
-export async function processDeliveryRequest(
-  mediatorDid: string,
-  aliceDidForMediator: string,
-  didRepository: DidRepository,
-) {
-  console.log('processDeliveryRequest');
-  const secretPinNumber = 1234; // Replace with the actual pin number
-  const statusRequestService = new StatusRequestService(didRepository, secretPinNumber);
-
-  try {
+  public async processDeliveryRequest(
+    mediatorDid: string,
+    aliceDidForMediator: string,
+  ) {
+    console.log('processDeliveryRequest');
     const secrets = secretsTest; // For local testing
     console.log('Retrieved Secrets:', secrets);
 
     const plainMessage: IMessage = {
       id: generateUuid(),
-      typ: ENCRYPTED_DIDCOMM_MESSAGE_TYPE,
+      typ: PLAIN_DIDCOMM_MESSAGE_TYPE,
       type: DELIVERY_REQUEST_TYPE_URI,
       body: { limit: 1 },
       from: aliceDidForMediator,
@@ -153,12 +149,7 @@ export async function processDeliveryRequest(
       { forward: false },
     );
 
-    const mediatorDIDDoc = await resolver.resolve(mediatorDid);
-
-    if (!mediatorDIDDoc || !mediatorDIDDoc.service || !mediatorDIDDoc.service[0].serviceEndpoint) {
-      throw new Error('Invalid mediator DID or service endpoint');
-    }
-    const mediatorEndpoint = mediatorDIDDoc.service[0].serviceEndpoint;
+    const mediatorEndpoint = await this.resolveMediatorEndpoint(resolver, mediatorDid);
 
     const headers = { 'Content-Type': ENCRYPTED_DIDCOMM_MESSAGE_TYPE };
 
@@ -186,51 +177,55 @@ export async function processDeliveryRequest(
     console.log('Unpacked Message:', messageContent);
 
     const packetMessage = messageContent.attachments?.[0].data;
-    let decodedData = '';
+    console.log('packetMessage: ', packetMessage);
 
-    if (packetMessage && 'base64' in packetMessage) {
-      const base64Data = (packetMessage as Base64AttachmentData).base64;
+    // Check if packetMessage is defined and handle accordingly
+    if (packetMessage) {
+      // Assuming packetMessage is of type LinksAttachmentData or similar
+      if (typeof packetMessage === 'string') {
+        // If it's already a string, you can use it directly
+        const persistedMessage = await this.persistMessage(
+          packetMessage,
+          mediatorDid,
+          aliceDidForMediator,
+          mediationRequest,
+        );
+        console.log(`Message ${persistedMessage.id} successfully persisted`);
+      } else if ('base64' in packetMessage) {
+        // If it's a base64 encoded string, decode it
+        const base64Data = (packetMessage as Base64AttachmentData).base64;
+        const decodedMessage = JSON.parse(Buffer.from(base64Data, 'base64').toString('utf-8'));
 
-      if (base64Data) {
-        decodedData = JSON.parse(Buffer.from(base64Data, 'base64').toString('utf-8'));
-        console.log(decodedData);
+        const [unpackedMessage] = await Message.unpack(
+          JSON.stringify(decodedMessage),
+          resolver,
+          secretsResolver,
+          {},
+        );
+    
+        console.log('Message!:', unpackedMessage.as_value().body.content);
+
+        const persistedMessage = await this.persistMessage(
+          unpackedMessage.as_value().body.content,
+          mediatorDid,
+          aliceDidForMediator,
+          mediationRequest,
+        );
+        
+        console.log(`Message ${persistedMessage.id} successfully persisted`);
       } else {
-        console.error('Base64 data is empty.');
+        console.error('Unsupported packetMessage format:', packetMessage);
       }
     } else {
-      console.error('No base64 data found.');
+      console.error('No packetMessage found in the attachments.');
     }
-
-    console.log('decodedData:', decodedData);
-    console.log('secretsResolver', secretsResolver);
-
-    const [unpackedMessageTest] = await Message.unpack(
-      JSON.stringify(decodedData),
-      resolver,
-      secretsResolver,
-      {},
-    );
-
-    console.log('Message!:', unpackedMessageTest.as_value().body.content);
-  } catch (error) {
-    console.error('Error processing delivery request:', error);
-  }
-}
-
-class StatusRequestService {
-  private didRepository: DidRepository;
-  private secretPinNumber: number;
-
-  constructor(didRepository: DidRepository, secretPinNumber: number) {
-    this.didRepository = didRepository;
-    this.secretPinNumber = secretPinNumber;
   }
 
-  public async retrieveSenderDidSecrets(senderDid: string): Promise<Secret[]> {
+  private async retrieveSenderDidSecrets(senderDid: string): Promise<Secret[]> {
     let privateKeys: DidIdentityWithDecryptedKeys | null;
     console.log('senderDid: ', senderDid);
     try {
-      privateKeys = await this.didRepository.getADidWithDecryptedPrivateKeysTEST(senderDid, this.secretPinNumber);
+      privateKeys = await this.didRepository.getADidPrivateKeysMini(senderDid, this.secretPinNumber);
     } catch (e) {
       console.error(e);
       throw new Error('Repository failure while retrieving private keys for senderDid');
@@ -250,6 +245,38 @@ class StatusRequestService {
 
     return secrets;
   }
+
+  private async resolveMediatorEndpoint(resolver: PeerDIDResolver, mediatorDid: string) {
+    const mediatorDIDDoc = await resolver.resolve(mediatorDid);
+    if (!mediatorDIDDoc || !mediatorDIDDoc.service || !mediatorDIDDoc.service[0].serviceEndpoint) {
+      throw new Error('Invalid mediator DID or service endpoint');
+    }
+    return mediatorDIDDoc.service[0].serviceEndpoint;
+  }
+
+    /**
+   * Persists sent message.
+   */
+    private async persistMessage(
+      message: string,
+      recipientDid: string,
+      senderDid: string,
+      basicMessage: Message,
+    ): Promise<MessageModel> {
+      const { id, created_time } = basicMessage.as_value();
+      const timestamp = new Date(created_time ?? currentTimestampInSecs());
+  
+      const messageModel: MessageModel = {
+        id,
+        text: message,
+        sender: senderDid,
+        contactId: recipientDid,
+        timestamp,
+        direction: 'out',
+      };
+  
+      return await this.messageRepository.create(messageModel);
+    }
 }
 
 export class DidcommSecretsResolver implements SecretsResolver {
