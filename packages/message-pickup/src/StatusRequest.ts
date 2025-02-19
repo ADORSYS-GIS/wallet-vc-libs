@@ -257,30 +257,33 @@ export class StatusRequestHandler {
     }
     return mediatorDIDDoc.service[0].serviceEndpoint;
   }
-
-    /**
+  
+  /**
    * Persists sent message.
    */
-    private async persistMessage(
-      message: string,
-      recipientDid: string,
-      senderDid: string,
-      basicMessage: Message,
-    ): Promise<MessageModel> {
-      const { id, created_time } = basicMessage.as_value();
-      const timestamp = new Date(created_time ?? currentTimestampInSecs());
-  
-      const messageModel: MessageModel = {
-        id,
-        text: message,
-        sender: senderDid,
-        contactId: recipientDid,
-        timestamp,
-        direction: 'out',
-      };
-  
-      return await this.messageRepository.create(messageModel);
-    }
+  private async persistMessage(
+    message: string,
+    recipientDid: string,
+    senderDid: string,
+    basicMessage: Message,
+  ): Promise<MessageModel> {
+    const { id, created_time } = basicMessage.as_value();
+
+    // created_time is in SECONDS, so multiply by 1000 to convert to milliseconds
+    const timestampSeconds = created_time ?? currentTimestampInSecs();
+    const timestamp = new Date(timestampSeconds * 1000);
+
+    const messageModel: MessageModel = {
+      id,
+      text: message,
+      sender: senderDid,
+      contactId: recipientDid,
+      timestamp,
+      direction: 'out',
+    };
+
+    return await this.messageRepository.create(messageModel);
+  }
 }
 
 export class DidcommSecretsResolver implements SecretsResolver {

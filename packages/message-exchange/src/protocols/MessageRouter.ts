@@ -128,7 +128,10 @@ export class MessageRouter {
     basicMessage: Message,
   ): Promise<MessageModel> {
     const { id, created_time } = basicMessage.as_value();
-    const timestamp = new Date(created_time ?? currentTimestampInSecs());
+
+    // created_time is in SECONDS, so multiply by 1000 to convert to milliseconds
+    const timestampSeconds = created_time ?? currentTimestampInSecs();
+    const timestamp = new Date(timestampSeconds * 1000);
 
     const messageModel: MessageModel = {
       id,
