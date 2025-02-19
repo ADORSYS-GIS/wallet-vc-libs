@@ -22,7 +22,7 @@ describe('MessageRouter', () => {
   test.only('should route messages successfully', async () => {
     // Prepare
 
-    const message = 'Bertrand!';
+    const message = 'more!';
     const recipientDid = aliceDid;
     const senderDid = await generateIdentity(secretPinNumber);
 

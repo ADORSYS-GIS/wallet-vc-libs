@@ -176,48 +176,52 @@ export class StatusRequestHandler {
     const messageContent: IMessage = unpackedMessage.as_value();
     console.log('Unpacked Message:', messageContent);
 
-    const packetMessage = messageContent.attachments?.[0].data;
-    console.log('packetMessage: ', packetMessage);
+    const packetMessages = messageContent.attachments; // Get all attachments
+    console.log('packetMessages: ', packetMessages);
 
-    // Check if packetMessage is defined and handle accordingly
-    if (packetMessage) {
-      // Assuming packetMessage is of type LinksAttachmentData or similar
-      if (typeof packetMessage === 'string') {
-        // If it's already a string, you can use it directly
-        const persistedMessage = await this.persistMessage(
-          packetMessage,
-          mediatorDid,
-          aliceDidForMediator,
-          mediationRequest,
-        );
-        console.log(`Message ${persistedMessage.id} successfully persisted`);
-      } else if ('base64' in packetMessage) {
-        // If it's a base64 encoded string, decode it
-        const base64Data = (packetMessage as Base64AttachmentData).base64;
-        const decodedMessage = JSON.parse(Buffer.from(base64Data, 'base64').toString('utf-8'));
-
-        const [unpackedMessage] = await Message.unpack(
-          JSON.stringify(decodedMessage),
-          resolver,
-          secretsResolver,
-          {},
-        );
-    
-        console.log('Message!:', unpackedMessage.as_value().body.content);
-
-        const persistedMessage = await this.persistMessage(
-          unpackedMessage.as_value().body.content,
-          mediatorDid,
-          aliceDidForMediator,
-          mediationRequest,
-        );
+    // Check if packetMessages is defined and handle accordingly
+    if (packetMessages && packetMessages.length > 0) {
+      for (const packetMessage of packetMessages) { // Iterate over each attachment
+        console.log('Processing packetMessage: ', packetMessage);
         
-        console.log(`Message ${persistedMessage.id} successfully persisted`);
-      } else {
-        console.error('Unsupported packetMessage format:', packetMessage);
+        if (typeof packetMessage.data === 'string') {
+          // If it's already a string, you can use it directly
+          const persistedMessage = await this.persistMessage(
+            packetMessage.data,
+            mediatorDid,
+            aliceDidForMediator,
+            packetMessage as unknown as Message,
+          );
+          console.log(`Message ${persistedMessage.id} successfully persisted`);
+        } else if ('base64' in packetMessage.data) {
+          // If it's a base64 encoded string, decode it
+          const base64Data = (packetMessage.data as Base64AttachmentData).base64;
+          const decodedMessage = JSON.parse(Buffer.from(base64Data, 'base64').toString('utf-8'));
+
+          const [unpackedMessage] = await Message.unpack(
+            JSON.stringify(decodedMessage),
+            resolver,
+            secretsResolver,
+            {},
+          );
+          console.log('unpackedMessage!:', unpackedMessage.as_value());
+      
+          console.log('Message!:', unpackedMessage.as_value().body.content);
+
+          const persistedMessage = await this.persistMessage(
+            unpackedMessage.as_value().body.content,
+            mediatorDid,
+            aliceDidForMediator,
+            unpackedMessage,
+          );
+          
+          console.log(`Message ${persistedMessage.id} successfully persisted`);
+        } else {
+          console.error('Unsupported packetMessage format:', packetMessage.data);
+        }
       }
     } else {
-      console.error('No packetMessage found in the attachments.');
+      console.error('No packetMessages found in the attachments.');
     }
   }
 
