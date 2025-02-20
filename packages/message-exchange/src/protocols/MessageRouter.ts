@@ -213,7 +213,7 @@ export class MessageRouter {
   /**
    * Recover mediator's endpoint URIs for routing packed message.
    */
-  public async recoverMediatorEndpointUris(
+  private async recoverMediatorEndpointUris(
     packedMessage: string,
     recipientDid: string,
   ): Promise<string[]> {

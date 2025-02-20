@@ -49,7 +49,7 @@ export class MessagePickupService {
     };
 
     try {
-      const messageCount = await this.messagePickup.processStatusRequest(mediatorDid, aliceDidForMediator, false);
+      const messageCount = await this.messagePickup.processStatusRequest(mediatorDid, aliceDidForMediator);
       if (messageCount > 0) {
         const message = await this.messagePickup.processDeliveryRequest(mediatorDid, aliceDidForMediator);
         response = {

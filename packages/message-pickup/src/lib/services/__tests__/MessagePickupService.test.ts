@@ -34,7 +34,7 @@ describe('MessagePickupService', () => {
     /// Prepare
 
     // Mock the method directly on the messagePickup instance
-    const mockSomeMethod = vi
+    const mockRetrievalOfSecrets = vi
       .spyOn(
         (messagePickupService as any)['messagePickup'],
         'retrieveSenderDidSecrets',
@@ -63,7 +63,7 @@ describe('MessagePickupService', () => {
     };
     /// Assert
     expect(eventData).toEqual(expectedResponse);
-    expect(mockSomeMethod).toHaveBeenCalledTimes(1);
+    expect(mockRetrievalOfSecrets).toHaveBeenCalledTimes(2);
   });
 
   test('should fail because there is no mock of private keys', async () => {
