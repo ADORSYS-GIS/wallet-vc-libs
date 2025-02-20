@@ -32,20 +32,10 @@ export class MessagePickup {
   public async processStatusRequest(
     mediatorDid: string,
     aliceDidForMediator: string,
-    test: boolean,
-    aliceRecipientDid: string = ''
   ) {
-    console.log('processStatusRequest');
-    let secrets, secrets2;
-    if (test) {
-      secrets = secretsTest;
-    } else {
-      secrets = await this.retrieveSenderDidSecrets(aliceDidForMediator);
-      secrets2 = await this.retrieveSenderDidSecrets(aliceRecipientDid);
-    }
+    const secrets = await this.retrieveSenderDidSecrets(aliceDidForMediator);
 
     console.log('Retrieved Secrets:', secrets);
-    console.log('Retrieved Secrets2:', secrets2);
 
     const val: IMessage = {
       id: generateUuid(),
@@ -80,29 +70,26 @@ export class MessagePickup {
     console.log('Sending request to:', mediatorEndpoint.uri);
     console.log('Request headers:', headers);
     console.log('Request body:', packedStatusRequest);
+    console.log('mediatorEndpoint.uri2:', mediatorEndpoint.uri);
 
-    const resp3 = await fetch(mediatorEndpoint.uri, {
+    const statusRequestResponse = await fetch(mediatorEndpoint.uri, {
       method: 'POST',
       headers: headers,
       body: packedStatusRequest,
     });
 
-    console.log('Response status:', resp3.status);
-    console.log('Response status text:', resp3.statusText);
-    console.log('Response headers:', resp3.headers.get('Content-Type'));
+    const statusRequestResponseBody = await statusRequestResponse.text();
+    console.log('Response body:', statusRequestResponseBody);
 
-    const responseBody = await resp3.text();
-    console.log('Response body:', responseBody);
-
-    if (!resp3.ok) {
-      throw new Error(`Failed to send message: ${resp3.statusText} - ${responseBody}`);
+    if (!statusRequestResponse.ok) {
+      throw new Error(`Failed to send message: ${statusRequestResponse.statusText} - ${statusRequestResponseBody}`);
     }
 
-    if (!responseBody) {
+    if (!statusRequestResponseBody) {
       throw new Error('Response body is empty');
     }
 
-    const responseJson = JSON.parse(responseBody);
+    const responseJson = JSON.parse(statusRequestResponseBody);
     console.log('Response JSON:', responseJson);
 
     const [unpackedMessage] = await Message.unpack(
@@ -119,7 +106,7 @@ export class MessagePickup {
   public async processDeliveryRequest(
     mediatorDid: string,
     aliceDidForMediator: string,
-  ) {
+  ): Promise<string>{
     console.log('processDeliveryRequest');
     const secrets = secretsTest; // For local testing
     console.log('Retrieved Secrets:', secrets);
@@ -153,12 +140,17 @@ export class MessagePickup {
     const mediatorEndpoint = await this.resolveMediatorEndpoint(resolver, mediatorDid);
 
     const headers = { 'Content-Type': ENCRYPTED_DIDCOMM_MESSAGE_TYPE };
+    console.log('mediatorEndpoint.uri3:', mediatorEndpoint.uri);
 
-    const responseBody = await fetch(mediatorEndpoint.uri, {
+    const deliveryRequestResponse = await fetch(mediatorEndpoint.uri, {
       method: 'POST',
       headers: headers,
       body: packedMediationRequest,
-    }).then(resp => resp.text());
+    }); 
+
+    const responseBody = await deliveryRequestResponse.text();
+
+    console.log('Response body2:', responseBody);
 
     if (!responseBody) {
       throw new Error('Response body is empty');
@@ -206,23 +198,29 @@ export class MessagePickup {
             {},
           );
           console.log('unpackedMessage!:', unpackedMessage.as_value());
-      
-          console.log('Message!:', unpackedMessage.as_value().body.content);
-
-          const persistedMessage = await this.persistMessage(
-            unpackedMessage.as_value().body.content,
-            mediatorDid,
-            aliceDidForMediator,
-            unpackedMessage,
-          );
-          
-          console.log(`Message ${persistedMessage.id} successfully persisted`);
+          const messageContent = unpackedMessage.as_value().body.content
+          console.log('Message!:',messageContent);
+          try {
+            const persistedMessage = await this.persistMessage(
+              messageContent,
+              mediatorDid,
+              aliceDidForMediator,
+              unpackedMessage,
+            );
+            console.log(`Message ${persistedMessage.id} successfully persisted`);
+          } catch (error) {
+            console.error('Error processing packet messages', error);
+            throw error; // or return an error message if preferred
+          }
         } else {
           console.error('Unsupported packetMessage format:', packetMessage.data);
         }
       }
+      console.log('fin!')
+      return 'Messages retrieved and stored successfully';
     } else {
       console.error('No packetMessages found in the attachments.');
+      return 'No messages retrieved';
     }
   }
 
@@ -231,6 +229,7 @@ export class MessagePickup {
     console.log('senderDid: ', senderDid);
     try {
       privateKeys = await this.didRepository.getADidPrivateKeysMini(senderDid, this.secretPinNumber);
+      console.log('privateKeys: ', privateKeys);
     } catch (e) {
       console.error(e);
       throw new Error('Repository failure while retrieving private keys for senderDid');
@@ -283,7 +282,12 @@ export class MessagePickup {
       direction: 'out',
     };
 
-    return await this.messageRepository.create(messageModel);
+    try {
+      return await this.messageRepository.create(messageModel);
+    } catch (error) {
+      console.error('Error processing packet messages', error);
+      throw error; // or return an error message if preferred
+    }
   }
 }
 

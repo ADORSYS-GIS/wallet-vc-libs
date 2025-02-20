@@ -148,7 +148,6 @@ export class DidRepository {
   //  */
   async getADidPrivateKeysMini(
     did: string,
-    pin: number,
   ): Promise<DidIdentityWithDecryptedKeys | null> {
 
     const record = await this.storageFactory.findOne('dids', did);

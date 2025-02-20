@@ -5,7 +5,7 @@
     "rootDir": "."
   },
   "files": [],
-  "include": [],
+  "include": ["src", "vitest.config.ts", "vitest.setup.ts"],
   "references": [
     {
       "path": "./tsconfig.lib.json"

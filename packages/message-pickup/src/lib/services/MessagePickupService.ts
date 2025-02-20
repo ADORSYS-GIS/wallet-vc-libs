@@ -38,31 +38,39 @@ export class MessagePickupService {
    * @param mediatorDid -  DID from the mediator
    * @param aliceDidForMediator - DID from alice to the mediator
    */
-  public ReceiveMessages(
+  public async ReceiveMessages(
     mediatorDid: string,
     aliceDidForMediator: string,
-  ): void {
+  ): Promise<void> {
     const channel = MessagePickupEvent.MessagePickup;
-    let response: ServiceResponse<string>;
-    this.messagePickup.processStatusRequest(mediatorDid, aliceDidForMediator, true)
-      .then((messageCount) => {
-        // If there are messages, call the next event
-        if(messageCount > 0){
-          this.messagePickup.processDeliveryRequest(mediatorDid, aliceDidForMediator)
-          .then((message) => {
-              response = {
-              status: ServiceResponseStatus.Success,
-              payload: message as unknown as string,
-            }
-        }).catch(this.sharedErrorHandler(channel));
-          }else{
-            response = {
-            status: ServiceResponseStatus.Success,
-            payload: 'no new messages',
-          };
-        }
-        this.eventBus.emit(channel, response);
-        }).catch(this.sharedErrorHandler(channel));
+    let response: ServiceResponse<string> = {
+      status: ServiceResponseStatus.Error,
+      payload: 'An error occurred',
+    };
+
+    try {
+      const messageCount = await this.messagePickup.processStatusRequest(mediatorDid, aliceDidForMediator, false);
+      if (messageCount > 0) {
+        const message = await this.messagePickup.processDeliveryRequest(mediatorDid, aliceDidForMediator);
+        response = {
+          status: ServiceResponseStatus.Success,
+          payload: message as string,
+        };
+      } else {
+        response = {
+          status: ServiceResponseStatus.Success,
+          payload: 'no new messages',
+        };
+      }
+    } catch (error) {
+      this.sharedErrorHandler(channel)(error);
+      response = {
+        status: ServiceResponseStatus.Error,
+        payload: error instanceof Error ? error.message : 'Unknown error',
+      };
+    }
+
+    this.eventBus.emit(channel, response);
   }
 
   /**

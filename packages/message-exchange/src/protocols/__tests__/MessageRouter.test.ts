@@ -7,7 +7,7 @@ import { generateIdentity, securityService } from './helpers';
 
 describe('MessageRouter', () => {
   const aliceDid =
-    'did:peer:2.Vz6MkoHJENiuUCMaaPc9ZoWSdJoxpeVPSuj83UHDJiZg8WB9m.Ez6LSmPab9tSwCGWhSDRWo5WXHZXHgCA2HA6JHRaPp1tuw9m2.SeyJzIjp7ImEiOlsiZGlkY29tbS92MiJdLCJyIjpbXSwidXJpIjoiZGlkOnBlZXI6Mi5FejZMU2twOTJXYlFROHNBbmZIYnlwZlVYdVQ2Qzc4elZScE5zQXpwUTdITmt0dGkzLlZ6Nk1ralROREtuRXZjeDJFeXRmTDhCZVp2ZEdVZkUxNTNTYmU0VTcyOU0yeGRINUguU2V5SjBJam9pWkcwaUxDSnpJanA3SW5WeWFTSTZJbWgwZEhCek9pOHZiV1ZrYVdGMGIzSXVjMjlqYVc5MWN5NXBieUlzSW1FaU9sc2laR2xrWTI5dGJTOTJNaUpkZlgwLlNleUowSWpvaVpHMGlMQ0p6SWpwN0luVnlhU0k2SW5kemN6b3ZMMjFsWkdsaGRHOXlMbk52WTJsdmRYTXVhVzh2ZDNNaUxDSmhJanBiSW1ScFpHTnZiVzB2ZGpJaVhYMTkifSwidCI6ImRtIn0';
+    'did:peer:2.Vz6Mko5umU56vwo877VTjByZhLppWRo9je2jqMgGS4GHY75Rg.Ez6LSqzxsSDkupqFZNEQkogxn6yqSZGgBthpEDv6BJdqWa4YR.SeyJzIjp7ImEiOlsiZGlkY29tbS92MiJdLCJyIjpbXSwidXJpIjoiZGlkOnBlZXI6Mi5FejZMU2twOTJXYlFROHNBbmZIYnlwZlVYdVQ2Qzc4elZScE5zQXpwUTdITmt0dGkzLlZ6Nk1ralROREtuRXZjeDJFeXRmTDhCZVp2ZEdVZkUxNTNTYmU0VTcyOU0yeGRINUguU2V5SjBJam9pWkcwaUxDSnpJanA3SW5WeWFTSTZJbWgwZEhCek9pOHZiV1ZrYVdGMGIzSXVjMjlqYVc5MWN5NXBieUlzSW1FaU9sc2laR2xrWTI5dGJTOTJNaUpkZlgwLlNleUowSWpvaVpHMGlMQ0p6SWpwN0luVnlhU0k2SW5kemN6b3ZMMjFsWkdsaGRHOXlMbk52WTJsdmRYTXVhVzh2ZDNNaUxDSmhJanBiSW1ScFpHTnZiVzB2ZGpJaVhYMTkifSwidCI6ImRtIn0';
 
   const secretPinNumber = 1234;
   const didRepository = new DidRepository(securityService);
@@ -22,7 +22,7 @@ describe('MessageRouter', () => {
   test.only('should route messages successfully', async () => {
     // Prepare
 
-    const message = 'more!';
+    const message = 'message2';
     const recipientDid = aliceDid;
     const senderDid = await generateIdentity(secretPinNumber);
 

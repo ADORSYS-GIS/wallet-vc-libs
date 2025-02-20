@@ -1,96 +1,141 @@
-// import { Message as MessageModel } from '@adorsys-gis/message-service';
-// import {
-//   ServiceResponse,
-//   ServiceResponseStatus,
-// } from '@adorsys-gis/status-service';
-// import nock from 'nock';
-// import { afterEach, beforeAll, describe, expect, test } from 'vitest';
-// import { MessageExchangeService } from '../../../index';
-// import {
-//   aliceDid,
-//   eventBus,
-//   generateIdentity,
-//   waitForEvent,
-// } from '../../../protocols/__tests__/helpers';
-// import { MessageExchangeEvent } from '../../events';
+import { ServiceResponseStatus } from '@adorsys-gis/status-service';
+import nock from 'nock';
+import { afterEach, beforeAll, describe, expect, test, vi } from 'vitest';
+import { MessagePickupService } from '../MessagePickupService';
+import {
+  eventBus,
+  waitForEvent,
+  aliceDidTest,
+  mediatorDidTest,
+  responseFromStatusRequest,
+  responseFromDeliveryRequest,
+  secretsTest,
+} from './helpers';
+import { MessagePickupEvent } from '../../events';
 
-// describe('MessageExchangeService', () => {
-//   const secretPinNumber = 1234;
-//   const messageExchangeService = new MessageExchangeService(
-//     eventBus,
-//     secretPinNumber,
-//   );
+describe('MessagePickupService', () => {
+  const secretPinNumber = 1234;
 
-//   beforeAll(() => {
-//     nock.disableNetConnect();
-//   });
+  const messagePickupService = new MessagePickupService(
+    eventBus,
+    secretPinNumber,
+  );
 
-//   afterEach(() => {
-//     nock.cleanAll();
-//   });
+  beforeAll(() => {
+    nock.disableNetConnect();
+  });
 
-//   test('should route messages successfully', async () => {
-//     /// Prepare
+  afterEach(() => {
+    nock.cleanAll();
+    vi.restoreAllMocks(); // Clear mock calls and instances
+  });
 
-//     const message = 'Hello, World!';
-//     const recipientDid = aliceDid;
-//     const senderDid = await generateIdentity(secretPinNumber);
-//     nock('https://mediator.rootsid.cloud').post('/').reply(202);
+  test('should process status request successfully', async () => {
+    /// Prepare
 
-//     /// Act
+    // Mock the method directly on the messagePickup instance
+    const mockSomeMethod = vi
+      .spyOn(
+        (messagePickupService as any)['messagePickup'],
+        'retrieveSenderDidSecrets',
+      )
+      .mockResolvedValue(secretsTest);
 
-//     const channel = waitForEvent(MessageExchangeEvent.RouteForwardMessages);
+    // Mock the response for processStatusRequest
+    // Here message_count = 2
+    nock('https://mediator.socious.io')
+      .post(/.*/)
+      .once()
+      .reply(200, responseFromStatusRequest)
+      .post(/.*/)
+      .once()
+      .reply(200, responseFromDeliveryRequest); // First request
 
-//     messageExchangeService.routeForwardMessage(
-//       message,
-//       recipientDid,
-//       senderDid,
-//     );
+    /// Act
+    const channel = waitForEvent(MessagePickupEvent.MessagePickup);
 
-//     const { status, payload: messageModel } =
-//       (await channel) as ServiceResponse<MessageModel>;
+    await messagePickupService.ReceiveMessages(mediatorDidTest, aliceDidTest);
+    const eventData = await channel;
 
-//     /// Assert
+    const expectedResponse = {
+      status: ServiceResponseStatus.Success,
+      payload: 'Messages retrieved and stored successfully',
+    };
+    /// Assert
+    expect(eventData).toEqual(expectedResponse);
+    expect(mockSomeMethod).toHaveBeenCalledTimes(1);
+  });
 
-//     expect(status).toEqual(ServiceResponseStatus.Success);
-//     expect(messageModel).toEqual(
-//       expect.objectContaining({
-//         text: message,
-//         sender: senderDid,
-//         contactId: recipientDid,
-//         direction: 'out',
-//       }),
-//     );
-//   });
+  test('should fail because there is no mock of private keys', async () => {
+    // Mock the response for processStatusRequest
+    nock('https://mediator.socious.io')
+      .post(/.*/)
+      .once()
+      .reply(404, 'not found');
 
-//   test('should report errors reliably', async () => {
-//     /// Prepare
+    /// Act
+    const channel = waitForEvent(MessagePickupEvent.MessagePickup);
 
-//     const message = 'Hello, World!';
-//     const recipientDid = aliceDid;
+    await messagePickupService.ReceiveMessages(mediatorDidTest, aliceDidTest);
+    const eventData = await channel;
 
-//     // The wallet cannot retrieve secrets with wrong secret PIN
-//     const wrongSecretPinNumber = secretPinNumber + 1;
-//     const senderDid = await generateIdentity(wrongSecretPinNumber);
+    /// Assert
+    // Type assertion to a known shape
+    const actual = eventData as {
+      status: ServiceResponseStatus;
+      payload: unknown;
+    };
 
-//     /// Act
+    // Check status
+    expect(actual.status).toEqual(ServiceResponseStatus.Error);
 
-//     const channel = waitForEvent(MessageExchangeEvent.RouteForwardMessages);
+    // Now check that payload is an Error and compare its string representation
+    if (actual.payload instanceof Error) {
+      expect(actual.payload.toString()).toEqual(
+        'Error: Inexistent private keys for senderDid',
+      );
+    }
+  });
 
-//     messageExchangeService.routeForwardMessage(
-//       message,
-//       recipientDid,
-//       senderDid,
-//     );
+  test('should fail because mediator is down', async () => {
+    /// Prepare
 
-//     const { status, payload: error } =
-//       (await channel) as ServiceResponse<Error>;
+    // Mock the method directly on the messagePickup instance
+    const mockSomeMethod = vi
+      .spyOn(
+        (messagePickupService as any)['messagePickup'],
+        'retrieveSenderDidSecrets',
+      )
+      .mockResolvedValue(secretsTest);
 
-//     /// Assert
+    // Mock the response for processStatusRequest
+    nock('https://mediator.socious.io')
+      .post(/.*/)
+      .once()
+      .reply(404, 'not found'); // First request
 
-//     expect(status).toEqual(ServiceResponseStatus.Error);
-//     expect(error.message).toEqual(
-//       'Repository failure while retrieving private keys for senderDid',
-//     );
-//   });
-// });
+    /// Act
+    const channel = waitForEvent(MessagePickupEvent.MessagePickup);
+
+    await messagePickupService.ReceiveMessages(mediatorDidTest, aliceDidTest);
+    const eventData = await channel;
+    console.log('eventData: ', eventData);
+
+     /// Assert
+    // Type assertion to a known shape
+    const actual = eventData as {
+      status: ServiceResponseStatus;
+      payload: unknown;
+    };
+
+    // Check status
+    expect(actual.status).toEqual(ServiceResponseStatus.Error);
+
+    // Now check that payload is an Error and compare its string representation
+    if (actual.payload instanceof Error) {
+      expect(actual.payload.toString()).toEqual(
+        'Error: Failed to send message: Not Found - not found',
+      );
+    }
+  });
+});
