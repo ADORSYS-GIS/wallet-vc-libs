@@ -230,7 +230,10 @@ export class DidService {
         secretsResolver,
         {},
       );
-      return unpackedKeylistResponse;
+      return {
+        mediatorRoutingKey,
+        keylistResponse: unpackedKeylistResponse,
+      };
     } catch (error: unknown) {
       this.sharedErrorHandler(channel)(error);
       throw error;
