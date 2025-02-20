@@ -173,8 +173,6 @@ export class DidService {
       }
 
       const mediatorRoutingKey = unpackedContent.body.routing_did;
-      console.log('Mediator Routing Key', mediatorRoutingKey);
-
       const mediatorNewDID = unpackedContent.from;
       if (!mediatorRoutingKey || !mediatorNewDID) {
         throw new Error('Mediation Response missing required fields');
