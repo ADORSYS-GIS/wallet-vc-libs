@@ -236,8 +236,10 @@ export class DidService {
         status: ServiceResponseStatus.Success,
         payload: unpackedKeylistResponse.as_value(),
       });
-
-      return unpackedKeylistResponse;
+      return {
+        mediatorRoutingKey,
+        keylistResponse: unpackedKeylistResponse,
+      };
     } catch (error: unknown) {
       this.sharedErrorHandler(channel)(error);
       throw error;
