@@ -222,9 +222,7 @@ export class MessagePickup {
   private async retrieveSenderDidSecrets(senderDid: string): Promise<Secret[]> {
     let privateKeys: DidIdentityWithDecryptedKeys | null;
     try {
-      privateKeys = await this.didRepository.getADidPrivateKeysMini(
-        senderDid
-      );
+      privateKeys = await this.didRepository.getADidPrivateKeysMini(senderDid);
     } catch (e) {
       console.error(e);
       throw new Error(

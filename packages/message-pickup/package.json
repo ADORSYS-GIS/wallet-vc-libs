@@ -6,7 +6,9 @@
     "test": "vitest --run",
     "test:watch": "vitest",
     "build": "tsc -p tsconfig.lib.json",
-    "lint": "eslint . --no-error-on-unmatched-pattern"
+    "lint": "eslint . --no-error-on-unmatched-pattern",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
   },
   "keywords": [],
   "author": "",
