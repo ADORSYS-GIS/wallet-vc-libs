@@ -49,9 +49,15 @@ export class MessagePickupService {
     };
 
     try {
-      const messageCount = await this.messagePickup.processStatusRequest(mediatorDid, aliceDidForMediator);
+      const messageCount = await this.messagePickup.processStatusRequest(
+        mediatorDid,
+        aliceDidForMediator,
+      );
       if (messageCount > 0) {
-        const message = await this.messagePickup.processDeliveryRequest(mediatorDid, aliceDidForMediator);
+        const message = await this.messagePickup.processDeliveryRequest(
+          mediatorDid,
+          aliceDidForMediator,
+        );
         response = {
           status: ServiceResponseStatus.Success,
           payload: message as string,

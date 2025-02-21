@@ -121,7 +121,7 @@ describe('MessagePickupService', () => {
     const eventData = await channel;
     console.log('eventData: ', eventData);
 
-     /// Assert
+    /// Assert
     // Type assertion to a known shape
     const actual = eventData as {
       status: ServiceResponseStatus;

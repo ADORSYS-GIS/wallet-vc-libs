@@ -174,7 +174,7 @@ export class DidService {
       }
 
       const mediatorRoutingKey = unpackedContent.body.routing_did;
-      
+
       const mediatorNewDID = unpackedContent.from;
       if (!mediatorRoutingKey || !mediatorNewDID) {
         throw new Error('Mediation Response missing required fields');
@@ -184,7 +184,6 @@ export class DidService {
         await didPeerMethod.generateMethod2RoutingKey(mediatorRoutingKey);
 
       await this.didRepository.createDidId(newDid);
-      
 
       const keyupdate: IMessage = {
         id: uuidv4(),
@@ -230,8 +229,11 @@ export class DidService {
         secretsResolver,
         {},
       );
-      console.log('unpackedKeylistResponse - Get values from here: (from = mediator) ', JSON.stringify(unpackedKeylistResponse.as_value(), null, 2));
-      
+      console.log(
+        'unpackedKeylistResponse - Get values from here: (from = mediator) ',
+        JSON.stringify(unpackedKeylistResponse.as_value(), null, 2),
+      );
+
       this.eventBus.emit(DidEventChannel.MediationResponseReceived, {
         status: ServiceResponseStatus.Success,
         payload: unpackedKeylistResponse.as_value(),
