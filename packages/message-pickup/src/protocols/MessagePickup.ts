@@ -223,8 +223,7 @@ export class MessagePickup {
     let privateKeys: DidIdentityWithDecryptedKeys | null;
     try {
       privateKeys = await this.didRepository.getADidPrivateKeysMini(
-        senderDid,
-        this.secretPinNumber,
+        senderDid
       );
     } catch (e) {
       console.error(e);
