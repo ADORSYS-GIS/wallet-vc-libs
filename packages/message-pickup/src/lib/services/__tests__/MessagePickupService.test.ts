@@ -1,17 +1,17 @@
 import { ServiceResponseStatus } from '@adorsys-gis/status-service';
 import nock from 'nock';
 import { afterEach, beforeAll, describe, expect, test, vi } from 'vitest';
+import { MessagePickupEvent } from '../../events';
 import { MessagePickupService } from '../MessagePickupService';
 import {
-  eventBus,
-  waitForEvent,
   aliceDidTest,
+  eventBus,
   mediatorDidTest,
-  responseFromStatusRequest,
   responseFromDeliveryRequest,
+  responseFromStatusRequest,
   secretsTest,
+  waitForEvent,
 } from './helpers';
-import { MessagePickupEvent } from '../../events';
 
 describe('MessagePickupService', () => {
   const secretPinNumber = 1234;

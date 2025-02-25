@@ -1,17 +1,21 @@
 import type {
-  Secret,
-  IMessage,
-  SecretsResolver,
-  Base64AttachmentData,
-} from 'didcomm';
-import { Message } from 'didcomm';
-import { PeerDIDResolver } from 'did-resolver-lib';
-import type {
-  DidRepository,
   DidIdentityWithDecryptedKeys,
+  DidRepository,
   PrivateKeyJWK,
 } from '@adorsys-gis/multiple-did-identities';
+import { PeerDIDResolver } from 'did-resolver-lib';
+import type {
+  Base64AttachmentData,
+  IMessage,
+  Secret,
+  SecretsResolver,
+} from 'didcomm';
+import { Message } from 'didcomm';
 
+import type {
+  Message as MessageModel,
+  MessageRepository,
+} from '@adorsys-gis/message-service';
 import { currentTimestampInSecs, generateUuid } from '../utils/misc';
 import {
   DELIVERY_REQUEST_TYPE_URI,
@@ -19,10 +23,6 @@ import {
   PLAIN_DIDCOMM_MESSAGE_TYPE,
   STATUS_REQUEST_TYPE_URI,
 } from './types/constants';
-import type {
-  Message as MessageModel,
-  MessageRepository,
-} from '@adorsys-gis/message-service';
 
 export class MessagePickup {
   private readonly didRepository: DidRepository;

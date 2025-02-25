@@ -229,10 +229,6 @@ export class DidService {
         secretsResolver,
         {},
       );
-      console.log(
-        'unpackedKeylistResponse - Get values from here: (from = mediator) ',
-        JSON.stringify(unpackedKeylistResponse.as_value(), null, 2),
-      );
 
       this.eventBus.emit(DidEventChannel.MediationResponseReceived, {
         status: ServiceResponseStatus.Success,

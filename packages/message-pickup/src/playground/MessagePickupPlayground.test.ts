@@ -1,7 +1,8 @@
-import { DidService } from '@adorsys-gis/contact-exchange/src/services/MediatorCoordination';
+import { DidService } from '@adorsys-gis/contact-exchange';
 import { EventEmitter } from 'eventemitter3';
-import { MessagePickup } from '../protocols/MessagePickup'; // Import the class
-import { DidEventChannel } from '@adorsys-gis/contact-exchange/src/services/MediatorCoordination'; // Import event channels
+import { MessagePickup } from '../protocols/MessagePickup';
+// eslint-disable-next-line no-restricted-imports
+import { DidEventChannel } from '@adorsys-gis/contact-exchange/src/services/MediatorCoordination';
 import {
   DidRepository,
   SecurityService,
@@ -9,7 +10,7 @@ import {
 import { mediatorDidTest, aliceDidTest, secretsTest } from '../utils/helpers';
 import { MessageRepository } from '@adorsys-gis/message-service';
 import { vi } from 'vitest';
-// Define the EventData interface
+
 interface EventData {
   payload: {
     from: string;
@@ -26,7 +27,7 @@ describe.skip('StatusRequest', () => {
   // Create instances of dependencies
   const eventBus = new EventEmitter();
   const securityService = new SecurityService();
-  const didRepository = new DidRepository(securityService); // Ensure this is correctly initialized
+  const didRepository = new DidRepository(securityService);
   const messageRepository = new MessageRepository();
 
   // Create an instance of DidService
