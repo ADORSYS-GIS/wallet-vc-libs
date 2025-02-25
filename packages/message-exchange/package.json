@@ -21,7 +21,8 @@
     "@scure/base": "^1.2.4",
     "cross-fetch": "^4.1.0",
     "did-resolver-lib": "https://gitpkg.vercel.app/adorsys/didcomm-messaging-clients-utilities/libs/did-resolver-lib?main",
-    "didcomm": "^0.4.1"
+    "didcomm": "^0.4.1",
+    "prettier": "^3.5.2"
   },
   "devDependencies": {
     "@types/node": "*",
