@@ -2,6 +2,7 @@
   "name": "message-pickup",
   "version": "1.0.0",
   "main": "index.js",
+   "type": "module",
   "scripts": {
     "test": "vitest --run",
     "test:watch": "vitest",
@@ -28,7 +29,7 @@
   },
   "dependencies": {
     "@adorsys-gis/contact-exchange": "^1.0.6",
-    "@adorsys-gis/message-exchange": "^1.0.1",
+    "@adorsys-gis/message-exchange": "file:/../message-exchange",
     "@adorsys-gis/message-service": "^1.0.1",
     "@adorsys-gis/status-service": "^1.0.0",
     "didcomm": "^0.4.1",

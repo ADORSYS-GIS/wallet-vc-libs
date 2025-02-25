@@ -1,9 +1,9 @@
+import { StableDIDResolver } from '@adorsys-gis/message-exchange';
 import type {
   DidIdentityWithDecryptedKeys,
   DidRepository,
   PrivateKeyJWK,
 } from '@adorsys-gis/multiple-did-identities';
-import { PeerDIDResolver } from 'did-resolver-lib';
 import type {
   Base64AttachmentData,
   IMessage,
@@ -56,7 +56,7 @@ export class MessagePickup {
       return_route: 'all',
     };
 
-    const resolver = new PeerDIDResolver();
+    const resolver = new StableDIDResolver();
     const statusRequest = new Message(val);
     const secretsResolver = new DidcommSecretsResolver(secrets);
 
@@ -121,7 +121,7 @@ export class MessagePickup {
       return_route: 'all',
     };
 
-    const resolver = new PeerDIDResolver();
+    const resolver = new StableDIDResolver();
     const mediationRequest = new Message(plainMessage);
     const secretsResolver = new DidcommSecretsResolver(secrets);
 
@@ -245,7 +245,7 @@ export class MessagePickup {
   }
 
   private async resolveMediatorEndpoint(
-    resolver: PeerDIDResolver,
+    resolver: StableDIDResolver,
     mediatorDid: string,
   ) {
     const mediatorDIDDoc = await resolver.resolve(mediatorDid);
