@@ -38,7 +38,7 @@ export class MessagePickupService {
    * @param mediatorDid -  DID from the mediator
    * @param aliceDidForMediator - DID from alice to the mediator
    */
-  public async ReceiveMessages(
+  public async receiveMessages(
     mediatorDid: string,
     aliceDidForMediator: string,
   ): Promise<void> {

@@ -2,7 +2,7 @@ import { DidService } from '@adorsys-gis/contact-exchange';
 import { EventEmitter } from 'eventemitter3';
 import { MessagePickup } from '../protocols/MessagePickup';
 // eslint-disable-next-line no-restricted-imports
-import { DidEventChannel } from '@adorsys-gis/contact-exchange/src/services/MediatorCoordination';
+import { DidEventChannel } from '@adorsys-gis/contact-exchange';
 import {
   DidRepository,
   SecurityService,

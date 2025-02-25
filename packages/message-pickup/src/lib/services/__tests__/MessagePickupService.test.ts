@@ -54,7 +54,7 @@ describe('MessagePickupService', () => {
     /// Act
     const channel = waitForEvent(MessagePickupEvent.MessagePickup);
 
-    await messagePickupService.ReceiveMessages(mediatorDidTest, aliceDidTest);
+    await messagePickupService.receiveMessages(mediatorDidTest, aliceDidTest);
     const eventData = await channel;
 
     const expectedResponse = {
@@ -76,7 +76,7 @@ describe('MessagePickupService', () => {
     /// Act
     const channel = waitForEvent(MessagePickupEvent.MessagePickup);
 
-    await messagePickupService.ReceiveMessages(mediatorDidTest, aliceDidTest);
+    await messagePickupService.receiveMessages(mediatorDidTest, aliceDidTest);
     const eventData = await channel;
 
     /// Assert
@@ -117,7 +117,7 @@ describe('MessagePickupService', () => {
     /// Act
     const channel = waitForEvent(MessagePickupEvent.MessagePickup);
 
-    await messagePickupService.ReceiveMessages(mediatorDidTest, aliceDidTest);
+    await messagePickupService.receiveMessages(mediatorDidTest, aliceDidTest);
     const eventData = await channel;
     console.log('eventData: ', eventData);
 
