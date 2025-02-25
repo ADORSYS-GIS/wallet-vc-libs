@@ -4,9 +4,9 @@ A library for implementing services to support the retrieval of messages from DI
 
 ## Features
 
-| **Protocol**                                                                                       | **Description**                                        | **Status**             |
-| -------------------------------------------------------------------------------------------------- | ------------------------------------------------------ | ---------------------- |
-| [DIDComm Message Pickup](https://didcomm.org/messagepickup/3.0)                                   | Pick up messages from mediators.                       | ✅ Implemented         |
+| **Protocol**                                                    | **Description**                  | **Status**     |
+| --------------------------------------------------------------- | -------------------------------- | -------------- |
+| [DIDComm Message Pickup](https://didcomm.org/messagepickup/3.0) | Pick up messages from mediators. | ✅ Implemented |
 
 ## Installation
 
@@ -66,8 +66,15 @@ If your application does not use an event bus, you can interact directly with th
 ```typescript
 import { MessagePickup } from '@adorsys-gis/message-pickup';
 
-const messagePickup = new MessagePickup(didRepository, secretPinNumber, messageRepository);
-const messageCount = await messagePickup.processStatusRequest(mediatorDid, aliceDidForMediator);
+const messagePickup = new MessagePickup(
+  didRepository,
+  secretPinNumber,
+  messageRepository,
+);
+const messageCount = await messagePickup.processStatusRequest(
+  mediatorDid,
+  aliceDidForMediator,
+);
 console.log('Message count:', messageCount);
 ```
 

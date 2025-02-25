@@ -191,7 +191,7 @@ export class MessagePickup {
             {},
           );
           const messageContent = unpackedMessage.as_value().body.content;
-          
+
           try {
             const persistedMessage = await this.persistMessage(
               messageContent,
