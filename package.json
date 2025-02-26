@@ -24,8 +24,8 @@
     "packages/qr-scanner",
     "packages/usePWA",
     "packages/message-service",
-    "packages/message-pickup",
-    "packages/message-exchange"
+    "packages/message-exchange",
+    "packages/message-pickup"
   ],
   "author": "",
   "license": "ISC",
