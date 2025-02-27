@@ -1,6 +1,6 @@
 {
   "name": "@adorsys-gis/message-exchange",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "A library for DIDComm message routing.",
   "license": "ISC",
   "author": "adorsys",
@@ -21,7 +21,8 @@
     "@scure/base": "^1.2.4",
     "cross-fetch": "^4.1.0",
     "did-resolver-lib": "https://gitpkg.vercel.app/adorsys/didcomm-messaging-clients-utilities/libs/did-resolver-lib?main",
-    "didcomm": "^0.4.1"
+    "didcomm": "^0.4.1",
+    "prettier": "^3.5.2"
   },
   "devDependencies": {
     "@types/node": "*",

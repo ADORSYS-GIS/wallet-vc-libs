@@ -38,7 +38,7 @@ export class MessagePickupService {
    * @param mediatorDid -  DID from the mediator
    * @param aliceDidForMediator - DID from alice to the mediator
    */
-  public async ReceiveMessages(
+  public async receiveMessages(
     mediatorDid: string,
     aliceDidForMediator: string,
   ): Promise<void> {
@@ -68,12 +68,9 @@ export class MessagePickupService {
           payload: 'no new messages',
         };
       }
-    } catch (error) {
+    } catch (error: unknown) {
       this.sharedErrorHandler(channel)(error);
-      response = {
-        status: ServiceResponseStatus.Error,
-        payload: error instanceof Error ? error.message : 'Unknown error',
-      };
+      return; // Avoid emitting a duplicate error response
     }
 
     this.eventBus.emit(channel, response);
