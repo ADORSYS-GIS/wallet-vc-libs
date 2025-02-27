@@ -5,9 +5,9 @@ import { afterEach, beforeAll, describe, expect, test, vi } from 'vitest';
 import { MessageRouter } from '../MessageRouter';
 import { generateIdentity, securityService } from './helpers';
 
-describe.skip('MessageRouter', () => {
+describe('MessageRouter', () => {
   const aliceDid =
-    'did:peer:2.Vz6Mko5umU56vwo877VTjByZhLppWRo9je2jqMgGS4GHY75Rg.Ez6LSqzxsSDkupqFZNEQkogxn6yqSZGgBthpEDv6BJdqWa4YR.SeyJzIjp7ImEiOlsiZGlkY29tbS92MiJdLCJyIjpbXSwidXJpIjoiZGlkOnBlZXI6Mi5FejZMU2twOTJXYlFROHNBbmZIYnlwZlVYdVQ2Qzc4elZScE5zQXpwUTdITmt0dGkzLlZ6Nk1ralROREtuRXZjeDJFeXRmTDhCZVp2ZEdVZkUxNTNTYmU0VTcyOU0yeGRINUguU2V5SjBJam9pWkcwaUxDSnpJanA3SW5WeWFTSTZJbWgwZEhCek9pOHZiV1ZrYVdGMGIzSXVjMjlqYVc5MWN5NXBieUlzSW1FaU9sc2laR2xrWTI5dGJTOTJNaUpkZlgwLlNleUowSWpvaVpHMGlMQ0p6SWpwN0luVnlhU0k2SW5kemN6b3ZMMjFsWkdsaGRHOXlMbk52WTJsdmRYTXVhVzh2ZDNNaUxDSmhJanBiSW1ScFpHTnZiVzB2ZGpJaVhYMTkifSwidCI6ImRtIn0';
+    'did:peer:2.Vz6Mkif4hLgKfpoKu1zYNrXT3Zc7qnprtPQjafTq93ZU3LyEp.Ez6LSqc4cLqJpZYgnUKnLCKwdK1L1ABkWhxjcjpbMoqNgEyfZ.SeyJzIjp7ImEiOlsiZGlkY29tbS92MiJdLCJyIjpbXSwidXJpIjoiZGlkOnBlZXI6Mi5FejZMU2twOTJXYlFROHNBbmZIYnlwZlVYdVQ2Qzc4elZScE5zQXpwUTdITmt0dGkzLlZ6Nk1ralROREtuRXZjeDJFeXRmTDhCZVp2ZEdVZkUxNTNTYmU0VTcyOU0yeGRINUguU2V5SjBJam9pWkcwaUxDSnpJanA3SW5WeWFTSTZJbWgwZEhCek9pOHZiV1ZrYVdGMGIzSXVjMjlqYVc5MWN5NXBieUlzSW1FaU9sc2laR2xrWTI5dGJTOTJNaUpkZlgwLlNleUowSWpvaVpHMGlMQ0p6SWpwN0luVnlhU0k2SW5kemN6b3ZMMjFsWkdsaGRHOXlMbk52WTJsdmRYTXVhVzh2ZDNNaUxDSmhJanBiSW1ScFpHTnZiVzB2ZGpJaVhYMTkifSwidCI6ImRtIn0';
 
   const secretPinNumber = 1234;
   const didRepository = new DidRepository(securityService);
@@ -19,7 +19,7 @@ describe.skip('MessageRouter', () => {
     secretPinNumber,
   );
 
-  test.only('should route messages successfully', async () => {
+  test('should route messages successfully', async () => {
     // Prepare
 
     const message = 'message2';

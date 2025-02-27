@@ -6,7 +6,7 @@ import {
   DidRepository,
   SecurityService,
 } from '@adorsys-gis/multiple-did-identities';
-import { mediatorDidTest, aliceDidTest, secretsTest } from '../utils/helpers';
+import { mediatorDidTest, aliceDidTest, secretsTest } from './helpers';
 import { MessageRepository } from '@adorsys-gis/message-service';
 import { vi } from 'vitest';
 // Define the EventData interface
@@ -22,7 +22,7 @@ interface EventData {
   };
 }
 
-describe.skip('StatusRequest', () => {
+describe('StatusRequest', () => {
   // Create instances of dependencies
   const eventBus = new EventEmitter();
   const securityService = new SecurityService();
@@ -67,34 +67,25 @@ describe.skip('StatusRequest', () => {
     console.log('aliceDidForMediator:', aliceDidForMediator);
     console.log('aliceRecipientDid:', aliceRecipientDid);
 
-    await messagePickup.processStatusRequest(
+    const messageCount = await messagePickup.processStatusRequest(
       mediatorDid,
       aliceDidForMediator,
-      false,
-      aliceRecipientDid,
+      aliceRecipientDid
     );
+
+    console.log('messageCount: ', messageCount);
   });
 
   it('processStatusRequest - local values', async () => {
-    //Injecting secrets
-    const mockSomeMethod = vi
-      .spyOn(
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any
-        (messagePickup as any)['messagePickup'],
-        'retrieveSenderDidSecrets',
-      )
-      .mockResolvedValue(secretsTest);
-
     const mediatorDid = mediatorDidTest;
     const aliceDidForMediator = aliceDidTest;
-
-    console.log('mediatorDid:', mediatorDid);
-    console.log('aliceDidForMediator:', aliceDidForMediator);
+    const aliceRecipientDid = aliceDidTest;
 
     const messageCount = await messagePickup.processStatusRequest(
       mediatorDid,
       aliceDidForMediator,
-      true,
+      aliceRecipientDid,
+      true
     );
     console.log('messageCount: ', messageCount);
   });
@@ -103,12 +94,16 @@ describe.skip('StatusRequest', () => {
     const mediatorDid = mediatorDidTest;
     const aliceDidForMediator = aliceDidTest;
 
-    console.log('mediatorDid:', mediatorDid);
-    console.log('aliceDidForMediator:', aliceDidForMediator);
-
-    await messagePickup.processDeliveryRequest(
+    const response = await messagePickup.processDeliveryRequest(
       mediatorDid,
       aliceDidForMediator,
+      true
     );
+    console.log('response: ', response);
+
+    const messages = (
+      await messageRepository.getAllByContact(mediatorDid)
+    );
+    console.log('messages: ', messages);
   });
 });

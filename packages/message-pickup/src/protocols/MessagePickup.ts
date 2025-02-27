@@ -24,6 +24,8 @@ import {
   STATUS_REQUEST_TYPE_URI,
 } from './types/constants';
 
+import { secretsTest } from '../playground/helpers';
+
 export class MessagePickup {
   private readonly didRepository: DidRepository;
   private readonly secretPinNumber: number;
@@ -42,8 +44,17 @@ export class MessagePickup {
   public async processStatusRequest(
     mediatorDid: string,
     aliceDidForMediator: string,
+    aliceRecipientDid: string,
+    localSecrets: boolean = false,
   ) {
-    const secrets = await this.retrieveSenderDidSecrets(aliceDidForMediator);
+    
+    let secrets;
+    if (localSecrets) {
+      secrets = secretsTest;
+    }else{
+      secrets = await this.retrieveSenderDidSecrets(aliceDidForMediator);
+      const secrets2 = await this.retrieveSenderDidSecrets(aliceRecipientDid);
+    }
 
     const val: IMessage = {
       id: generateUuid(),
@@ -107,8 +118,16 @@ export class MessagePickup {
   public async processDeliveryRequest(
     mediatorDid: string,
     aliceDidForMediator: string,
+    localSecrets: boolean = false,
   ): Promise<string> {
-    const secrets = await this.retrieveSenderDidSecrets(aliceDidForMediator);
+
+    let secrets;
+    if (localSecrets) {
+      secrets = secretsTest;
+    }else{
+      secrets = await this.retrieveSenderDidSecrets(aliceDidForMediator);
+      const secrets2 = await this.retrieveSenderDidSecrets(aliceRecipientDid);
+    }
 
     const plainMessage: IMessage = {
       id: generateUuid(),
