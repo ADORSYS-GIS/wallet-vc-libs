@@ -76,7 +76,7 @@ describe('StatusRequest', () => {
     console.log('messageCount: ', messageCount);
   });
 
-  it('processStatusRequest - local values', async () => {
+  it.only('processStatusRequest - local values', async () => {
     const mediatorDid = mediatorDidTest;
     const aliceDidForMediator = aliceDidTest;
     const aliceRecipientDid = aliceDidTest;
