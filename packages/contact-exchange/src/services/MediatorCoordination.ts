@@ -229,14 +229,15 @@ export class DidService {
         secretsResolver,
         {},
       );
-
+      const recipientDid = unpackedKeylistResponse.as_value().body.updated[0].recipient_did;
+      
       this.eventBus.emit(DidEventChannel.MediationResponseReceived, {
         status: ServiceResponseStatus.Success,
-        payload: unpackedKeylistResponse.as_value(),
+        payload: recipientDid,
       });
       return {
         mediatorRoutingKey,
-        keylistResponse: unpackedKeylistResponse,
+        keylistResponse: recipientDid,
       };
     } catch (error: unknown) {
       this.sharedErrorHandler(channel)(error);
