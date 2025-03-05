@@ -66,6 +66,17 @@ export class DidcommSecretsResolver implements SecretsResolver {
   }
 }
 
+// Define return type interfaces
+export interface ProcessMediatorOOBResult {
+  messagingDid: string;
+  mediatorDid: string;
+}
+
+export interface SendKeylistUpdateResult {
+  recipientDID: string;
+  mediatorDID: string;
+}
+
 // Service class to handle DID communication
 export class DidService {
   private didRepository: DidRepository;
@@ -77,7 +88,9 @@ export class DidService {
     this.didRepository = new DidRepository(securityService);
   }
 
-  public async processMediatorOOB(oob: string): Promise<unknown> {
+  public async processMediatorOOB(
+    oob: string,
+  ): Promise<ProcessMediatorOOBResult> {
     const channel = DidEventChannel.ProcessMediatorOOB;
 
     try {
@@ -166,6 +179,7 @@ export class DidService {
       );
 
       const unpackedContent = unpackedMessage.as_value();
+
       if (unpackedContent.type !== MessageType.MediationResponse) {
         throw new Error(
           'Unexpected message type received for Mediation Response',
@@ -182,12 +196,10 @@ export class DidService {
       const newDid =
         await didPeerMethod.generateMethod2RoutingKey(mediatorRoutingKey);
 
-      await this.didRepository.createDidId(newDid);
-
       // Call the new method to handle keylist update
       const updatedDid = await this.sendKeylistUpdate(
         didPeer.did,
-        didTo,
+        mediatorNewDID,
         newDid.did,
         mediatorEndpoint.uri,
         resolver,
@@ -197,10 +209,12 @@ export class DidService {
       this.eventBus.emit(DidEventChannel.MediationResponseReceived, {
         status: ServiceResponseStatus.Success,
         payload: updatedDid,
+        mediatorNewDID,
       });
 
       return {
-        messagingDid: updatedDid,
+        messagingDid: updatedDid.recipientDID,
+        mediatorDid: mediatorNewDID,
       };
     } catch (error: unknown) {
       this.sharedErrorHandler(channel)(error);
@@ -215,7 +229,7 @@ export class DidService {
     mediatorEndpointUri: string,
     resolver: PeerDIDResolver,
     secretsResolver: DidcommSecretsResolver,
-  ): Promise<string> {
+  ): Promise<SendKeylistUpdateResult> {
     const keyupdate: IMessage = {
       id: uuidv4(),
       typ: MessageTyp.Didcomm,
@@ -267,7 +281,17 @@ export class DidService {
     );
 
     const recipientDidResponse = unpackedKeylistResponse.as_value();
-    return recipientDidResponse.body.updated[0].recipient_did;
+    const recipientDID = recipientDidResponse.body.updated[0].recipient_did;
+    const MediatorUpdatedDID = recipientDidResponse.from;
+
+    if (!recipientDID || !MediatorUpdatedDID) {
+      throw new Error('Keylist Update missing required fields');
+    }
+
+    return {
+      recipientDID: recipientDid,
+      mediatorDID: MediatorUpdatedDID,
+    };
   }
 
   private prependDidToSecretIds(

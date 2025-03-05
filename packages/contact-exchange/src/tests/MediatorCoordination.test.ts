@@ -302,11 +302,13 @@ describe('DidService', () => {
         json: jest.fn().mockResolvedValue({}),
       });
 
-      jest
-        .spyOn(service, 'sendKeylistUpdate')
-        .mockResolvedValue('did:example:updatedDid');
+      // Mock the sendKeylistUpdate method to return the new return type
+      jest.spyOn(service, 'sendKeylistUpdate').mockResolvedValue({
+        recipientDID: 'did:example:recipientDID',
+        mediatorDID: 'did:example:mediatorDID',
+      });
 
-      await service.processMediatorOOB(mockOob);
+      const result = await service.processMediatorOOB(mockOob);
 
       expect(mockDidPeerMethod.generateMethod2).toHaveBeenCalled();
       expect(mockDidPeerMethod.generateMethod2RoutingKey).toHaveBeenCalled();
@@ -315,12 +317,18 @@ describe('DidService', () => {
       expect(fetch).toHaveBeenCalledWith('http://test.com', expect.any(Object));
       expect(service.sendKeylistUpdate).toHaveBeenCalledWith(
         'did:peer:456',
-        'did:peer:123',
+        'did:example:mediatorOldDID',
         'did:example:mediatorNewDID',
         'http://test.com',
-        mockResolver,
-        expect.any(DidcommSecretsResolver),
+        expect.any(Object),
+        expect.any(Object),
       );
+
+      // Verify the return value
+      expect(result).toEqual({
+        messagingDid: 'did:example:recipientDID',
+        mediatorDid: 'did:example:mediatorOldDID',
+      });
     });
   });
 });
