@@ -7,11 +7,11 @@ export default defineConfig({
   test: {
     globals: true,
     setupFiles: ['vitest.setup.ts'],
-    deps: {
-      inline: ['didcomm'],
+    server: {
+      deps: {
+        inline: [/\.wasm$/, 'didcomm'],
+        fallbackCJS: true,
+      },
     },
-  },
-  optimizeDeps: {
-    include: ['didcomm'],
   },
 });

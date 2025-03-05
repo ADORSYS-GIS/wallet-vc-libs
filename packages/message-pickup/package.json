@@ -1,0 +1,40 @@
+{
+  "name": "message-pickup",
+  "version": "1.0.0",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "test": "vitest --run",
+    "test:watch": "vitest",
+    "build": "tsc -p tsconfig.lib.json",
+    "lint": "eslint . --no-error-on-unmatched-pattern",
+    "lint:fix": "eslint . --fix",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "description": "",
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.0",
+    "@eslint/js": "^9.21.0",
+    "@types/jest": "^29.5.14",
+    "@types/node": "^22.12.0",
+    "eslint": "^9.19.0",
+    "jest": "^29.7.0",
+    "prettier": "^3.5.2",
+    "ts-jest": "^29.2.5",
+    "typescript": "^5.7.3",
+    "vite-plugin-wasm": "^3.4.1",
+    "vitest": "^3.0.5"
+  },
+  "dependencies": {
+    "@adorsys-gis/contact-exchange": "^1.0.6",
+    "@adorsys-gis/message-exchange": "file:../message-exchange",
+    "@adorsys-gis/message-service": "^1.0.1",
+    "@adorsys-gis/status-service": "^1.0.0",
+    "didcomm": "^0.4.1",
+    "eventemitter3": "^5.0.1"
+  }
+}
