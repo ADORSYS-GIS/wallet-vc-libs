@@ -1,4 +1,3 @@
-import { CloneMethodArgs } from '@adorsys-gis/cloning-decorator';
 import { DidPeerMethod } from '@adorsys-gis/multiple-did-identities/src/did-methods/DidPeerMethod';
 import type { PrivateKeyJWK } from '@adorsys-gis/multiple-did-identities/src/did-methods/IDidMethod';
 import { DidRepository } from '@adorsys-gis/multiple-did-identities/src/repository/DidRepository';
@@ -9,7 +8,7 @@ import fetch from 'cross-fetch';
 import { PeerDIDResolver } from 'did-resolver-lib';
 import type { IMessage, Secret, SecretsResolver } from 'didcomm';
 import { Message } from 'didcomm';
-import { EventEmitter } from 'eventemitter3';
+import type { EventEmitter } from 'eventemitter3';
 import { v4 as uuidv4 } from 'uuid';
 import { MessageTyp, MessageType } from './DIDCommOOBInvitation';
 
@@ -26,7 +25,6 @@ export enum DidEventChannel {
 // Shared error handler
 function sharedErrorHandler(channel: DidEventChannel, eventBus: EventEmitter) {
   return (error: unknown) => {
-    console.error(`Error occurred in channel ${channel}:`, error);
     const response: ServiceResponse<Error> = {
       status: ServiceResponseStatus.Error,
       payload: error instanceof Error ? error : new Error(String(error)),
@@ -140,7 +138,8 @@ export class DidService {
       if (
         !mediatorDIDDoc ||
         !mediatorDIDDoc.service ||
-        !mediatorDIDDoc.service[0].serviceEndpoint
+        !mediatorDIDDoc.service[0].serviceEndpoint ||
+        !mediatorDIDDoc.service[0].serviceEndpoint.uri
       ) {
         throw new Error('Invalid mediator DID or service endpoint');
       }
@@ -185,64 +184,90 @@ export class DidService {
 
       await this.didRepository.createDidId(newDid);
 
-      const keyupdate: IMessage = {
-        id: uuidv4(),
-        typ: MessageTyp.Didcomm,
-        type: MessageType.KeylistUpdate,
-        body: {
-          updates: [
-            {
-              recipient_did: newDid.did,
-              action: 'add',
-            },
-          ],
-        },
-        from: didPeer.did,
-        to: [didTo],
-        created_time: Math.round(Date.now() / 1000),
-        return_route: 'all',
-      };
-
-      const keylistUpdate = new Message(keyupdate);
-
-      const [packedKeylistUpdate] = await keylistUpdate.pack_encrypted(
+      // Call the new method to handle keylist update
+      const updatedDid = await this.sendKeylistUpdate(
+        didPeer.did,
         didTo,
-        didPeer.did,
-        didPeer.did,
+        newDid.did,
+        mediatorEndpoint.uri,
         resolver,
         secretsResolver,
-        { forward: false },
       );
 
-      const keylistResponse = await fetch(mediatorEndpoint.uri, {
-        method: 'POST',
-        body: packedKeylistUpdate,
-        headers: { 'Content-Type': 'application/didcomm-encrypted+json' },
-      });
-
-      // Unpack the keylist update response message
-      const keylistResponseJson = await keylistResponse.json();
-
-      const [unpackedKeylistResponse] = await Message.unpack(
-        JSON.stringify(keylistResponseJson),
-        resolver,
-        secretsResolver,
-        {},
-      );
-      const recipientDid = unpackedKeylistResponse.as_value().body.updated[0].recipient_did;
-      
       this.eventBus.emit(DidEventChannel.MediationResponseReceived, {
         status: ServiceResponseStatus.Success,
-        payload: recipientDid,
+        payload: updatedDid,
       });
+
       return {
-        mediatorRoutingKey,
-        keylistResponse: recipientDid,
+        messagingDid: updatedDid,
       };
     } catch (error: unknown) {
       this.sharedErrorHandler(channel)(error);
       throw error;
     }
+  }
+
+  public async sendKeylistUpdate(
+    fromDid: string,
+    toDid: string,
+    recipientDid: string,
+    mediatorEndpointUri: string,
+    resolver: PeerDIDResolver,
+    secretsResolver: DidcommSecretsResolver,
+  ): Promise<string> {
+    const keyupdate: IMessage = {
+      id: uuidv4(),
+      typ: MessageTyp.Didcomm,
+      type: MessageType.KeylistUpdate,
+      body: {
+        updates: [
+          {
+            recipient_did: recipientDid,
+            action: 'add',
+          },
+        ],
+      },
+      from: fromDid,
+      to: [toDid],
+      created_time: Math.round(Date.now() / 1000),
+      return_route: 'all',
+    };
+
+    const keylistUpdate = new Message(keyupdate);
+
+    const [packedKeylistUpdate] = await keylistUpdate.pack_encrypted(
+      toDid,
+      fromDid,
+      fromDid,
+      resolver,
+      secretsResolver,
+      { forward: false },
+    );
+
+    const keylistResponse = await fetch(mediatorEndpointUri, {
+      method: 'POST',
+      body: packedKeylistUpdate,
+      headers: { 'Content-Type': 'application/didcomm-encrypted+json' },
+    });
+
+    if (!keylistResponse.ok) {
+      throw new Error(
+        `Failed to send Keylist Update message: ${keylistResponse.statusText}`,
+      );
+    }
+
+    const keylistResponseJson = await keylistResponse.json();
+
+    const [unpackedKeylistResponse] = await Message.unpack(
+      JSON.stringify(keylistResponseJson),
+      resolver,
+      secretsResolver,
+      {},
+    );
+
+    const recipientDidResponse = unpackedKeylistResponse.as_value();
+    return recipientDidResponse.body.updated[0].recipient_did;
   }
 
   private prependDidToSecretIds(
@@ -259,7 +284,3 @@ export class DidService {
     return sharedErrorHandler(channel, this.eventBus);
   }
 }
-
-// Decorate the DidService class to clone method arguments
-const decorate = CloneMethodArgs({ exclude: [EventEmitter] });
-export const DecoratedDidService = decorate(DidService);
