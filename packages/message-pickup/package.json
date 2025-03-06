@@ -8,6 +8,7 @@
     "test:watch": "vitest",
     "build": "tsc -p tsconfig.lib.json",
     "lint": "eslint . --no-error-on-unmatched-pattern",
+    "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
     "format:check": "prettier --check ."
   },
