@@ -8,6 +8,7 @@ import {
   eventBus,
   mediatorDidTest,
   responseFromDeliveryRequest,
+  responseFromMessageReceived,
   responseFromStatusRequest,
   secretsTest,
   waitForEvent,
@@ -32,7 +33,6 @@ describe('MessagePickupService', () => {
 
   test('should process status request successfully', async () => {
     /// Prepare
-
     // Mock the method directly on the messagePickup instance
     const mockRetrievalOfSecrets = vi
       .spyOn(
@@ -42,14 +42,16 @@ describe('MessagePickupService', () => {
       .mockResolvedValue(secretsTest);
 
     // Mock the response for processStatusRequest
-    // Here message_count = 2
-    nock('https://mediator.socious.io')
+    nock('http://localhost:8080')
       .post(/.*/)
       .once()
-      .reply(200, responseFromStatusRequest)
+      .reply(200, responseFromMessageReceived)
       .post(/.*/)
       .once()
-      .reply(200, responseFromDeliveryRequest); // First request
+      .reply(200, responseFromDeliveryRequest)
+      .post(/.*/)
+      .once()
+      .reply(200, responseFromStatusRequest); // First request
 
     /// Act
     const channel = waitForEvent(MessagePickupEvent.MessagePickup);
@@ -68,10 +70,7 @@ describe('MessagePickupService', () => {
 
   test('should fail because there is no mock of private keys', async () => {
     // Mock the response for processStatusRequest
-    nock('https://mediator.socious.io')
-      .post(/.*/)
-      .once()
-      .reply(404, 'not found');
+    nock('http://localhost:8080').post(/.*/).once().reply(404, 'not found');
 
     /// Act
     const channel = waitForEvent(MessagePickupEvent.MessagePickup);
@@ -109,17 +108,13 @@ describe('MessagePickupService', () => {
       .mockResolvedValue(secretsTest);
 
     // Mock the response for processStatusRequest
-    nock('https://mediator.socious.io')
-      .post(/.*/)
-      .once()
-      .reply(404, 'not found'); // First request
+    nock('http://localhost:8080').post(/.*/).once().reply(404, 'not found'); // First request
 
     /// Act
     const channel = waitForEvent(MessagePickupEvent.MessagePickup);
 
     await messagePickupService.receiveMessages(mediatorDidTest, aliceDidTest);
     const eventData = await channel;
-    console.log('eventData: ', eventData);
 
     /// Assert
     // Type assertion to a known shape
