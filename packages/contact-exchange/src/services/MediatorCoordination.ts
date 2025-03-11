@@ -196,6 +196,9 @@ export class DidService {
       const newDid =
         await didPeerMethod.generateMethod2RoutingKey(mediatorRoutingKey);
 
+      await this.didRepository.createDidId(newDid);
+
+
       // Call the new method to handle keylist update
       const updatedDid = await this.sendKeylistUpdate(
         didPeer.did,
@@ -205,10 +208,7 @@ export class DidService {
         resolver,
         secretsResolver,
       );
-      console.log(
-        'unpackedKeylistResponse - Get values from here: (from = mediator) ',
-        JSON.stringify(unpackedKeylistResponse.as_value(), null, 2),
-      );
+      
 
       this.eventBus.emit(DidEventChannel.MediationResponseReceived, {
         status: ServiceResponseStatus.Success,
@@ -287,14 +287,21 @@ export class DidService {
     const recipientDidResponse = unpackedKeylistResponse.as_value();
     const recipientDID = recipientDidResponse.body.updated[0].recipient_did;
     const MediatorUpdatedDID = recipientDidResponse.from;
+    const aliceDID = recipientDidResponse.to?.[0];
 
     if (!recipientDID || !MediatorUpdatedDID) {
       throw new Error('Keylist Update missing required fields');
     }
 
+    console.log(
+      'unpackedKeylistResponse - Get values from here: (from = mediator) ',
+      JSON.stringify(unpackedKeylistResponse.as_value(), null, 2),
+    );
+
     return {
       recipientDID: recipientDid,
       mediatorDID: MediatorUpdatedDID,
+      aliceDID: aliceDID
     };
   }
 

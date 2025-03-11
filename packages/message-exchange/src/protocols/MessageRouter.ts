@@ -80,7 +80,7 @@ export class MessageRouter {
       packedMessage,
       recipientDid,
     );
-
+    console.log('packedMessage: ', packedMessage);
     // Route message to mediator
     await this.postMessage(packedMessage, mediatorEndpointUris);
 

@@ -149,6 +149,10 @@ export class DidRepository {
     did: string,
   ): Promise<DidIdentityWithDecryptedKeys | null> {
     const record = await this.storageFactory.findOne('dids', did);
+
+    const records = await this.storageFactory.findAll('dids');
+    console.log('records: ', records);
+
     if (!record) {
       console.error('No record found for DID:', did);
       return null;

@@ -7,7 +7,7 @@ import { generateIdentity, securityService } from './helpers';
 
 describe('MessageRouter', () => {
   const aliceDid =
-    'did:peer:2.Vz6Mkhj8jMxHXSVaQ1XdSZQE4YLdxyWeCfXcBohgPWrqn9UTD.Ez6LSmffu3YoXptkJRPnBUBirQdNNH48gsHkbGsrQNWSEJ31r.SeyJzIjp7ImEiOlsiZGlkY29tbS92MiJdLCJyIjpbXSwidXJpIjoiZGlkOnBlZXI6Mi5FejZMU2twOTJXYlFROHNBbmZIYnlwZlVYdVQ2Qzc4elZScE5zQXpwUTdITmt0dGkzLlZ6Nk1ralROREtuRXZjeDJFeXRmTDhCZVp2ZEdVZkUxNTNTYmU0VTcyOU0yeGRINUguU2V5SjBJam9pWkcwaUxDSnpJanA3SW5WeWFTSTZJbWgwZEhCek9pOHZiV1ZrYVdGMGIzSXVjMjlqYVc5MWN5NXBieUlzSW1FaU9sc2laR2xrWTI5dGJTOTJNaUpkZlgwLlNleUowSWpvaVpHMGlMQ0p6SWpwN0luVnlhU0k2SW5kemN6b3ZMMjFsWkdsaGRHOXlMbk52WTJsdmRYTXVhVzh2ZDNNaUxDSmhJanBiSW1ScFpHTnZiVzB2ZGpJaVhYMTkifSwidCI6ImRtIn0';
+    'did:peer:2.Vz6MkpptENmT5NAaHt6R1Y5guUPPWLpB5QiAzQMa9uPbtvWm4.Ez6LSrBKDbqjfwjGdAUaDhi39zP6FUhX45YTAQCjXa3qhFhTT.SeyJzIjp7ImEiOlsiZGlkY29tbS92MiJdLCJyIjpbXSwidXJpIjoiZGlkOnBlZXI6Mi5WejZNa2phcldIRGhHR2d3UXNHRlk2N2kxSnlVOUp3bXNkWHVTc3pLYnY2VHNiYks5LkV6NkxTaW5pOEpSUHNTaGJTRFRNTnJHZ1doRHlKOHpGY1czbnNMY1drMUJKdjNDSFUuU2V5SnBaQ0k2SWlOa2FXUmpiMjF0SWl3aWN5STZleUpoSWpwYkltUnBaR052YlcwdmRqSWlYU3dpY2lJNlcxMHNJblZ5YVNJNkltaDBkSEE2THk5c2IyTmhiR2h2YzNRNk9EQTRNQ0o5TENKMElqb2laRzBpZlEifSwidCI6ImRtIn0';
 
   const secretPinNumber = 1234;
   const didRepository = new DidRepository(securityService);
@@ -22,7 +22,7 @@ describe('MessageRouter', () => {
   test('should route messages successfully', async () => {
     // Prepare
 
-    const message = 'hello';
+    const message = 'hello!';
     const recipientDid = aliceDid;
     const senderDid = await generateIdentity(secretPinNumber);
 

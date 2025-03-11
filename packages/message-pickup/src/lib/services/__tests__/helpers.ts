@@ -96,8 +96,6 @@ export const responseFromDeliveryRequest = {
   iv: '5KT9HmWHS53cUxWyHgV0gQ',
 };
 
-// Here we have the 2 messages
-// export const responseFromDeliveryRequest =
 export const aliceDidTest =
   'did:peer:2.Vz6Mkw9vwWhRDKsBFmPLF524SZ8fDswqFasfLyE6jYxZjwdHv.Ez6LSsqYxkLqMfBWPdonioJmiCHHXfmes8MhRSSvkc4NiUqVt.SeyJzIjp7ImEiOlsiZGlkY29tbS92MiJdLCJyIjpbXSwidXJpIjoiaHR0cDovL2V4YW1wbGUuY29tL2RpZGNvbW0ifSwidCI6ImRtIn0';
 export const mediatorDidTest =

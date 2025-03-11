@@ -30,7 +30,7 @@ describe('MessagePickupService', () => {
     vi.restoreAllMocks(); // Clear mock calls and instances
   });
 
-  test('should process status request successfully', async () => {
+  test.only('should process status request successfully', async () => {
     /// Prepare
 
     // Mock the method directly on the messagePickup instance

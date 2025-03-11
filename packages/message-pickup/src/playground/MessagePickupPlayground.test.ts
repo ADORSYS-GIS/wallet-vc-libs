@@ -8,18 +8,14 @@ import {
 } from '@adorsys-gis/multiple-did-identities';
 import { mediatorDidTest, aliceDidTest, secretsTest } from './helpers';
 import { MessageRepository } from '@adorsys-gis/message-service';
-import { vi } from 'vitest';
+
 // Define the EventData interface
 interface EventData {
   payload: {
-    from: string;
-    to: string;
-    body: {
-      updated: {
-        recipient_did: string;
-      }[];
-    };
-  };
+    mediatorDID: string,
+    recipientDID: string,
+    aliceDID: string
+  }
 }
 
 describe('StatusRequest', () => {
@@ -50,18 +46,18 @@ describe('StatusRequest', () => {
   it('processStatusRequest - local values - flow', async () => {
     // (1/2) Perform the mediation coordination:
     const oobString =
-      'https://mediator.socious.io?_oob=eyJpZCI6ImMzNGYwMjRjLTU2ODEtNDIwNi1hN2U3LWYzY2FiZGY3OGEzNiIsInR5cGUiOiJodHRwczovL2RpZGNvbW0ub3JnL291dC1vZi1iYW5kLzIuMC9pbnZpdGF0aW9uIiwiZnJvbSI6ImRpZDpwZWVyOjIuRXo2TFNrcDkyV2JRUThzQW5mSGJ5cGZVWHVUNkM3OHpWUnBOc0F6cFE3SE5rdHRpMy5WejZNa2pUTkRLbkV2Y3gyRXl0Zkw4QmVadmRHVWZFMTUzU2JlNFU3MjlNMnhkSDVILlNleUowSWpvaVpHMGlMQ0p6SWpwN0luVnlhU0k2SW1oMGRIQnpPaTh2YldWa2FXRjBiM0l1YzI5amFXOTFjeTVwYnlJc0ltRWlPbHNpWkdsa1kyOXRiUzkyTWlKZGZYMC5TZXlKMElqb2laRzBpTENKeklqcDdJblZ5YVNJNkluZHpjem92TDIxbFpHbGhkRzl5TG5OdlkybHZkWE11YVc4dmQzTWlMQ0poSWpwYkltUnBaR052YlcwdmRqSWlYWDE5IiwiYm9keSI6eyJnb2FsX2NvZGUiOiJyZXF1ZXN0LW1lZGlhdGUiLCJnb2FsIjoiUmVxdWVzdE1lZGlhdGUiLCJhY2NlcHQiOlsiZGlkY29tbS92MiJdfSwidHlwIjoiYXBwbGljYXRpb24vZGlkY29tbS1wbGFpbitqc29uIn0';
+      'http://localhost:8080?_oob=eyJ0eXBlIjoiaHR0cHM6Ly9kaWRjb21tLm9yZy9vdXQtb2YtYmFuZC8yLjAvaW52aXRhdGlvbiIsImlkIjoiZDViMmVlMTEtZTllOC00ODEyLWExNjUtNDkyYjk5ZWJjYjU1IiwiZnJvbSI6ImRpZDpwZWVyOjIuVno2TWtoUjhEcGdoMWtFNkR1eEdDS1RVNmdkU0pSOXV1THJ5MXBaVWpETlExNUFWei5FejZMU2tDWkFoTUhvVGJUS3lnelJYeW5XY0N2N1g0Vkd0TWhvM1NkTlRqWlNQVjVULlNleUpwWkNJNklpTmthV1JqYjIxdElpd2ljeUk2ZXlKaElqcGJJbVJwWkdOdmJXMHZkaklpWFN3aWNpSTZXMTBzSW5WeWFTSTZJbWgwZEhBNkx5OXNiMk5oYkdodmMzUTZPREE0TUNKOUxDSjBJam9pWkcwaWZRIiwiYm9keSI6eyJnb2FsX2NvZGUiOiJyZXF1ZXN0LW1lZGlhdGUiLCJnb2FsIjoiUmVxdWVzdCBNZWRpYXRlIiwibGFiZWwiOiJNZWRpYXRvciIsImFjY2VwdCI6WyJkaWRjb21tL3YyIl19fQ';
     const processEvent = waitForEvent(
       DidEventChannel.MediationResponseReceived,
     );
     await didService.processMediatorOOB(oobString);
     const eventData = await processEvent;
-    console.log('Event Data:', eventData.payload); // Log the event data
+    console.log('Event Data:', eventData); // Log the event data
 
     // (2/2) Perform status request
-    const mediatorDid = eventData.payload.from;
-    const aliceDidForMediator = eventData.payload.to[0];
-    const aliceRecipientDid = eventData.payload.body.updated[0].recipient_did;
+    const mediatorDid = eventData.payload.mediatorDID;
+    const aliceDidForMediator = eventData.payload.aliceDID;
+    const aliceRecipientDid = eventData.payload.recipientDID;
 
     console.log('mediatorDid:', mediatorDid);
     console.log('aliceDidForMediator:', aliceDidForMediator);
