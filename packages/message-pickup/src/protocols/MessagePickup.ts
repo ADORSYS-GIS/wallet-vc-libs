@@ -282,7 +282,7 @@ export class MessagePickup {
       id: generateUuid(),
       typ: PLAIN_DIDCOMM_MESSAGE_TYPE,
       type: ACK_MESSAGE_RECEIVED_TYPE_URI,
-      body: { "message_id_list": ['67c18b043255c3c883e4e5b2'] },
+      body: { "message_id_list": [msgId] },
       from: aliceDidForMediator,
       to: [mediatorDid],
       created_time: Math.round(Date.now() / 1000),

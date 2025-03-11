@@ -1,4 +1,4 @@
-import { DidService } from '@adorsys-gis/contact-exchange/src/services/MediatorCoordination';
+import { DidService } from '@adorsys-gis/contact-exchange/';
 import { EventEmitter } from 'eventemitter3';
 import { MessagePickup } from '../protocols/MessagePickup'; // Import the class
 import { DidEventChannel } from '@adorsys-gis/contact-exchange/src/services/MediatorCoordination'; // Import event channels

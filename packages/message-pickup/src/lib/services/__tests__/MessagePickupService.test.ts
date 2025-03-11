@@ -8,6 +8,7 @@ import {
   eventBus,
   mediatorDidTest,
   responseFromDeliveryRequest,
+  responseFromMessageReceived,
   responseFromStatusRequest,
   secretsTest,
   waitForEvent,
@@ -32,7 +33,6 @@ describe('MessagePickupService', () => {
 
   test.only('should process status request successfully', async () => {
     /// Prepare
-
     // Mock the method directly on the messagePickup instance
     const mockRetrievalOfSecrets = vi
       .spyOn(
@@ -42,14 +42,16 @@ describe('MessagePickupService', () => {
       .mockResolvedValue(secretsTest);
 
     // Mock the response for processStatusRequest
-    // Here message_count = 2
-    nock('https://mediator.socious.io')
+    nock('http://localhost:8080')
       .post(/.*/)
       .once()
-      .reply(200, responseFromStatusRequest)
+      .reply(200, responseFromMessageReceived)
       .post(/.*/)
       .once()
-      .reply(200, responseFromDeliveryRequest); // First request
+      .reply(200, responseFromDeliveryRequest)
+      .post(/.*/)
+      .once()
+      .reply(200, responseFromStatusRequest); // First request
 
     /// Act
     const channel = waitForEvent(MessagePickupEvent.MessagePickup);
@@ -63,7 +65,7 @@ describe('MessagePickupService', () => {
     };
     /// Assert
     expect(eventData).toEqual(expectedResponse);
-    expect(mockRetrievalOfSecrets).toHaveBeenCalledTimes(2);
+    expect(mockRetrievalOfSecrets).toHaveBeenCalledTimes(3);
   });
 
   test('should fail because there is no mock of private keys', async () => {
