@@ -5,3 +5,5 @@ export const STATUS_REQUEST_TYPE_URI =
   'https://didcomm.org/messagepickup/3.0/status-request';
 export const DELIVERY_REQUEST_TYPE_URI =
   'https://didcomm.org/messagepickup/3.0/delivery-request';
+export const ACK_MESSAGE_RECEIVED_TYPE_URI =
+  'https://didcomm.org/messagepickup/3.0/messages-received';

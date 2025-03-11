@@ -7,6 +7,7 @@ import type {
 import type {
   Base64AttachmentData,
   IMessage,
+  JsonAttachmentData,
   Secret,
   SecretsResolver,
 } from 'didcomm';
@@ -18,6 +19,7 @@ import type {
 } from '@adorsys-gis/message-service';
 import { currentTimestampInSecs, generateUuid } from '../utils/misc';
 import {
+  ACK_MESSAGE_RECEIVED_TYPE_URI,
   DELIVERY_REQUEST_TYPE_URI,
   ENCRYPTED_DIDCOMM_MESSAGE_TYPE,
   PLAIN_DIDCOMM_MESSAGE_TYPE,
@@ -166,17 +168,7 @@ export class MessagePickup {
     // Check if packetMessages is defined and handle accordingly
     if (packetMessages && packetMessages.length > 0) {
       for (const packetMessage of packetMessages) {
-        // Iterate over each attachment
-        if (typeof packetMessage.data === 'string') {
-          // If it's already a string, you can use it directly
-          const persistedMessage = await this.persistMessage(
-            packetMessage.data,
-            mediatorDid,
-            aliceDidForMediator,
-            packetMessage as unknown as Message,
-          );
-          console.log(`Message ${persistedMessage.id} successfully persisted`);
-        } else if ('base64' in packetMessage.data) {
+        if ('base64' in packetMessage.data) {
           // If it's a base64 encoded string, decode it
           const base64Data = (packetMessage.data as Base64AttachmentData)
             .base64;
@@ -191,7 +183,6 @@ export class MessagePickup {
             {},
           );
           const messageContent = unpackedMessage.as_value().body.content;
-
           try {
             const persistedMessage = await this.persistMessage(
               messageContent,
@@ -202,21 +193,125 @@ export class MessagePickup {
             console.log(
               `Message ${persistedMessage.id} successfully persisted`,
             );
-          } catch (error) {
-            console.error('Error processing packet messages', error);
-            throw error; // or return an error message if preferred
+            try {
+              await this.ackMessageReceived(
+                mediatorDid,
+                aliceDidForMediator,
+                persistedMessage.id,
+                resolver,
+                secretsResolver,
+                mediatorEndpoint.uri,
+              );
+              console.log(
+                `Acknowledgment for message ${persistedMessage.id} sent successfully.`,
+              );
+            } catch (error) {
+              console.error(
+                `Failed to send acknowledgment for message ${persistedMessage.id}:`,
+                error,
+              );
+            }
+          } catch (e) {
+            console.error('Error processing packet messages', e);
           }
         } else {
-          console.error(
-            'Unsupported packetMessage format:',
-            packetMessage.data,
+          const responseJson = JSON.stringify(
+            (packetMessage.data as JsonAttachmentData).json,
           );
+
+          const [unpackedMessage] = await Message.unpack(
+            responseJson,
+            resolver,
+            secretsResolver,
+            {},
+          );
+          const messageContent = unpackedMessage.as_value().body.content;
+
+          const persistedMessage = await this.persistMessage(
+            messageContent,
+            mediatorDid,
+            aliceDidForMediator,
+            unpackedMessage as unknown as Message,
+          );
+          console.log(`Message ${persistedMessage.id} successfully persisted`);
+          try {
+            await this.ackMessageReceived(
+              mediatorDid,
+              aliceDidForMediator,
+              persistedMessage.id,
+              resolver,
+              secretsResolver,
+              mediatorEndpoint.uri,
+            );
+            console.log(
+              `Acknowledgment for message ${persistedMessage.id} sent successfully.`,
+            );
+          } catch (error) {
+            console.error(
+              `Failed to send acknowledgment for message ${persistedMessage.id}:`,
+              error,
+            );
+          }
         }
       }
-      return 'Messages retrieved and stored successfully';
     } else {
-      console.error('No packetMessages found in the attachments.');
-      return 'No messages retrieved';
+      return 'No new messages';
+    }
+    return 'Messages retrieved and stored successfully';
+  }
+
+  private async ackMessageReceived(
+    mediatorDid: string,
+    aliceDidForMediator: string,
+    msgId: string,
+    resolver: StableDIDResolver,
+    secretsResolver: DidcommSecretsResolver,
+    mediatorEndpoint: string,
+  ): Promise<void> {
+    const ackMessage: IMessage = {
+      id: generateUuid(),
+      typ: PLAIN_DIDCOMM_MESSAGE_TYPE,
+      type: ACK_MESSAGE_RECEIVED_TYPE_URI,
+      body: { message_id_list: [msgId] },
+      from: aliceDidForMediator,
+      to: [mediatorDid],
+      created_time: Math.round(Date.now() / 1000),
+      return_route: 'all',
+    };
+
+    const ackMessageRequest = new Message(ackMessage);
+
+    const [packedAckMessage] = await ackMessageRequest.pack_encrypted(
+      mediatorDid,
+      aliceDidForMediator,
+      aliceDidForMediator,
+      resolver,
+      secretsResolver,
+      { forward: false },
+    );
+
+    try {
+      const ackMessageResponse = await fetch(mediatorEndpoint, {
+        method: 'POST',
+        headers: { 'Content-Type': ENCRYPTED_DIDCOMM_MESSAGE_TYPE },
+        body: packedAckMessage,
+      });
+      const responseBody = await ackMessageResponse.text();
+
+      if (!responseBody) {
+        throw new Error('Response body is empty');
+      }
+
+      const responseJson = JSON.parse(responseBody);
+      const [unpackedMessage] = await Message.unpack(
+        JSON.stringify(responseJson),
+        resolver,
+        secretsResolver,
+        {},
+      );
+      return unpackedMessage.as_value().body.message_id_list;
+    } catch (error) {
+      console.error('Error sending acknowledgment:', error);
     }
   }
 
