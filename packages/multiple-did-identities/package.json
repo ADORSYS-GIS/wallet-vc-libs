@@ -1,6 +1,6 @@
 {
-  "name": "@adorsys-gis/multiple-did-identities",
-  "version": "1.0.6",
+  "name": "multiple-did-identities",
+  "version": "1.0.7",
   "dependencies": {
     "@adorsys-gis/cloning-decorator": "^1.0.1",
     "@adorsys-gis/event-bus": "^1.0.5",
