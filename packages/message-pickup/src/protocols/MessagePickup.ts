@@ -107,9 +107,14 @@ export class MessagePickup {
   public async processDeliveryRequest(
     mediatorDid: string,
     aliceDidForMediator: string,
+    aliceMessagingDID: string
   ): Promise<string> {
-    const secrets = await this.retrieveSenderDidSecrets(aliceDidForMediator);
-    console.log('Secrets retrieved in processDeliveryRequest:', secrets); // log secrets of the did passed to processDeliveryRequest
+    const secret1 = await this.retrieveSenderDidSecrets(aliceDidForMediator);
+    const secret2 = await this.retrieveSenderDidSecrets(aliceMessagingDID);
+    const secrets = [...secret1, ...secret2];
+
+    console.log('Secrets retrieved in processDeliveryRequest(secret1):', secret1); // log secrets of the did passed to processDeliveryRequest
+    console.log('Secrets retrieved in processDeliveryRequest(secret2):', secret2); // log secrets of the did passed to processDeliveryRequest
 
     const plainMessage: IMessage = {
       id: generateUuid(),
@@ -164,48 +169,66 @@ export class MessagePickup {
 
     const packetMessages = messageContent.attachments; // Get all attachments
 
+    console.log('Message Content:', { messageContent });
+    console.log('Packet Messages:', { packetMessages });
+
     // Check if packetMessages is defined and handle accordingly
     if (packetMessages && packetMessages.length > 0) {
       for (const packetMessage of packetMessages) {
         // Iterate over each attachment
         if (typeof packetMessage.data === 'string') {
+
+          // String data (needs unpacking if it’s encrypted)
+          const [unpackedAttachment] = await Message.unpack(
+            packetMessage.data,
+            resolver,
+            secretsResolver,
+            {},
+          );
+          const attachmentMessage = unpackedAttachment.as_value();
+          const messageContent = attachmentMessage.body.content; // The actual message
+          const senderDid = attachmentMessage.from ?? ''; // Alice’s sender DID
+
+          console.log('String Case - Unpacked Message Content:', messageContent);
+          console.log('String Case - Sender DID (Alice):', senderDid);
+
           // If it's already a string, you can use it directly
           const persistedMessage = await this.persistMessage(
             packetMessage.data,
-            mediatorDid,
-            aliceDidForMediator,
+            senderDid,
+            aliceMessagingDID,
             packetMessage as unknown as Message,
           );
           console.log(`Message ${persistedMessage.id} successfully persisted`);
         } else if ('base64' in packetMessage.data) {
-          // If it's a base64 encoded string, decode it
-          const base64Data = (packetMessage.data as Base64AttachmentData)
-            .base64;
-          const decodedMessage = JSON.parse(
-            Buffer.from(base64Data, 'base64').toString('utf-8'),
-          );
+          // Case 2: Base64 data
+          const base64Data = (packetMessage.data as Base64AttachmentData).base64;
+          const decodedMessage = JSON.parse(Buffer.from(base64Data, 'base64').toString('utf-8'));
 
-          const [unpackedMessage] = await Message.unpack(
+          const [unpackedAttachment] = await Message.unpack(
             JSON.stringify(decodedMessage),
             resolver,
             secretsResolver,
             {},
           );
-          const messageContent = unpackedMessage.as_value().body.content;
+          const attachmentMessage = unpackedAttachment.as_value();
+          const messageContent = attachmentMessage.body.content; // The actual message
+          const senderDid = attachmentMessage.from ?? ''; // Alice’s sender DID
+
+          console.log('Base64 Case - Unpacked Message Content:', messageContent);
+          console.log('Base64 Case - Sender DID (Alice):', senderDid);
 
           try {
             const persistedMessage = await this.persistMessage(
               messageContent,
-              mediatorDid,
-              aliceDidForMediator,
-              unpackedMessage,
+              senderDid,
+              aliceMessagingDID,
+              unpackedAttachment,
             );
-            console.log(
-              `Message ${persistedMessage.id} successfully persisted`,
-            );
+            console.log(`Message ${persistedMessage.id} successfully persisted`);
           } catch (error) {
             console.error('Error processing packet messages', error);
-            throw error; // or return an error message if preferred
+            throw error;
           }
         } else {
           console.error(
