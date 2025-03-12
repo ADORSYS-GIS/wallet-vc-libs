@@ -3,10 +3,7 @@ import { SecurityService } from '@adorsys-gis/multiple-did-identities/src/securi
 import fetch from 'cross-fetch';
 import { PeerDIDResolver } from 'did-resolver-lib';
 import { EventEmitter } from 'eventemitter3';
-import {
-  DidcommSecretsResolver,
-  DidService,
-} from '../services/MediatorCoordination';
+import { DidService } from '../services/MediatorCoordination';
 
 // Mocking dependencies
 jest.mock('@adorsys-gis/multiple-did-identities/src/repository/DidRepository');
@@ -53,7 +50,8 @@ describe('DidService', () => {
     jest.clearAllMocks();
     eventBus = new EventEmitter();
     const securityService = new SecurityService();
-    service = new DidService(eventBus, securityService);
+    const userPin = 123456
+    service = new DidService(eventBus, securityService, userPin);
   });
 
   describe('processMediatorOOB', () => {
@@ -332,3 +330,4 @@ describe('DidService', () => {
     });
   });
 });
+

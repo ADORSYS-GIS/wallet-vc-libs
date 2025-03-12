@@ -1,16 +1,17 @@
 {
-  "name": "@adorsys-gis/contact-exchange",
-  "version": "1.0.6",
+  "name": "contact-exchange",
+  "version": "1.0.7",
   "type": "commonjs",
   "main": "./dist/src/index.js",
   "typings": "./dist/src/index.d.ts",
   "devDependencies": {
     "@types/jest": "*",
+    "fake-indexeddb": "*",
     "jest": "*",
     "ts-jest": "*",
     "tslib": "*",
     "typescript": "*",
-    "fake-indexeddb": "*"
+    "vitest": "^3.0.8"
   },
   "scripts": {
     "test": "jest",
@@ -24,6 +25,7 @@
   "description": "",
   "dependencies": {
     "@adorsys-gis/cloning-decorator": "^1.0.1",
+    "@adorsys-gis/message-exchange": "file:../message-exchange",
     "@adorsys-gis/multiple-did-identities": "^1.0.4",
     "@adorsys-gis/status-service": "^1.0.0",
     "cross-fetch": "^4.1.0",

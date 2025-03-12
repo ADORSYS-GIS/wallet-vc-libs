@@ -1,8 +1,9 @@
 {
   "name": "message-pickup",
-  "version": "1.0.0",
-  "main": "index.js",
-  "type": "module",
+  "version": "1.0.1",
+  "type": "commonjs",
+  "main": "./dist/src/index.js",
+  "typings": "./dist/src/index.d.ts",
   "scripts": {
     "test": "vitest --run",
     "test:watch": "vitest",

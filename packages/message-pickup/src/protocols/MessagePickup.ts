@@ -109,6 +109,7 @@ export class MessagePickup {
     aliceDidForMediator: string,
   ): Promise<string> {
     const secrets = await this.retrieveSenderDidSecrets(aliceDidForMediator);
+    console.log('Secrets retrieved in processDeliveryRequest:', secrets); // log secrets of the did passed to processDeliveryRequest
 
     const plainMessage: IMessage = {
       id: generateUuid(),
@@ -223,7 +224,7 @@ export class MessagePickup {
   private async retrieveSenderDidSecrets(senderDid: string): Promise<Secret[]> {
     let privateKeys: DidIdentityWithDecryptedKeys | null;
     try {
-      privateKeys = await this.didRepository.getADidPrivateKeysMini(senderDid);
+      privateKeys = await this.didRepository.getADidWithDecryptedPrivateKeys(senderDid, this.secretPinNumber);
     } catch (e) {
       console.error(e);
       throw new Error(
@@ -281,7 +282,7 @@ export class MessagePickup {
       sender: senderDid,
       contactId: recipientDid,
       timestamp,
-      direction: 'out',
+      direction: 'in',
     };
 
     try {
