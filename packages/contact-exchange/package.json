@@ -6,11 +6,11 @@
   "typings": "./dist/src/index.d.ts",
   "devDependencies": {
     "@types/jest": "*",
+    "fake-indexeddb": "*",
     "jest": "*",
     "ts-jest": "*",
     "tslib": "*",
-    "typescript": "*",
-    "fake-indexeddb": "*"
+    "typescript": "*"
   },
   "scripts": {
     "test": "jest",
@@ -24,6 +24,7 @@
   "description": "",
   "dependencies": {
     "@adorsys-gis/cloning-decorator": "^1.0.1",
+    "@adorsys-gis/message-exchange": "^1.0.2",
     "@adorsys-gis/multiple-did-identities": "^1.0.4",
     "@adorsys-gis/status-service": "^1.0.0",
     "cross-fetch": "^4.1.0",

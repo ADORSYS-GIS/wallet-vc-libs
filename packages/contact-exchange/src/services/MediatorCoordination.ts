@@ -5,7 +5,7 @@ import type { SecurityService } from '@adorsys-gis/multiple-did-identities/src/s
 import type { ServiceResponse } from '@adorsys-gis/status-service';
 import { ServiceResponseStatus } from '@adorsys-gis/status-service';
 import fetch from 'cross-fetch';
-import { PeerDIDResolver } from 'did-resolver-lib';
+import { StableDIDResolver } from '@adorsys-gis/message-exchange';
 import type { IMessage, Secret, SecretsResolver } from 'didcomm';
 import { Message } from 'didcomm';
 import type { EventEmitter } from 'eventemitter3';
@@ -113,7 +113,7 @@ export class DidService {
       const didPeer = await didPeerMethod.generateMethod2();
       await this.didRepository.createDidId(didPeer);
 
-      const resolver = new PeerDIDResolver();
+      const resolver = new StableDIDResolver();
       const secrets = [didPeer.privateKeyE, didPeer.privateKeyV].filter(
         (secret) => secret !== undefined,
       );
@@ -227,7 +227,7 @@ export class DidService {
     toDid: string,
     recipientDid: string,
     mediatorEndpointUri: string,
-    resolver: PeerDIDResolver,
+    resolver: StableDIDResolver,
     secretsResolver: DidcommSecretsResolver,
   ): Promise<SendKeylistUpdateResult> {
     const keyupdate: IMessage = {
