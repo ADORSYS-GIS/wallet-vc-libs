@@ -1,7 +1,7 @@
 import { DidPeerMethod } from '@adorsys-gis/multiple-did-identities/src/did-methods/DidPeerMethod';
 import { SecurityService } from '@adorsys-gis/multiple-did-identities/src/security/SecurityService';
 import fetch from 'cross-fetch';
-import { PeerDIDResolver } from 'did-resolver-lib';
+import { StableDIDResolver } from '@adorsys-gis/message-exchange';
 import { EventEmitter } from 'eventemitter3';
 import {
   DidcommSecretsResolver,
@@ -10,7 +10,6 @@ import {
 
 // Mocking dependencies
 jest.mock('@adorsys-gis/multiple-did-identities/src/repository/DidRepository');
-jest.mock('did-resolver-lib');
 jest.mock('@adorsys-gis/multiple-did-identities/src/did-methods/DidPeerMethod');
 jest.mock('didcomm', () => ({
   Message: class {
@@ -90,7 +89,7 @@ describe('DidService', () => {
       const mockResolver = {
         resolve: jest.fn().mockResolvedValue(null),
       };
-      (PeerDIDResolver as jest.Mock).mockImplementation(() => mockResolver);
+      (StableDIDResolver as jest.Mock).mockImplementation(() => mockResolver);
 
       await expect(service.processMediatorOOB(mockOob)).rejects.toThrow(
         'Invalid mediator DID or service endpoint',
@@ -119,7 +118,7 @@ describe('DidService', () => {
           service: [], // No service endpoint
         }),
       };
-      (PeerDIDResolver as jest.Mock).mockImplementation(() => mockResolver);
+      (StableDIDResolver as jest.Mock).mockImplementation(() => mockResolver);
 
       await expect(service.processMediatorOOB(mockOob)).rejects.toThrow(
         "Cannot read properties of undefined (reading 'serviceEndpoint')",
@@ -153,7 +152,7 @@ describe('DidService', () => {
           ],
         }),
       };
-      (PeerDIDResolver as jest.Mock).mockImplementation(() => mockResolver);
+      (StableDIDResolver as jest.Mock).mockImplementation(() => mockResolver);
 
       (fetch as jest.Mock).mockResolvedValue({
         ok: false,
@@ -197,7 +196,7 @@ describe('DidService', () => {
           ],
         }),
       };
-      (PeerDIDResolver as jest.Mock).mockImplementation(() => mockResolver);
+      (StableDIDResolver as jest.Mock).mockImplementation(() => mockResolver);
 
       (fetch as jest.Mock).mockResolvedValue({
         ok: true,
@@ -247,7 +246,7 @@ describe('DidService', () => {
           ],
         }),
       };
-      (PeerDIDResolver as jest.Mock).mockImplementation(() => mockResolver);
+      (StableDIDResolver as jest.Mock).mockImplementation(() => mockResolver);
 
       (fetch as jest.Mock).mockResolvedValue({
         ok: true,
@@ -295,7 +294,7 @@ describe('DidService', () => {
           ],
         }),
       };
-      (PeerDIDResolver as jest.Mock).mockImplementation(() => mockResolver);
+      (StableDIDResolver as jest.Mock).mockImplementation(() => mockResolver);
 
       (fetch as jest.Mock).mockResolvedValue({
         ok: true,
