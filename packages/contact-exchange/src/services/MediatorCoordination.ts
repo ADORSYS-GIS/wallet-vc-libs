@@ -1,3 +1,4 @@
+import { StableDIDResolver } from '@adorsys-gis/message-exchange';
 import { DidPeerMethod } from '@adorsys-gis/multiple-did-identities/src/did-methods/DidPeerMethod';
 import type { PrivateKeyJWK } from '@adorsys-gis/multiple-did-identities/src/did-methods/IDidMethod';
 import { DidRepository } from '@adorsys-gis/multiple-did-identities/src/repository/DidRepository';
@@ -5,7 +6,6 @@ import type { SecurityService } from '@adorsys-gis/multiple-did-identities/src/s
 import type { ServiceResponse } from '@adorsys-gis/status-service';
 import { ServiceResponseStatus } from '@adorsys-gis/status-service';
 import fetch from 'cross-fetch';
-import { StableDIDResolver } from '@adorsys-gis/message-exchange';
 import type { IMessage, Secret, SecretsResolver } from 'didcomm';
 import { Message } from 'didcomm';
 import type { EventEmitter } from 'eventemitter3';

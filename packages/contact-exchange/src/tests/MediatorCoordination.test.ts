@@ -10,7 +10,6 @@ import {
 
 // Mocking dependencies
 jest.mock('@adorsys-gis/multiple-did-identities/src/repository/DidRepository');
-jest.mock('did-resolver-lib');
 jest.mock('@adorsys-gis/multiple-did-identities/src/did-methods/DidPeerMethod');
 jest.mock('didcomm', () => ({
   Message: class {

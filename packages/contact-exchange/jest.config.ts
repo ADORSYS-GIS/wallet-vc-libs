@@ -14,7 +14,7 @@ module.exports = {
   moduleFileExtensions: ['ts', 'js', 'html'],
   coverageDirectory: '../../coverage/libs/contact-exchange',
   transformIgnorePatterns: [
-    'node_modules/(?!(did-resolver-lib|@adorsys-gis/message-exchange))/',
+    'node_modules/(?!(|@adorsys-gis/message-exchange))/',
   ],
   moduleNameMapper: {
     '^@adorsys-gis/message-exchange$':
