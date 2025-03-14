@@ -67,6 +67,49 @@ describe('MessageService', () => {
     );
   });
 
+  it('should not add the same message with the same ID more than once', async () => {
+    const message: Message = {
+      id: uuidv4(),
+      text: 'Hello, this is a test message',
+      sender: 'did:key:z92389jqjdNJAWOJNSWDDjies',
+      contactId: 'did:key:zKAJCbjwdhuhJBJWHBDSIs',
+      timestamp: new Date(),
+    };
+
+    // First insertion should succeed
+    const firstInsertEvent = waitForEvent(MessageEventChannel.CreateMessage);
+    messageService.createMessage(message);
+    const firstInsertResponse = await firstInsertEvent;
+
+    expect(firstInsertResponse).toEqual(
+      expect.objectContaining({
+        status: ServiceResponseStatus.Success,
+        payload: message,
+      }),
+    );
+
+    // Second insertion should return the same message without creating a duplicate
+    const secondInsertEvent = waitForEvent(MessageEventChannel.CreateMessage);
+    messageService.createMessage(message);
+    const secondInsertResponse = await secondInsertEvent;
+
+    expect(secondInsertResponse).toEqual(firstInsertResponse);
+
+    // Third insertion
+    const thirdInsertEvent = waitForEvent(MessageEventChannel.CreateMessage);
+    messageService.createMessage(message);
+    const thirdInsertResponse = await thirdInsertEvent;
+
+    expect(thirdInsertResponse).toEqual(firstInsertResponse);
+
+    // Fourth insertion
+    const fourthInsertEvent = waitForEvent(MessageEventChannel.CreateMessage);
+    messageService.createMessage(message);
+    const fourthInsertResponse = await fourthInsertEvent;
+
+    expect(fourthInsertResponse).toEqual(firstInsertResponse);
+  });
+
   it('should emit an error when failing to create a message', async () => {
     const newMessage: Message = {
       id: uuidv4(),

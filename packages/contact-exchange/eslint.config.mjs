@@ -21,4 +21,10 @@ export default [
       '@typescript-eslint/no-unused-vars': 'off',
     },
   },
+  {
+    files: ['**/*.test.ts'],
+    rules: {
+      '@typescript-eslint/no-explicit-any': 'off', // Disable the rule for tests
+    },
+  },
 ];
