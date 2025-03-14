@@ -114,9 +114,6 @@ export class MessagePickup {
     const secret2 = await this.retrieveSenderDidSecrets(aliceMessagingDID);
     const secrets = [...secret1, ...secret2];
 
-    console.log('Secrets retrieved in processDeliveryRequest(secret1):', secret1); // log secrets of the did passed to processDeliveryRequest
-    console.log('Secrets retrieved in processDeliveryRequest(secret2):', secret2); // log secrets of the did passed to processDeliveryRequest
-
     const plainMessage: IMessage = {
       id: generateUuid(),
       typ: PLAIN_DIDCOMM_MESSAGE_TYPE,
@@ -168,9 +165,6 @@ export class MessagePickup {
 
     const messageContent: IMessage = unpackedMessage.as_value();
     const packetMessages = messageContent.attachments; // Get all attachments
-
-    console.log('Message Content:', { messageContent });
-    console.log('Packet Messages:', { packetMessages });
 
     // Check if packetMessages is defined and handle accordingly
     if (packetMessages && packetMessages.length > 0) {
