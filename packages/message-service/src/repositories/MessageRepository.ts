@@ -40,9 +40,14 @@ export class MessageRepository {
   }
 
   async create(message: Message): Promise<Message> {
-    const existingMessage = await this.storage.findOne(objectStorename, message.id);
+    const existingMessage = await this.storage.findOne(
+      objectStorename,
+      message.id,
+    );
     if (existingMessage) {
-      console.log(`Message with ID ${message.id} already exists, skipping insert.`);
+      console.log(
+        `Message with ID ${message.id} already exists, skipping insert.`,
+      );
       return existingMessage.value;
     }
     await this.storage.insert(objectStorename, { value: message });

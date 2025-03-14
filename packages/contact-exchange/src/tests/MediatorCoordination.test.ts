@@ -52,7 +52,7 @@ describe('DidService', () => {
     jest.clearAllMocks();
     eventBus = new EventEmitter();
     const securityService = new SecurityService();
-    const userPin = 123456
+    const userPin = 123456;
     service = new DidService(eventBus, securityService, userPin);
   });
 
@@ -74,7 +74,9 @@ describe('DidService', () => {
     it('should throw an error if the mediator DID document is missing', async () => {
       const mockOob =
         'oob=' +
-        Buffer.from(JSON.stringify({ from: 'did:peer:123' })).toString('base64url');
+        Buffer.from(JSON.stringify({ from: 'did:peer:123' })).toString(
+          'base64url',
+        );
 
       const mockDidPeerMethod = {
         generateMethod2: jest.fn().mockResolvedValue({
@@ -110,7 +112,9 @@ describe('DidService', () => {
     it('should throw an error if the mediator DID document has no service endpoint', async () => {
       const mockOob =
         'oob=' +
-        Buffer.from(JSON.stringify({ from: 'did:peer:123' })).toString('base64url');
+        Buffer.from(JSON.stringify({ from: 'did:peer:123' })).toString(
+          'base64url',
+        );
 
       // Mock DidPeerMethod
       const mockDidPeerMethod = {
@@ -167,7 +171,9 @@ describe('DidService', () => {
     it('should throw an error if the mediation request fails', async () => {
       const mockOob =
         'oob=' +
-        Buffer.from(JSON.stringify({ from: 'did:peer:123' })).toString('base64url');
+        Buffer.from(JSON.stringify({ from: 'did:peer:123' })).toString(
+          'base64url',
+        );
 
       // Mock DidPeerMethod
       const mockDidPeerMethod = {
@@ -234,7 +240,9 @@ describe('DidService', () => {
     it('should throw an error if the mediation response has an unexpected message type', async () => {
       const mockOob =
         'oob=' +
-        Buffer.from(JSON.stringify({ from: 'did:peer:123' })).toString('base64url');
+        Buffer.from(JSON.stringify({ from: 'did:peer:123' })).toString(
+          'base64url',
+        );
 
       // Mock DidPeerMethod
       const mockDidPeerMethod = {
@@ -285,7 +293,9 @@ describe('DidService', () => {
       // Mock fetch response for mediation request
       (fetch as jest.Mock).mockResolvedValue({
         ok: true,
-        json: jest.fn().mockResolvedValue({ message: 'mocked-didcomm-message' }),
+        json: jest
+          .fn()
+          .mockResolvedValue({ message: 'mocked-didcomm-message' }),
       });
 
       // Create DidService instance
@@ -328,7 +338,9 @@ describe('DidService', () => {
     it('should throw an error if the mediation response is missing required fields', async () => {
       const mockOob =
         'oob=' +
-        Buffer.from(JSON.stringify({ from: 'did:peer:123' })).toString('base64url');
+        Buffer.from(JSON.stringify({ from: 'did:peer:123' })).toString(
+          'base64url',
+        );
 
       // Mock DidPeerMethod
       const mockDidPeerMethod = {
@@ -379,7 +391,9 @@ describe('DidService', () => {
       // Mock fetch response for mediation request
       (fetch as jest.Mock).mockResolvedValue({
         ok: true,
-        json: jest.fn().mockResolvedValue({ message: 'mocked-didcomm-message' }),
+        json: jest
+          .fn()
+          .mockResolvedValue({ message: 'mocked-didcomm-message' }),
       });
 
       // Create DidService instance
@@ -422,8 +436,10 @@ describe('DidService', () => {
     it('should successfully process valid OOB and handle keylist update', async () => {
       const mockOob =
         'oob=' +
-        Buffer.from(JSON.stringify({ from: 'did:peer:123' })).toString('base64url');
-    
+        Buffer.from(JSON.stringify({ from: 'did:peer:123' })).toString(
+          'base64url',
+        );
+
       const mockDidPeerMethod = {
         generateMethod2: jest.fn().mockResolvedValue({
           did: 'did:peer:456',
@@ -437,7 +453,7 @@ describe('DidService', () => {
         }),
       };
       (DidPeerMethod as jest.Mock).mockImplementation(() => mockDidPeerMethod);
-    
+
       const mockResolver = {
         resolve: jest.fn().mockResolvedValue({
           id: 'did:example:mediator',
@@ -450,7 +466,7 @@ describe('DidService', () => {
         }),
       };
       (PeerDIDResolver as jest.Mock).mockImplementation(() => mockResolver);
-    
+
       const mockDidRepository = {
         createDidId: jest.fn().mockResolvedValue(undefined),
         getADidWithDecryptedPrivateKeys: jest.fn().mockResolvedValue({
@@ -461,23 +477,23 @@ describe('DidService', () => {
           },
         }),
       };
-    
+
       const mockEventBus = { emit: jest.fn() } as unknown as EventEmitter;
       const mockSecurityService = {
         encrypt: jest.fn().mockResolvedValue('encrypted-key'),
       } as unknown as SecurityService;
-    
+
       const service = new DidService(mockEventBus, mockSecurityService, 1234);
       Object.defineProperty(service, 'didRepository', {
         value: mockDidRepository,
         writable: true,
       });
-    
+
       (fetch as jest.Mock).mockResolvedValue({
         ok: true,
         json: jest.fn().mockResolvedValue({}),
       });
-    
+
       jest.spyOn(didcomm.Message, 'unpack').mockResolvedValue([
         {
           as_value: () => ({
@@ -497,14 +513,14 @@ describe('DidService', () => {
         },
         {},
       ] as [any, any]);
-    
+
       jest.spyOn(service, 'sendKeylistUpdate').mockResolvedValue({
         recipientDID: 'did:example:recipientDID',
         mediatorDID: 'did:example:mediatorDID',
       });
-    
+
       const result = await service.processMediatorOOB(mockOob);
-    
+
       expect(mockDidPeerMethod.generateMethod2).toHaveBeenCalled();
       expect(mockDidPeerMethod.generateMethod2RoutingKey).toHaveBeenCalled();
       expect(mockResolver.resolve).toHaveBeenCalledWith('did:peer:123');
@@ -518,7 +534,7 @@ describe('DidService', () => {
         expect.any(Object),
         expect.any(Object),
       );
-    
+
       expect(result).toEqual({
         messagingDid: 'did:example:recipientDID',
         mediatorDid: 'did:example:mediator',
@@ -526,4 +542,3 @@ describe('DidService', () => {
     });
   });
 });
-

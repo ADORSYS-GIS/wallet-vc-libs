@@ -47,7 +47,10 @@ const createMockMetadata = (): didcomm.UnpackMetadata => ({
 describe('MessagePickupService', () => {
   const secretPinNumber = 1234;
 
-  const messagePickupService = new MessagePickupService(eventBus, secretPinNumber);
+  const messagePickupService = new MessagePickupService(
+    eventBus,
+    secretPinNumber,
+  );
 
   beforeAll(() => {
     nock.disableNetConnect();
@@ -61,7 +64,10 @@ describe('MessagePickupService', () => {
   test('should process status request successfully', async () => {
     /// Prepare
     const mockRetrievalOfSecrets = vi
-      .spyOn((messagePickupService as any)['messagePickup'], 'retrieveSenderDidSecrets')
+      .spyOn(
+        (messagePickupService as any)['messagePickup'],
+        'retrieveSenderDidSecrets',
+      )
       .mockResolvedValue(secretsTest);
 
     vi.spyOn(didcomm.Message, 'unpack')
@@ -89,7 +95,11 @@ describe('MessagePickupService', () => {
           attachments: [
             {
               id: 'attach-1',
-              data: { base64: Buffer.from(JSON.stringify({ content: 'Hello' })).toString('base64') },
+              data: {
+                base64: Buffer.from(
+                  JSON.stringify({ content: 'Hello' }),
+                ).toString('base64'),
+              },
             },
           ],
         }),
@@ -108,7 +118,10 @@ describe('MessagePickupService', () => {
         createMockMetadata(),
       ]);
 
-    vi.spyOn((messagePickupService as any)['messagePickup'].messageRepository, 'create').mockResolvedValue({
+    vi.spyOn(
+      (messagePickupService as any)['messagePickup'].messageRepository,
+      'create',
+    ).mockResolvedValue({
       id: 'msg-1',
       text: 'Hello',
       sender: 'did:peer:sender',
@@ -128,7 +141,11 @@ describe('MessagePickupService', () => {
     /// Act
     const channel = waitForEvent(MessagePickupEvent.MessagePickup);
 
-    await messagePickupService.receiveMessages(mediatorDidTest, aliceDidTest, aliceMessagingDIDTest);
+    await messagePickupService.receiveMessages(
+      mediatorDidTest,
+      aliceDidTest,
+      aliceMessagingDIDTest,
+    );
     const eventData = await channel;
 
     const expectedResponse = {
@@ -145,7 +162,10 @@ describe('MessagePickupService', () => {
 
   test('should fail because there is no mock of private keys', async () => {
     const mockRetrievalOfSecrets = vi
-      .spyOn((messagePickupService as any)['messagePickup'], 'retrieveSenderDidSecrets')
+      .spyOn(
+        (messagePickupService as any)['messagePickup'],
+        'retrieveSenderDidSecrets',
+      )
       .mockRejectedValue(new Error('Inexistent private keys for senderDid'));
 
     nock('https://mediator.socious.io')
@@ -156,20 +176,32 @@ describe('MessagePickupService', () => {
     /// Act
     const channel = waitForEvent(MessagePickupEvent.MessagePickup);
 
-    await messagePickupService.receiveMessages(mediatorDidTest, aliceDidTest, aliceMessagingDIDTest);
+    await messagePickupService.receiveMessages(
+      mediatorDidTest,
+      aliceDidTest,
+      aliceMessagingDIDTest,
+    );
     const eventData = await channel;
 
     /// Assert
-    const actual = eventData as { status: ServiceResponseStatus; payload: unknown };
+    const actual = eventData as {
+      status: ServiceResponseStatus;
+      payload: unknown;
+    };
     expect(actual.status).toEqual(ServiceResponseStatus.Error);
     if (actual.payload instanceof Error) {
-      expect(actual.payload.toString()).toEqual('Error: Inexistent private keys for senderDid');
+      expect(actual.payload.toString()).toEqual(
+        'Error: Inexistent private keys for senderDid',
+      );
     }
   });
 
   test('should fail because mediator is down', async () => {
     const mockRetrievalOfSecrets = vi
-      .spyOn((messagePickupService as any)['messagePickup'], 'retrieveSenderDidSecrets')
+      .spyOn(
+        (messagePickupService as any)['messagePickup'],
+        'retrieveSenderDidSecrets',
+      )
       .mockResolvedValue(secretsTest);
 
     nock('https://mediator.socious.io')
@@ -180,14 +212,23 @@ describe('MessagePickupService', () => {
     /// Act
     const channel = waitForEvent(MessagePickupEvent.MessagePickup);
 
-    await messagePickupService.receiveMessages(mediatorDidTest, aliceDidTest, aliceMessagingDIDTest);
+    await messagePickupService.receiveMessages(
+      mediatorDidTest,
+      aliceDidTest,
+      aliceMessagingDIDTest,
+    );
     const eventData = await channel;
 
     /// Assert
-    const actual = eventData as { status: ServiceResponseStatus; payload: unknown };
+    const actual = eventData as {
+      status: ServiceResponseStatus;
+      payload: unknown;
+    };
     expect(actual.status).toEqual(ServiceResponseStatus.Error);
     if (actual.payload instanceof Error) {
-      expect(actual.payload.toString()).toEqual('Error: Failed to send message: Not Found - not found');
+      expect(actual.payload.toString()).toEqual(
+        'Error: Failed to send message: Not Found - not found',
+      );
     }
   });
 });

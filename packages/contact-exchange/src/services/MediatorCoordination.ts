@@ -118,15 +118,16 @@ export class DidService {
       await encryptPrivateKeys(
         didPeer,
         this.secretPinNumber,
-        [
-          'privateKeyV',
-          'privateKeyE',
-        ],
+        ['privateKeyV', 'privateKeyE'],
         this.securityService,
       );
       const didDoc = sanitizeDidDoc(didPeer);
       await this.didRepository.createDidId(didDoc);
-      const didIdentity = await this.didRepository.getADidWithDecryptedPrivateKeys(didDoc.did, this.secretPinNumber);
+      const didIdentity =
+        await this.didRepository.getADidWithDecryptedPrivateKeys(
+          didDoc.did,
+          this.secretPinNumber,
+        );
       if (!didIdentity) {
         throw new Error('Failed to retrieve DID identity with decrypted keys');
       }
@@ -135,19 +136,21 @@ export class DidService {
 
       const secrets = [
         didIdentity.decryptedPrivateKeys['privateKeyE'],
-        didIdentity.decryptedPrivateKeys['privateKeyV']
-      ].filter(
-        (secret) => secret !== undefined,
-      );
+        didIdentity.decryptedPrivateKeys['privateKeyV'],
+      ].filter((secret) => secret !== undefined);
 
       const privateKeySecrets = secrets.filter(
-        (secret): secret is PrivateKeyJWK => 'id' in secret && 'type' in secret && 'privateKeyJwk' in secret
+        (secret): secret is PrivateKeyJWK =>
+          'id' in secret && 'type' in secret && 'privateKeyJwk' in secret,
       );
-      const updatedSecrets = this.prependDidToSecretIds(privateKeySecrets, didDoc.did);
+      const updatedSecrets = this.prependDidToSecretIds(
+        privateKeySecrets,
+        didDoc.did,
+      );
 
       const secretsResolver = new DidcommSecretsResolver(updatedSecrets);
 
-      const mediationRequest: IMessage = ({
+      const mediationRequest: IMessage = {
         id: uuidv4(),
         typ: MessageTyp.Didcomm,
         type: MessageType.MediationRequest,
@@ -156,7 +159,7 @@ export class DidService {
         to: [didTo],
         created_time: Math.round(Date.now() / 1000),
         return_route: 'all',
-      });
+      };
 
       const message = new Message(mediationRequest);
 
@@ -228,15 +231,12 @@ export class DidService {
       await encryptPrivateKeys(
         newDid,
         this.secretPinNumber,
-        [
-          'privateKeyV',
-          'privateKeyE',
-        ],
+        ['privateKeyV', 'privateKeyE'],
         this.securityService,
       );
       const didDocNew = sanitizeDidDoc(newDid);
       await this.didRepository.createDidId(didDocNew);
-      
+
       // Call the new method to handle keylist update
       const updatedDid = await this.sendKeylistUpdate(
         didDoc.did,

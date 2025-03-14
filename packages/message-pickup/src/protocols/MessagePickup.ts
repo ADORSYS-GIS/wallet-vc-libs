@@ -108,7 +108,7 @@ export class MessagePickup {
   public async processDeliveryRequest(
     mediatorDid: string,
     aliceDidForMediator: string,
-    aliceMessagingDID: string
+    aliceMessagingDID: string,
   ): Promise<string> {
     const secret1 = await this.retrieveSenderDidSecrets(aliceDidForMediator);
     const secret2 = await this.retrieveSenderDidSecrets(aliceMessagingDID);
@@ -195,7 +195,6 @@ export class MessagePickup {
             console.log(
               `Message ${persistedMessage.id} successfully persisted`,
             );
-      
           } catch (e) {
             console.error('Error processing packet messages', e);
           }
@@ -210,7 +209,7 @@ export class MessagePickup {
             secretsResolver,
             {},
           );
-          
+
           const attachmentMessage = unpackedMessage.as_value();
           const messageContent = attachmentMessage.body.content;
           const senderDid = attachmentMessage.from ?? '';
@@ -233,7 +232,10 @@ export class MessagePickup {
   private async retrieveSenderDidSecrets(senderDid: string): Promise<Secret[]> {
     let privateKeys: DidIdentityWithDecryptedKeys | null;
     try {
-      privateKeys = await this.didRepository.getADidWithDecryptedPrivateKeys(senderDid, this.secretPinNumber);
+      privateKeys = await this.didRepository.getADidWithDecryptedPrivateKeys(
+        senderDid,
+        this.secretPinNumber,
+      );
     } catch (e) {
       console.error(e);
       throw new Error(

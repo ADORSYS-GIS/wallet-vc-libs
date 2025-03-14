@@ -85,7 +85,7 @@ describe('MessageService', () => {
       expect.objectContaining({
         status: ServiceResponseStatus.Success,
         payload: message,
-      })
+      }),
     );
 
     // Second insertion should return the same message without creating a duplicate
@@ -109,7 +109,6 @@ describe('MessageService', () => {
 
     expect(fourthInsertResponse).toEqual(firstInsertResponse);
   });
-
 
   it('should emit an error when failing to create a message', async () => {
     const newMessage: Message = {
