@@ -1,6 +1,6 @@
 {
-  "name": "contact-exchange",
-  "version": "1.0.8",
+  "name": "@adorsys-gis/contact-exchange",
+  "version": "1.0.7",
   "type": "commonjs",
   "main": "./dist/src/index.js",
   "typings": "./dist/src/index.d.ts",

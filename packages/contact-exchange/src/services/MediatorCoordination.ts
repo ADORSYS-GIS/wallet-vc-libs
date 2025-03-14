@@ -236,8 +236,6 @@ export class DidService {
       );
       const didDocNew = sanitizeDidDoc(newDid);
       await this.didRepository.createDidId(didDocNew);
-
-      console.log('Succesfully stored new DID with routing keys', didDocNew.did);
       
       // Call the new method to handle keylist update
       const updatedDid = await this.sendKeylistUpdate(
@@ -248,8 +246,6 @@ export class DidService {
         resolver,
         secretsResolver,
       );
-
-      console.log('updatedDid', updatedDid.recipientDID);
 
       this.eventBus.emit(DidEventChannel.MediationResponseReceived, {
         status: ServiceResponseStatus.Success,
