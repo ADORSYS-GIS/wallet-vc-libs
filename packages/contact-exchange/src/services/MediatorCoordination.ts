@@ -113,16 +113,19 @@ export class DidService {
 
       const didTo = decodedOob.from;
       const didPeerMethod = new DidPeerMethod();
-      // Generate DID Peer 2
       const didPeer = await didPeerMethod.generateMethod2();
+
       await encryptPrivateKeys(
         didPeer,
         this.secretPinNumber,
         ['privateKeyV', 'privateKeyE'],
         this.securityService,
       );
+
       const didDoc = sanitizeDidDoc(didPeer);
+
       await this.didRepository.createDidId(didDoc);
+
       const didIdentity =
         await this.didRepository.getADidWithDecryptedPrivateKeys(
           didDoc.did,
@@ -143,6 +146,7 @@ export class DidService {
         (secret): secret is PrivateKeyJWK =>
           'id' in secret && 'type' in secret && 'privateKeyJwk' in secret,
       );
+
       const updatedSecrets = this.prependDidToSecretIds(
         privateKeySecrets,
         didDoc.did,
@@ -187,6 +191,7 @@ export class DidService {
       ) {
         throw new Error('Invalid mediator DID or service endpoint');
       }
+
       const mediatorEndpoint = mediatorDIDDoc.service[0].serviceEndpoint;
 
       const mediationResponse = await fetch(mediatorEndpoint.uri, {
@@ -200,6 +205,7 @@ export class DidService {
           `Failed to send Mediation Deny message: ${mediationResponse.statusText}`,
         );
       }
+
       const responseJson = await mediationResponse.json();
 
       const [unpackedMessage] = await Message.unpack(
@@ -218,8 +224,8 @@ export class DidService {
       }
 
       const mediatorRoutingKey = unpackedContent.body.routing_did;
-
       const mediatorNewDID = unpackedContent.from;
+
       if (!mediatorRoutingKey || !mediatorNewDID) {
         throw new Error('Mediation Response missing required fields');
       }
@@ -234,6 +240,7 @@ export class DidService {
         ['privateKeyV', 'privateKeyE'],
         this.securityService,
       );
+
       const didDocNew = sanitizeDidDoc(newDid);
       await this.didRepository.createDidId(didDocNew);
 

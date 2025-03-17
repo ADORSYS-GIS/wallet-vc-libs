@@ -173,18 +173,22 @@ export class MessagePickup {
           // If it's a base64 encoded string, decode it
           const base64Data = (packetMessage.data as Base64AttachmentData)
             .base64;
+
           const decodedMessage = JSON.parse(
             Buffer.from(base64Data, 'base64').toString('utf-8'),
           );
+
           const [unpackedAttachment] = await Message.unpack(
             JSON.stringify(decodedMessage),
             resolver,
             secretsResolver,
             {},
           );
+
           const attachmentMessage = unpackedAttachment.as_value();
           const messageContent = attachmentMessage.body.content;
           const senderDid = attachmentMessage.from ?? '';
+
           try {
             const persistedMessage = await this.persistMessage(
               messageContent,
