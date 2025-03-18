@@ -23,10 +23,10 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "@adorsys-gis/message-exchange": "^1.0.2",
     "@adorsys-gis/cloning-decorator": "^1.0.1",
     "@adorsys-gis/multiple-did-identities": "^1.0.4",
     "@adorsys-gis/status-service": "^1.0.0",
+    "@adorsys-gis/message-exchange": "^1.0.2",
     "cross-fetch": "^4.1.0",
     "didcomm": "^0.4.1",
     "structured-clone": "^0.2.2"
