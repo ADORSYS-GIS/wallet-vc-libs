@@ -168,6 +168,9 @@ export class MessagePickup {
     // Check if packetMessages is defined and handle accordingly
     if (packetMessages && packetMessages.length > 0) {
       for (const packetMessage of packetMessages) {
+        let messageContent;
+        let unpackedMsg;
+
         if ('base64' in packetMessage.data) {
           // If it's a base64 encoded string, decode it
           const base64Data = (packetMessage.data as Base64AttachmentData)
@@ -176,64 +179,36 @@ export class MessagePickup {
             Buffer.from(base64Data, 'base64').toString('utf-8'),
           );
 
-          const [unpackedMessage] = await Message.unpack(
+          [unpackedMsg] = await Message.unpack(
             JSON.stringify(decodedMessage),
             resolver,
             secretsResolver,
             {},
           );
-          const messageContent = unpackedMessage.as_value().body.content;
-          try {
-            const persistedMessage = await this.persistMessage(
-              messageContent,
-              mediatorDid,
-              aliceDidForMediator,
-              unpackedMessage,
-            );
-            console.log(
-              `Message ${persistedMessage.id} successfully persisted`,
-            );
-            try {
-              await this.ackMessageReceived(
-                mediatorDid,
-                aliceDidForMediator,
-                persistedMessage.id,
-                resolver,
-                secretsResolver,
-                mediatorEndpoint.uri,
-              );
-              console.log(
-                `Acknowledgment for message ${persistedMessage.id} sent successfully.`,
-              );
-            } catch (error) {
-              console.error(
-                `Failed to send acknowledgment for message ${persistedMessage.id}:`,
-                error,
-              );
-            }
-          } catch (e) {
-            console.error('Error processing packet messages', e);
-          }
+          messageContent = unpackedMsg.as_value().body.content;
         } else {
           const responseJson = JSON.stringify(
             (packetMessage.data as JsonAttachmentData).json,
           );
 
-          const [unpackedMessage] = await Message.unpack(
+          [unpackedMsg] = await Message.unpack(
             responseJson,
             resolver,
             secretsResolver,
             {},
           );
-          const messageContent = unpackedMessage.as_value().body.content;
+          messageContent = unpackedMsg.as_value().body.content;
+        }
 
+        try {
           const persistedMessage = await this.persistMessage(
             messageContent,
             mediatorDid,
             aliceDidForMediator,
-            unpackedMessage as unknown as Message,
+            unpackedMsg as unknown as Message,
           );
           console.log(`Message ${persistedMessage.id} successfully persisted`);
+
           try {
             await this.ackMessageReceived(
               mediatorDid,
@@ -252,6 +227,8 @@ export class MessagePickup {
               error,
             );
           }
+        } catch (e) {
+          console.error('Error processing packet messages', e);
         }
       }
     } else {
