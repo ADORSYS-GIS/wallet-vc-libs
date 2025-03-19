@@ -7,6 +7,7 @@ import type {
 import type {
   Base64AttachmentData,
   IMessage,
+  JsonAttachmentData,
   Secret,
   SecretsResolver,
 } from 'didcomm';
@@ -107,14 +108,17 @@ export class MessagePickup {
   public async processDeliveryRequest(
     mediatorDid: string,
     aliceDidForMediator: string,
+    aliceMessagingDID: string,
   ): Promise<string> {
-    const secrets = await this.retrieveSenderDidSecrets(aliceDidForMediator);
+    const secret1 = await this.retrieveSenderDidSecrets(aliceDidForMediator);
+    const secret2 = await this.retrieveSenderDidSecrets(aliceMessagingDID);
+    const secrets = [...secret1, ...secret2];
 
     const plainMessage: IMessage = {
       id: generateUuid(),
       typ: PLAIN_DIDCOMM_MESSAGE_TYPE,
       type: DELIVERY_REQUEST_TYPE_URI,
-      body: { limit: 1 },
+      body: { limit: 30 },
       from: aliceDidForMediator,
       to: [mediatorDid],
       created_time: Math.round(Date.now() / 1000),
@@ -160,70 +164,82 @@ export class MessagePickup {
     );
 
     const messageContent: IMessage = unpackedMessage.as_value();
-
     const packetMessages = messageContent.attachments; // Get all attachments
 
     // Check if packetMessages is defined and handle accordingly
     if (packetMessages && packetMessages.length > 0) {
       for (const packetMessage of packetMessages) {
-        // Iterate over each attachment
-        if (typeof packetMessage.data === 'string') {
-          // If it's already a string, you can use it directly
-          const persistedMessage = await this.persistMessage(
-            packetMessage.data,
-            mediatorDid,
-            aliceDidForMediator,
-            packetMessage as unknown as Message,
-          );
-          console.log(`Message ${persistedMessage.id} successfully persisted`);
-        } else if ('base64' in packetMessage.data) {
+        if ('base64' in packetMessage.data) {
           // If it's a base64 encoded string, decode it
           const base64Data = (packetMessage.data as Base64AttachmentData)
             .base64;
+
           const decodedMessage = JSON.parse(
             Buffer.from(base64Data, 'base64').toString('utf-8'),
           );
 
-          const [unpackedMessage] = await Message.unpack(
+          const [unpackedAttachment] = await Message.unpack(
             JSON.stringify(decodedMessage),
             resolver,
             secretsResolver,
             {},
           );
-          const messageContent = unpackedMessage.as_value().body.content;
+
+          const attachmentMessage = unpackedAttachment.as_value();
+          const messageContent = attachmentMessage.body.content;
+          const senderDid = attachmentMessage.from ?? '';
 
           try {
             const persistedMessage = await this.persistMessage(
               messageContent,
-              mediatorDid,
-              aliceDidForMediator,
+              senderDid,
+              aliceMessagingDID,
               unpackedMessage,
             );
             console.log(
               `Message ${persistedMessage.id} successfully persisted`,
             );
-          } catch (error) {
-            console.error('Error processing packet messages', error);
-            throw error; // or return an error message if preferred
+          } catch (e) {
+            console.error('Error processing packet messages', e);
           }
         } else {
-          console.error(
-            'Unsupported packetMessage format:',
-            packetMessage.data,
+          const responseJson = JSON.stringify(
+            (packetMessage.data as JsonAttachmentData).json,
           );
+
+          const [unpackedMessage] = await Message.unpack(
+            responseJson,
+            resolver,
+            secretsResolver,
+            {},
+          );
+
+          const attachmentMessage = unpackedMessage.as_value();
+          const messageContent = attachmentMessage.body.content;
+          const senderDid = attachmentMessage.from ?? '';
+
+          const persistedMessage = await this.persistMessage(
+            messageContent,
+            senderDid,
+            aliceMessagingDID,
+            unpackedMessage as unknown as Message,
+          );
+          console.log(`Message ${persistedMessage.id} successfully persisted`);
         }
       }
-      return 'Messages retrieved and stored successfully';
     } else {
-      console.error('No packetMessages found in the attachments.');
-      return 'No messages retrieved';
+      return 'No new messages';
     }
+    return 'Messages retrieved and stored successfully';
   }
 
   private async retrieveSenderDidSecrets(senderDid: string): Promise<Secret[]> {
     let privateKeys: DidIdentityWithDecryptedKeys | null;
     try {
-      privateKeys = await this.didRepository.getADidPrivateKeysMini(senderDid);
+      privateKeys = await this.didRepository.getADidWithDecryptedPrivateKeys(
+        senderDid,
+        this.secretPinNumber,
+      );
     } catch (e) {
       console.error(e);
       throw new Error(
@@ -281,7 +297,7 @@ export class MessagePickup {
       sender: senderDid,
       contactId: recipientDid,
       timestamp,
-      direction: 'out',
+      direction: 'in',
     };
 
     try {
