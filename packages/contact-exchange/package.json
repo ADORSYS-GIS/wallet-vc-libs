@@ -10,8 +10,7 @@
     "jest": "*",
     "ts-jest": "*",
     "tslib": "*",
-    "typescript": "*",
-    "vitest": "^3.0.8"
+    "typescript": "*"
   },
   "scripts": {
     "test": "jest",
