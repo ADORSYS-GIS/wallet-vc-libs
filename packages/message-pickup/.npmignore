@@ -1,13 +1,5 @@
-# Include all contents of the dist folder
-!dist/**/*
-
 # Ignore TypeScript configuration and build info files
-tsconfig.json
 *.tsbuildinfo
-dist/**/*.tsbuildinfo
-tsconfig.spec.json
-tsconfig.lib.json
-eslint.config.mjs
 
 # Ignore source code and TypeScript files
 src/*
@@ -16,14 +8,11 @@ src/*
 *.json
 node_modules/
 package-lock.json
-package.json
-project.json
-.swcrc
 
 # Ignore testing and linting configuration files
-jest.config.ts
-.eslintrc.json
-jest.setup.ts
+vitest.config.ts
+vitest.setup.ts
+eslint.config.mjs
 
-# Ignore documentation files
-README.md
+# Include all contents of the dist folder
+!dist/**/*
