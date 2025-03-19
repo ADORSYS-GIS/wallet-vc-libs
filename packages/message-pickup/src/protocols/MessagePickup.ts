@@ -217,7 +217,7 @@ export class MessagePickup {
             await this.ackMessageReceived(
               mediatorDid,
               aliceDidForMediator,
-              packetMessage.id,
+              packetMessage.id as string,
               resolver,
               secretsResolver,
               mediatorEndpoint.uri,
