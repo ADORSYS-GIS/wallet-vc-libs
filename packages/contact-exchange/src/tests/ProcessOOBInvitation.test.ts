@@ -4,7 +4,7 @@ import {
   invalidEncodedUrl,
   validEncodedUrl,
   validOutOfBandInvitation,
-} from './OOBTestFixtures';
+} from '../utils/OOBTestFixtures';
 
 beforeEach(() => {
   jest.spyOn(console, 'error').mockImplementation(() => {});

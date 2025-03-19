@@ -4,7 +4,7 @@ import {
   invalidContact,
   secondValidContact,
   validContact,
-} from './OOBTestFixtures';
+} from '../utils/OOBTestFixtures';
 
 describe('Wallet', () => {
   let wallet: Wallet;
