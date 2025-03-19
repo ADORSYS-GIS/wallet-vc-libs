@@ -2,6 +2,8 @@ import { DidPeerMethod } from '@adorsys-gis/multiple-did-identities/src/did-meth
 import type { PrivateKeyJWK } from '@adorsys-gis/multiple-did-identities/src/did-methods/IDidMethod';
 import { DidRepository } from '@adorsys-gis/multiple-did-identities/src/repository/DidRepository';
 import type { SecurityService } from '@adorsys-gis/multiple-did-identities/src/security/SecurityService';
+import { encryptPrivateKeys } from '@adorsys-gis/multiple-did-identities/src/utils/encryptPrivateKeys';
+import { sanitizeDidDoc } from '@adorsys-gis/multiple-did-identities/src/utils/sanitizeDidDoc';
 import type { ServiceResponse } from '@adorsys-gis/status-service';
 import { ServiceResponseStatus } from '@adorsys-gis/status-service';
 import fetch from 'cross-fetch';
@@ -84,6 +86,7 @@ export class DidService {
   constructor(
     public eventBus: EventEmitter,
     public securityService: SecurityService,
+    private readonly secretPinNumber: number,
   ) {
     this.didRepository = new DidRepository(securityService);
   }
@@ -111,31 +114,63 @@ export class DidService {
       const didTo = decodedOob.from;
       const didPeerMethod = new DidPeerMethod();
       const didPeer = await didPeerMethod.generateMethod2();
-      await this.didRepository.createDidId(didPeer);
+
+      await encryptPrivateKeys(
+        didPeer,
+        this.secretPinNumber,
+        ['privateKeyV', 'privateKeyE'],
+        this.securityService,
+      );
+
+      const didDoc = sanitizeDidDoc(didPeer);
+
+      await this.didRepository.createDidId(didDoc);
+
+      const didIdentity =
+        await this.didRepository.getADidWithDecryptedPrivateKeys(
+          didDoc.did,
+          this.secretPinNumber,
+        );
+      if (!didIdentity) {
+        throw new Error('Failed to retrieve DID identity with decrypted keys');
+      }
 
       const resolver = new PeerDIDResolver();
-      const secrets = [didPeer.privateKeyE, didPeer.privateKeyV].filter(
-        (secret) => secret !== undefined,
+
+      const secrets = [
+        didIdentity.decryptedPrivateKeys['privateKeyE'],
+        didIdentity.decryptedPrivateKeys['privateKeyV'],
+      ].filter((secret) => secret !== undefined);
+
+      const privateKeySecrets = secrets.filter(
+        (secret): secret is PrivateKeyJWK =>
+          'id' in secret && 'type' in secret && 'privateKeyJwk' in secret,
       );
-      const updatedSecrets = this.prependDidToSecretIds(secrets, didPeer.did);
+
+      const updatedSecrets = this.prependDidToSecretIds(
+        privateKeySecrets,
+        didDoc.did,
+      );
 
       const secretsResolver = new DidcommSecretsResolver(updatedSecrets);
 
-      const mediationRequest = new Message({
+      const mediationRequest: IMessage = {
         id: uuidv4(),
         typ: MessageTyp.Didcomm,
         type: MessageType.MediationRequest,
         body: { messagesspecificattribute: 'and its value' },
-        from: didPeer.did,
+        from: didDoc.did,
         to: [didTo],
         created_time: Math.round(Date.now() / 1000),
         return_route: 'all',
-      });
+      };
 
-      const [packedMediationRequest] = await mediationRequest.pack_encrypted(
+      const message = new Message(mediationRequest);
+
+      const [packedMediationRequest] = await message.pack_encrypted(
         didTo,
-        didPeer.did,
-        didPeer.did,
+        didDoc.did,
+        didDoc.did,
         resolver,
         secretsResolver,
         { forward: false },
@@ -156,6 +191,7 @@ export class DidService {
       ) {
         throw new Error('Invalid mediator DID or service endpoint');
       }
+
       const mediatorEndpoint = mediatorDIDDoc.service[0].serviceEndpoint;
 
       const mediationResponse = await fetch(mediatorEndpoint.uri, {
@@ -169,6 +205,7 @@ export class DidService {
           `Failed to send Mediation Deny message: ${mediationResponse.statusText}`,
         );
       }
+
       const responseJson = await mediationResponse.json();
 
       const [unpackedMessage] = await Message.unpack(
@@ -187,8 +224,8 @@ export class DidService {
       }
 
       const mediatorRoutingKey = unpackedContent.body.routing_did;
-
       const mediatorNewDID = unpackedContent.from;
+
       if (!mediatorRoutingKey || !mediatorNewDID) {
         throw new Error('Mediation Response missing required fields');
       }
@@ -196,11 +233,22 @@ export class DidService {
       const newDid =
         await didPeerMethod.generateMethod2RoutingKey(mediatorRoutingKey);
 
+      // Store the DID generated using the mediator routing keys
+      await encryptPrivateKeys(
+        newDid,
+        this.secretPinNumber,
+        ['privateKeyV', 'privateKeyE'],
+        this.securityService,
+      );
+
+      const didDocNew = sanitizeDidDoc(newDid);
+      await this.didRepository.createDidId(didDocNew);
+
       // Call the new method to handle keylist update
       const updatedDid = await this.sendKeylistUpdate(
-        didPeer.did,
+        didDoc.did,
         mediatorNewDID,
-        newDid.did,
+        didDocNew.did,
         mediatorEndpoint.uri,
         resolver,
         secretsResolver,

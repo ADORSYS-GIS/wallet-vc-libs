@@ -41,6 +41,7 @@ export class MessagePickupService {
   public async receiveMessages(
     mediatorDid: string,
     aliceDidForMediator: string,
+    aliceMessagingDID: string,
   ): Promise<void> {
     const channel = MessagePickupEvent.MessagePickup;
     let response: ServiceResponse<string> = {
@@ -57,6 +58,7 @@ export class MessagePickupService {
         const message = await this.messagePickup.processDeliveryRequest(
           mediatorDid,
           aliceDidForMediator,
+          aliceMessagingDID,
         );
         response = {
           status: ServiceResponseStatus.Success,

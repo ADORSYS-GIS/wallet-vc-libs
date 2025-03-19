@@ -109,14 +109,17 @@ export class MessagePickup {
   public async processDeliveryRequest(
     mediatorDid: string,
     aliceDidForMediator: string,
+    aliceMessagingDID: string,
   ): Promise<string> {
-    const secrets = await this.retrieveSenderDidSecrets(aliceDidForMediator);
+    const secret1 = await this.retrieveSenderDidSecrets(aliceDidForMediator);
+    const secret2 = await this.retrieveSenderDidSecrets(aliceMessagingDID);
+    const secrets = [...secret1, ...secret2];
 
     const plainMessage: IMessage = {
       id: generateUuid(),
       typ: PLAIN_DIDCOMM_MESSAGE_TYPE,
       type: DELIVERY_REQUEST_TYPE_URI,
-      body: { limit: 1 },
+      body: { limit: 30 },
       from: aliceDidForMediator,
       to: [mediatorDid],
       created_time: Math.round(Date.now() / 1000),
@@ -162,19 +165,18 @@ export class MessagePickup {
     );
 
     const messageContent: IMessage = unpackedMessage.as_value();
-
     const packetMessages = messageContent.attachments; // Get all attachments
 
     // Check if packetMessages is defined and handle accordingly
     if (packetMessages && packetMessages.length > 0) {
       for (const packetMessage of packetMessages) {
-        let messageContent;
         let unpackedMsg;
 
         if ('base64' in packetMessage.data) {
           // If it's a base64 encoded string, decode it
           const base64Data = (packetMessage.data as Base64AttachmentData)
             .base64;
+
           const decodedMessage = JSON.parse(
             Buffer.from(base64Data, 'base64').toString('utf-8'),
           );
@@ -185,7 +187,6 @@ export class MessagePickup {
             secretsResolver,
             {},
           );
-          messageContent = unpackedMsg.as_value().body.content;
         } else {
           const responseJson = JSON.stringify(
             (packetMessage.data as JsonAttachmentData).json,
@@ -197,14 +198,17 @@ export class MessagePickup {
             secretsResolver,
             {},
           );
-          messageContent = unpackedMsg.as_value().body.content;
         }
+
+        const attachmentMessage = unpackedMsg.as_value();
+        const messageContent = attachmentMessage.body.content;
+        const senderDid = attachmentMessage.from ?? '';
 
         try {
           const persistedMessage = await this.persistMessage(
             messageContent,
-            mediatorDid,
-            aliceDidForMediator,
+            senderDid,
+            aliceMessagingDID,
             unpackedMsg as unknown as Message,
           );
           console.log(`Message ${persistedMessage.id} successfully persisted`);
@@ -295,7 +299,10 @@ export class MessagePickup {
   private async retrieveSenderDidSecrets(senderDid: string): Promise<Secret[]> {
     let privateKeys: DidIdentityWithDecryptedKeys | null;
     try {
-      privateKeys = await this.didRepository.getADidPrivateKeysMini(senderDid);
+      privateKeys = await this.didRepository.getADidWithDecryptedPrivateKeys(
+        senderDid,
+        this.secretPinNumber,
+      );
     } catch (e) {
       console.error(e);
       throw new Error(
@@ -353,7 +360,7 @@ export class MessagePickup {
       sender: senderDid,
       contactId: recipientDid,
       timestamp,
-      direction: 'out',
+      direction: 'in',
     };
 
     try {
