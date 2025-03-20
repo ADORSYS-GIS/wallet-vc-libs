@@ -7,6 +7,7 @@ tsconfig.json
 dist/**/*.tsbuildinfo
 tsconfig.spec.json
 tsconfig.lib.json
+eslint.config.mjs
 
 # Ignore source code and TypeScript files
 src/*
@@ -23,6 +24,7 @@ project.json
 jest.config.ts
 .eslintrc.json
 jest.setup.ts
+dist/src/tests
 
 # Ignore documentation files
 README.md
