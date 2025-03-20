@@ -7,7 +7,8 @@ A library for implementing services to support message exchange between DIDComm 
 | **Protocol**                                                                                       | **Description**                                        | **Status**             |
 | -------------------------------------------------------------------------------------------------- | ------------------------------------------------------ | ---------------------- |
 | [DIDComm Message Routing](https://identity.foundation/didcomm-messaging/spec/#routing-protocol-20) | Send a message to a DIDComm agent via their mediators. | ✅ Implemented         |
-| [Message Pickup](https://didcomm.org/messagepickup/3.0)                                            | Pick up messages from mediators.                       | 🚧 Not yet implemented |
+| [Message Pickup](https://didcomm.org/messagepickup/3.0)                                            | Pick up messages from mediators.                       | ✅ Implemented         |
+
 
 ## Installation
 
