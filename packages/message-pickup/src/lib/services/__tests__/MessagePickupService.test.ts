@@ -10,6 +10,7 @@ import {
   eventBus,
   mediatorDidTest,
   responseFromDeliveryRequest,
+  responseFromMessageReceived,
   responseFromStatusRequest,
   secretsTest,
   waitForEvent,
@@ -133,10 +134,13 @@ describe('MessagePickupService', () => {
     nock('https://mediator.socious.io')
       .post(/.*/)
       .once()
-      .reply(200, responseFromStatusRequest)
+      .reply(200, responseFromMessageReceived)
       .post(/.*/)
       .once()
-      .reply(200, responseFromDeliveryRequest);
+      .reply(200, responseFromDeliveryRequest)
+      .post(/.*/)
+      .once()
+      .reply(200, responseFromStatusRequest); // First request
 
     /// Act
     const channel = waitForEvent(MessagePickupEvent.MessagePickup);
