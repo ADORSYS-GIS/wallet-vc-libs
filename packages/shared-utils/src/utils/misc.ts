@@ -22,4 +22,4 @@ export function normalizeToArray<T>(val?: T | Array<T>): Array<T> {
   }
 
   return [val as T].filter((e) => e != null && e != undefined);
-} 
+}

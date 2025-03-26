@@ -15,10 +15,10 @@ import {
   generateUuid,
   isDIDCommMessagingServiceEndpoint,
   isHttpUrl,
-  normalizeToArray,
-  StableDIDResolver,
   StaticSecretsResolver,
 } from '../utils';
+
+import { normalizeToArray, StableDIDResolver } from '@adorsys-gis/shared-utils';
 import {
   BASIC_MESSAGE_TYPE_URI,
   DIDCOMM_MESSAGING_SERVICE_TYPE,

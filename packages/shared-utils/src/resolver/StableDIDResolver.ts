@@ -204,4 +204,4 @@ export class StableDIDResolver extends PeerDIDResolver {
 
     return this.peerDidDocPresetProfiles[matchingPresetKey];
   }
-} 
+}

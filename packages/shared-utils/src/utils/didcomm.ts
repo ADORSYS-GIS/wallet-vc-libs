@@ -12,4 +12,4 @@ export function isDIDCommMessagingServiceEndpoint(
     'uri' in arg &&
     arg.uri !== undefined
   );
-} 
+}
