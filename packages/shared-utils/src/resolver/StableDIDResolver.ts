@@ -1,8 +1,8 @@
 import { PeerDIDResolver } from 'did-resolver-lib';
 import type { DIDDoc, Service } from 'didcomm';
-import { DIDCOMM_MESSAGING_SERVICE_TYPE } from '../../protocols/types/constants';
-import { isDIDCommMessagingServiceEndpoint } from '../didcomm';
-import { normalizeToArray } from '../misc';
+import { DIDCOMM_MESSAGING_SERVICE_TYPE } from '../constants';
+import { isDIDCommMessagingServiceEndpoint } from '../utils/didcomm';
+import { normalizeToArray } from '../utils/misc';
 
 /**
  * Key ID profiles for did:peer resolution.
@@ -204,4 +204,4 @@ export class StableDIDResolver extends PeerDIDResolver {
 
     return this.peerDidDocPresetProfiles[matchingPresetKey];
   }
-}
+} 

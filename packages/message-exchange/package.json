@@ -22,7 +22,8 @@
     "cross-fetch": "^4.1.0",
     "did-resolver-lib": "https://gitpkg.vercel.app/adorsys/didcomm-messaging-clients-utilities/libs/did-resolver-lib?main",
     "didcomm": "^0.4.1",
-    "prettier": "^3.5.2"
+    "prettier": "^3.5.2",
+    "@adorsys-gis/shared-utils": "^1.0.0"
   },
   "devDependencies": {
     "@types/node": "*",
