@@ -64,7 +64,6 @@ describe('MessagePickupService', () => {
     vi.spyOn(didcomm.Message.prototype, 'pack_encrypted').mockImplementation(
       function (this: didcomm.Message) {
         const type = this.as_value().type;
-        console.log('Mocked pack_encrypted called with type:', type); // Debug log
         return Promise.resolve([
           `encrypted-${type}`,
           { to_kids: ['key-1'] },
@@ -328,24 +327,21 @@ describe('MessagePickupService', () => {
     console.log('Setting up nock for status-request');
     nock('https://mediator.socious.io')
       .post(/.*/, (body) => {
-        console.log('Status request body:', body);
-        return true; // Match any body
+        return true;
       })
       .reply(200, responseFromStatusRequest);
 
     console.log('Setting up nock for delivery-request');
     nock('https://mediator.socious.io')
       .post(/.*/, (body) => {
-        console.log('Delivery request body:', body);
-        return true; // Match any body
+        return true;
       })
       .reply(200, responseFromDeliveryRequest);
 
     console.log('Setting up nock for messages-received');
     nock('https://mediator.socious.io')
       .post(/.*/, (body) => {
-        console.log('Ack request body:', body);
-        return true; // Match any body
+        return true;
       })
       .reply(200, (uri, requestBody) => {
         const response = {
@@ -353,7 +349,6 @@ describe('MessagePickupService', () => {
           type: 'https://didcomm.org/messagepickup/3.0/status',
           body: { remaining: ['attach-1'] },
         };
-        console.log('Ack response sent:', response);
         return response;
       });
 
@@ -366,8 +361,6 @@ describe('MessagePickupService', () => {
       aliceMessagingDIDTest,
     );
     const eventData = await channel;
-
-    console.log('Event data received:', eventData);
 
     const actual = eventData as {
       status: ServiceResponseStatus;
