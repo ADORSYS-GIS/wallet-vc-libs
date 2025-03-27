@@ -1,5 +1,5 @@
-export { StableDIDResolver } from './resolver/StableDIDResolver';
 export { StaticSecretsResolver } from './resolver/StaticSecretsResolver';
+export { StableDIDResolver } from '@adorsys-gis/shared-utils';
 import type { JWKKeys as JWK } from '@adorsys-gis/multiple-did-identities';
 import { base58, base64urlnopad } from '@scure/base';
 import type { DIDCommMessagingService } from 'didcomm';
