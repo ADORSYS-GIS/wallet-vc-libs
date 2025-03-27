@@ -23,7 +23,7 @@
     "did-resolver-lib": "https://gitpkg.vercel.app/adorsys/didcomm-messaging-clients-utilities/libs/did-resolver-lib?main",
     "didcomm": "^0.4.1",
     "prettier": "^3.5.2",
-    "@adorsys-gis/shared-utils":  "workspace:*"
+    "@adorsys-gis/shared-utils":  "https://drive.google.com/uc?export=download&id=173y7txbfVtXveuToncOLYog_URZcXAty"
   },
   "devDependencies": {
     "@types/node": "*",
