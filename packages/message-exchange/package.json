@@ -17,13 +17,13 @@
     "@adorsys-gis/cloning-decorator": "^1.0.1",
     "@adorsys-gis/message-service": "^1.0.3",
     "@adorsys-gis/multiple-did-identities": "^1.0.7",
+    "@adorsys-gis/shared-utils": "*",
     "@adorsys-gis/status-service": "^1.0.0",
     "@scure/base": "^1.2.4",
     "cross-fetch": "^4.1.0",
     "did-resolver-lib": "https://gitpkg.vercel.app/adorsys/didcomm-messaging-clients-utilities/libs/did-resolver-lib?main",
     "didcomm": "^0.4.1",
-    "prettier": "^3.5.2",
-    "@adorsys-gis/shared-utils":  "https://drive.google.com/uc?export=download&id=173y7txbfVtXveuToncOLYog_URZcXAty"
+    "prettier": "^3.5.2"
   },
   "devDependencies": {
     "@types/node": "*",

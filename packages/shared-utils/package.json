@@ -2,8 +2,8 @@
   "name": "@adorsys-gis/shared-utils",
   "version": "1.0.0",
   "description": "Shared utilities used across packages",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "dist/src/index.js",
+  "types": "dist/src/index.d.ts",
   "scripts": {
     "build": "tsc",
     "format": "prettier --write .",
@@ -12,6 +12,8 @@
     "test": "vitest --run"
   },
   "dependencies": {
+    "@adorsys-gis/multiple-did-identities": "^1.0.7",
+    "@scure/base": "^1.2.4",
     "did-resolver-lib": "https://gitpkg.vercel.app/adorsys/didcomm-messaging-clients-utilities/libs/did-resolver-lib?main",
     "didcomm": "^0.4.1"
   },
