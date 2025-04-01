@@ -12,7 +12,9 @@ messageEmitter.on('error', (errorMessage: string, error?: Error) => {
 });
 
 messageEmitter.on('success', (successMessage: string) => {
-  console.log(`Success: ${successMessage}`);
+  if (process.env['NODE_ENV'] !== 'test') {
+    console.log(`Success: ${successMessage}`);
+  }
 });
 
 export function handleOOBInvitation(

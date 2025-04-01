@@ -13,7 +13,9 @@ describe('eventBus', () => {
 
   beforeAll(() => {
     callback1 = jest.fn((data) => {
-      console.log('Subscriber 1 received event1 with data:', data);
+      if (process.env['NODE_ENV'] !== 'test') {
+        console.log('Subscriber 1 received event1 with data:', data);
+      }
     });
     callback2 = jest.fn(async () => {
       await new Promise((resolve) => setTimeout(resolve, 1000));

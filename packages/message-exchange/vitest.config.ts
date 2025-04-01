@@ -7,6 +7,7 @@ export default defineConfig({
   test: {
     globals: true,
     setupFiles: ['vitest.setup.ts'],
+    silent: true,
     deps: {
       inline: ['didcomm'],
     },
