@@ -19,4 +19,4 @@ describe('misc utils', () => {
       expect(normalizeToArray(undefined)).toEqual([]);
     });
   });
-}); 
+});

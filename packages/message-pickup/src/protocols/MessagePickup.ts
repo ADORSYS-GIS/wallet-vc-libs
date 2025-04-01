@@ -151,7 +151,6 @@ export class MessagePickup {
     });
 
     const responseBody = await deliveryRequestResponse.text();
-
     if (!responseBody) {
       throw new Error('Response body is empty');
     }
@@ -165,22 +164,18 @@ export class MessagePickup {
     );
 
     const messageContent: IMessage = unpackedMessage.as_value();
-    const packetMessages = messageContent.attachments; // Get all attachments
+    const packetMessages = messageContent.attachments;
 
-    // Check if packetMessages is defined and handle accordingly
     if (packetMessages && packetMessages.length > 0) {
       for (const packetMessage of packetMessages) {
         let unpackedMsg;
 
         if ('base64' in packetMessage.data) {
-          // If it's a base64 encoded string, decode it
           const base64Data = (packetMessage.data as Base64AttachmentData)
             .base64;
-
           const decodedMessage = JSON.parse(
             Buffer.from(base64Data, 'base64').toString('utf-8'),
           );
-
           [unpackedMsg] = await Message.unpack(
             JSON.stringify(decodedMessage),
             resolver,
@@ -191,7 +186,6 @@ export class MessagePickup {
           const responseJson = JSON.stringify(
             (packetMessage.data as JsonAttachmentData).json,
           );
-
           [unpackedMsg] = await Message.unpack(
             responseJson,
             resolver,
@@ -204,36 +198,26 @@ export class MessagePickup {
         const messageContent = attachmentMessage.body.content;
         const senderDid = attachmentMessage.from ?? '';
 
-        try {
-          const persistedMessage = await this.persistMessage(
-            messageContent,
-            senderDid,
-            aliceMessagingDID,
-            unpackedMsg as unknown as Message,
-          );
-          console.log(`Message ${persistedMessage.id} successfully persisted`);
+        const persistedMessage = await this.persistMessage(
+          messageContent,
+          senderDid,
+          aliceMessagingDID,
+          unpackedMsg as unknown as Message,
+        );
+        console.log(`Message ${persistedMessage.id} successfully persisted`);
 
-          try {
-            await this.ackMessageReceived(
-              mediatorDid,
-              aliceDidForMediator,
-              packetMessage.id as string,
-              resolver,
-              secretsResolver,
-              mediatorEndpoint.uri,
-            );
-            console.log(
-              `Acknowledgment for message ${persistedMessage.id} sent successfully.`,
-            );
-          } catch (error) {
-            console.error(
-              `Failed to send acknowledgment for message ${persistedMessage.id}:`,
-              error,
-            );
-          }
-        } catch (e) {
-          console.error('Error processing packet messages', e);
-        }
+        console.log(`Acknowledging message with ID: ${packetMessage.id}`);
+        await this.ackMessageReceived(
+          mediatorDid,
+          aliceDidForMediator,
+          packetMessage.id as string,
+          resolver,
+          secretsResolver,
+          mediatorEndpoint.uri,
+        );
+        console.log(
+          `Acknowledgment for message ${persistedMessage.id} sent successfully.`,
+        );
       }
     } else {
       return 'No new messages';
@@ -261,7 +245,6 @@ export class MessagePickup {
     };
 
     const ackMessageRequest = new Message(ackMessage);
-
     const [packedAckMessage] = await ackMessageRequest.pack_encrypted(
       mediatorDid,
       aliceDidForMediator,
@@ -271,28 +254,35 @@ export class MessagePickup {
       { forward: false },
     );
 
-    try {
-      const ackMessageResponse = await fetch(mediatorEndpoint, {
-        method: 'POST',
-        headers: { 'Content-Type': ENCRYPTED_DIDCOMM_MESSAGE_TYPE },
-        body: packedAckMessage,
-      });
-      const responseBody = await ackMessageResponse.text();
+    const ackMessageResponse = await fetch(mediatorEndpoint, {
+      method: 'POST',
+      headers: { 'Content-Type': ENCRYPTED_DIDCOMM_MESSAGE_TYPE },
+      body: packedAckMessage,
+    });
 
-      if (!responseBody) {
-        throw new Error('Response body is empty');
-      }
+    const responseBody = await ackMessageResponse.text();
+    if (!responseBody) {
+      throw new Error('Response body is empty');
+    }
 
-      const responseJson = JSON.parse(responseBody);
-      const [unpackedMessage] = await Message.unpack(
-        JSON.stringify(responseJson),
-        resolver,
-        secretsResolver,
-        {},
+    const responseJson = JSON.parse(responseBody);
+    const [unpackedMessage] = await Message.unpack(
+      JSON.stringify(responseJson),
+      resolver,
+      secretsResolver,
+      {},
+    );
+
+    const response = unpackedMessage.as_value();
+
+    // Check if the mediator confirmed deletion
+    if (
+      response.type !== 'https://didcomm.org/messagepickup/3.0/status' ||
+      (response.body.remaining && response.body.remaining.includes(msgId))
+    ) {
+      throw new Error(
+        `Mediator did not delete message ${msgId}. Response: ${JSON.stringify(response)}`,
       );
-      return unpackedMessage.as_value().body.message_id_list;
-    } catch (error) {
-      console.error('Error sending acknowledgment:', error);
     }
   }
 

@@ -9,4 +9,7 @@ export { DIDCOMM_MESSAGING_SERVICE_TYPE } from './constants';
 
 // Export utilities
 export { normalizeToArray } from './utils/misc';
-export { isDIDCommMessagingServiceEndpoint, jwkToPublicKeyBase58 } from './utils/didcomm';
+export {
+  isDIDCommMessagingServiceEndpoint,
+  jwkToPublicKeyBase58,
+} from './utils/didcomm';

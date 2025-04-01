@@ -7,8 +7,5 @@
     "types": ["node"]
   },
   "include": ["src", "**/*config.ts", "**/*setup.ts"],
-  "exclude": ["src/**/*.spec.ts", "src/**/*.test.ts", "src/**/__tests__"],
-  "references": [
-    { "path": "../shared-utils" }
-  ]
+  "exclude": ["src/**/*.spec.ts", "src/**/*.test.ts", "src/**/__tests__"]
 }

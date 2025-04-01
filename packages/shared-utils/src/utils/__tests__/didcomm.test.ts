@@ -62,4 +62,4 @@ describe('utils (didcomm)', () => {
       );
     });
   });
-}); 
+});

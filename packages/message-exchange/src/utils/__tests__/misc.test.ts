@@ -1,9 +1,5 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import {
-  currentTimestampInSecs,
-  generateUuid,
-  isHttpUrl,
-} from '../misc';
+import { currentTimestampInSecs, generateUuid, isHttpUrl } from '../misc';
 
 describe('utils (misc)', () => {
   describe('generateUuid', () => {

@@ -23,6 +23,8 @@
   "devDependencies": {
     "eslint": "*",
     "vitest": "^3.0.4",
-    "prettier": "^3.5.2"
+    "prettier": "^3.5.2",
+    "@typescript-eslint/eslint-plugin": "*",
+    "@typescript-eslint/parser": "*"
   }
 }

@@ -1,13 +1,17 @@
 import { describe, expect, test, it } from 'vitest';
 import { DIDCOMM_MESSAGING_SERVICE_TYPE } from '../../constants';
-import { StableDIDResolver, PeerDIDResolverProfile } from '../StableDIDResolver';
+import {
+  StableDIDResolver,
+  PeerDIDResolverProfile,
+} from '../StableDIDResolver';
 import type { DIDDoc } from 'didcomm';
 
 describe('StableDIDResolver', () => {
   const resolver = new StableDIDResolver();
 
   test('should resolve DIDs with default profile', async () => {
-    const did = 'did:peer:2.Ez6LSsecNaN6QsJEbozUdkyLz6Yq31ehKNUi1wguWopKeXCXN.Vz6MksGYNRHbQY7cSUE7C4JFrGyc19XZXgyqsYxZt9ijszYtj.SeyJpZCI6Im5ldy1pZCIsInQiOiJkbSIsInMiOlt7InVyaSI6ImRpZDpwZWVyOjIuRXo2TFNkWVdieDlQSGY1cGF1cWlTTVhvekNTRHFhblN0N0hyWVlReVk5UW9Cekg1Ui5WejZNa3ZTaHNtTTFZc1BRVHJzWHNSUkU1RzlRY2s5Zm5nTk05RnpOOVdiZGc5dTQ1LlNleUpwWkNJNkltNWxkeTFwWkNJc0luUWlPaUprYlNJc0luTWlPaUpvZEhSd2N6b3ZMMjFsWkdsaGRHOXlMbkp2YjNSemFXUXVZMnh2ZFdRaUxDSmhJanBiSW1ScFpHTnZiVzB2ZGpJaVhYMCJ9XSwiYSI6WyJkaWRjb21tL3YyIl19';
+    const did =
+      'did:peer:2.Ez6LSsecNaN6QsJEbozUdkyLz6Yq31ehKNUi1wguWopKeXCXN.Vz6MksGYNRHbQY7cSUE7C4JFrGyc19XZXgyqsYxZt9ijszYtj.SeyJpZCI6Im5ldy1pZCIsInQiOiJkbSIsInMiOlt7InVyaSI6ImRpZDpwZWVyOjIuRXo2TFNkWVdieDlQSGY1cGF1cWlTTVhvekNTRHFhblN0N0hyWVlReVk5UW9Cekg1Ui5WejZNa3ZTaHNtTTFZc1BRVHJzWHNSUkU1RzlRY2s5Zm5nTk05RnpOOVdiZGc5dTQ1LlNleUpwWkNJNkltNWxkeTFwWkNJc0luUWlPaUprYlNJc0luTWlPaUpvZEhSd2N6b3ZMMjFsWkdsaGRHOXlMbkp2YjNSemFXUXVZMnh2ZFdRaUxDSmhJanBiSW1ScFpHTnZiVzB2ZGpJaVhYMCJ9XSwiYSI6WyJkaWRjb21tL3YyIl19';
     const diddoc = await resolver.resolve(did);
 
     expect(diddoc).toBeTruthy();
@@ -15,7 +19,8 @@ describe('StableDIDResolver', () => {
   });
 
   test('should normalize DIDComm messaging services', async () => {
-    const did = 'did:peer:2.Ez6LSsecNaN6QsJEbozUdkyLz6Yq31ehKNUi1wguWopKeXCXN.Vz6MksGYNRHbQY7cSUE7C4JFrGyc19XZXgyqsYxZt9ijszYtj.SeyJpZCI6Im5ldy1pZCIsInQiOiJkbSIsInMiOlt7InVyaSI6ImRpZDpwZWVyOjIuRXo2TFNkWVdieDlQSGY1cGF1cWlTTVhvekNTRHFhblN0N0hyWVlReVk5UW9Cekg1Ui5WejZNa3ZTaHNtTTFZc1BRVHJzWHNSUkU1RzlRY2s5Zm5nTk05RnpOOVdiZGc5dTQ1LlNleUpwWkNJNkltNWxkeTFwWkNJc0luUWlPaUprYlNJc0luTWlPaUpvZEhSd2N6b3ZMMjFsWkdsaGRHOXlMbkp2YjNSemFXUXVZMnh2ZFdRaUxDSmhJanBiSW1ScFpHTnZiVzB2ZGpJaVhYMCJ9XSwiYSI6WyJkaWRjb21tL3YyIl19';
+    const did =
+      'did:peer:2.Ez6LSsecNaN6QsJEbozUdkyLz6Yq31ehKNUi1wguWopKeXCXN.Vz6MksGYNRHbQY7cSUE7C4JFrGyc19XZXgyqsYxZt9ijszYtj.SeyJpZCI6Im5ldy1pZCIsInQiOiJkbSIsInMiOlt7InVyaSI6ImRpZDpwZWVyOjIuRXo2TFNkWVdieDlQSGY1cGF1cWlTTVhvekNTRHFhblN0N0hyWVlReVk5UW9Cekg1Ui5WejZNa3ZTaHNtTTFZc1BRVHJzWHNSUkU1RzlRY2s5Zm5nTk05RnpOOVdiZGc5dTQ1LlNleUpwWkNJNkltNWxkeTFwWkNJc0luUWlPaUprYlNJc0luTWlPaUpvZEhSd2N6b3ZMMjFsWkdsaGRHOXlMbkp2YjNSemFXUXVZMnh2ZFdRaUxDSmhJanBiSW1ScFpHTnZiVzB2ZGpJaVhYMCJ9XSwiYSI6WyJkaWRjb21tL3YyIl19';
     const diddoc = await resolver.resolve(did);
 
     const messagingServices = diddoc?.service.filter(
@@ -30,8 +35,9 @@ describe('StableDIDResolver', () => {
   });
 
   test('should enforce RootsID profile when detected', async () => {
-    const did = 'did:peer:2.Ez6LSsecNaN6QsJEbozUdkyLz6Yq31ehKNUi1wguWopKeXCXN.Vz6MksGYNRHbQY7cSUE7C4JFrGyc19XZXgyqsYxZt9ijszYtj.SeyJpZCI6Im5ldy1pZCIsInQiOiJkbSIsInMiOlt7InVyaSI6ImRpZDpwZWVyOjIuRXo2TFNkWVdieDlQSGY1cGF1cWlTTVhvekNTRHFhblN0N0hyWVlReVk5UW9Cekg1Ui5WejZNa3ZTaHNtTTFZc1BRVHJzWHNSUkU1RzlRY2s5Zm5nTk05RnpOOVdiZGc5dTQ1LlNleUpwWkNJNkltNWxkeTFwWkNJc0luUWlPaUprYlNJc0luTWlPaUpvZEhSd2N6b3ZMMjFsWkdsaGRHOXlMbkp2YjNSemFXUXVZMnh2ZFdRaUxDSmhJanBiSW1ScFpHTnZiVzB2ZGpJaVhYMCJ9XSwiYSI6WyJkaWRjb21tL3YyIl19';
-    
+    const did =
+      'did:peer:2.Ez6LSsecNaN6QsJEbozUdkyLz6Yq31ehKNUi1wguWopKeXCXN.Vz6MksGYNRHbQY7cSUE7C4JFrGyc19XZXgyqsYxZt9ijszYtj.SeyJpZCI6Im5ldy1pZCIsInQiOiJkbSIsInMiOlt7InVyaSI6ImRpZDpwZWVyOjIuRXo2TFNkWVdieDlQSGY1cGF1cWlTTVhvekNTRHFhblN0N0hyWVlReVk5UW9Cekg1Ui5WejZNa3ZTaHNtTTFZc1BRVHJzWHNSUkU1RzlRY2s5Zm5nTk05RnpOOVdiZGc5dTQ1LlNleUpwWkNJNkltNWxkeTFwWkNJc0luUWlPaUprYlNJc0luTWlPaUpvZEhSd2N6b3ZMMjFsWkdsaGRHOXlMbkp2YjNSemFXUXVZMnh2ZFdRaUxDSmhJanBiSW1ScFpHTnZiVzB2ZGpJaVhYMCJ9XSwiYSI6WyJkaWRjb21tL3YyIl19';
+
     // Create a custom resolver that returns a DID document with RootsID service
     class CustomResolver extends StableDIDResolver {
       override async resolve(did: string): Promise<DIDDoc | null> {
@@ -54,12 +60,17 @@ describe('StableDIDResolver', () => {
 
     const customResolver = new CustomResolver();
     const newResolver = await customResolver.enforceProfileForParty(did);
-    expect(newResolver.getPeerDidResolverProfile()).toBe(PeerDIDResolverProfile.RootsID);
+    expect(newResolver.getPeerDidResolverProfile()).toBe(
+      PeerDIDResolverProfile.RootsID,
+    );
   });
 
   test('should convert key IDs to RootsID format when using RootsID profile', async () => {
-    const rootsidResolver = new StableDIDResolver(PeerDIDResolverProfile.RootsID);
-    const did = 'did:peer:2.Ez6LSsecNaN6QsJEbozUdkyLz6Yq31ehKNUi1wguWopKeXCXN.Vz6MksGYNRHbQY7cSUE7C4JFrGyc19XZXgyqsYxZt9ijszYtj.SeyJpZCI6Im5ldy1pZCIsInQiOiJkbSIsInMiOlt7InVyaSI6ImRpZDpwZWVyOjIuRXo2TFNkWVdieDlQSGY1cGF1cWlTTVhvekNTRHFhblN0N0hyWVlReVk5UW9Cekg1Ui5WejZNa3ZTaHNtTTFZc1BRVHJzWHNSUkU1RzlRY2s5Zm5nTk05RnpOOVdiZGc5dTQ1LlNleUpwWkNJNkltNWxkeTFwWkNJc0luUWlPaUprYlNJc0luTWlPaUpvZEhSd2N6b3ZMMjFsWkdsaGRHOXlMbkp2YjNSemFXUXVZMnh2ZFdRaUxDSmhJanBiSW1ScFpHTnZiVzB2ZGpJaVhYMCJ9XSwiYSI6WyJkaWRjb21tL3YyIl19';
+    const rootsidResolver = new StableDIDResolver(
+      PeerDIDResolverProfile.RootsID,
+    );
+    const did =
+      'did:peer:2.Ez6LSsecNaN6QsJEbozUdkyLz6Yq31ehKNUi1wguWopKeXCXN.Vz6MksGYNRHbQY7cSUE7C4JFrGyc19XZXgyqsYxZt9ijszYtj.SeyJpZCI6Im5ldy1pZCIsInQiOiJkbSIsInMiOlt7InVyaSI6ImRpZDpwZWVyOjIuRXo2TFNkWVdieDlQSGY1cGF1cWlTTVhvekNTRHFhblN0N0hyWVlReVk5UW9Cekg1Ui5WejZNa3ZTaHNtTTFZc1BRVHJzWHNSUkU1RzlRY2s5Zm5nTk05RnpOOVdiZGc5dTQ1LlNleUpwWkNJNkltNWxkeTFwWkNJc0luUWlPaUprYlNJc0luTWlPaUpvZEhSd2N6b3ZMMjFsWkdsaGRHOXlMbkp2YjNSemFXUXVZMnh2ZFdRaUxDSmhJanBiSW1ScFpHTnZiVzB2ZGpJaVhYMCJ9XSwiYSI6WyJkaWRjb21tL3YyIl19';
     const diddoc = await rootsidResolver.resolve(did);
 
     expect(diddoc).toBeTruthy();
@@ -86,11 +97,10 @@ describe('StableDIDResolver', () => {
   });
 
   test('should fail if unable to autocorrect structure', async () => {
-    const did = 'did:peer:2.Ez6LSsecNaN6QsJEbozUdkyLz6Yq31ehKNUi1wguWopKeXCXN.Vz6MksGYNRHbQY7cSUE7C4JFrGyc19XZXgyqsYxZt9ijszYtj.SeyJpZCI6Im5ldy1pZCIsInQiOiJkbSIsInMiOjEyMzR9';
-    await expect(
-      async () => await resolver.resolve(did),
-    ).rejects.toThrowError(
+    const did =
+      'did:peer:2.Ez6LSsecNaN6QsJEbozUdkyLz6Yq31ehKNUi1wguWopKeXCXN.Vz6MksGYNRHbQY7cSUE7C4JFrGyc19XZXgyqsYxZt9ijszYtj.SeyJpZCI6Im5ldy1pZCIsInQiOiJkbSIsInMiOjEyMzR9';
+    await expect(async () => await resolver.resolve(did)).rejects.toThrowError(
       'Failed to autocorrect malformed DIDCommMessaging service endpoint',
     );
   });
-}); 
+});

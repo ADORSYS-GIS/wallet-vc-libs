@@ -4,7 +4,9 @@
     "module": "esnext",
     "outDir": "./dist",
     "moduleResolution": "node",
-    "types": ["node"]
+    "types": ["node"],
+    "rootDir": "./src",
+    "composite": false
   },
   "include": ["src", "**/*config.ts", "**/*setup.ts"],
   "exclude": ["src/**/*.spec.ts", "src/**/*.test.ts", "src/**/__tests__"]
