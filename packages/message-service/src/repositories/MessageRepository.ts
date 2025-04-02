@@ -45,9 +45,6 @@ export class MessageRepository {
       message.id,
     );
     if (existingMessage) {
-      console.log(
-        `Message with ID ${message.id} already exists, skipping insert.`,
-      );
       return existingMessage.value;
     }
     await this.storage.insert(objectStorename, { value: message });

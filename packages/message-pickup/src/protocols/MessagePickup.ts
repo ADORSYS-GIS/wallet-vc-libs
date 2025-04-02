@@ -198,15 +198,13 @@ export class MessagePickup {
         const messageContent = attachmentMessage.body.content;
         const senderDid = attachmentMessage.from ?? '';
 
-        const persistedMessage = await this.persistMessage(
+        await this.persistMessage(
           messageContent,
           senderDid,
           aliceMessagingDID,
           unpackedMsg as unknown as Message,
         );
-        console.log(`Message ${persistedMessage.id} successfully persisted`);
 
-        console.log(`Acknowledging message with ID: ${packetMessage.id}`);
         await this.ackMessageReceived(
           mediatorDid,
           aliceDidForMediator,
@@ -214,9 +212,6 @@ export class MessagePickup {
           resolver,
           secretsResolver,
           mediatorEndpoint.uri,
-        );
-        console.log(
-          `Acknowledgment for message ${persistedMessage.id} sent successfully.`,
         );
       }
     } else {
@@ -293,8 +288,7 @@ export class MessagePickup {
         senderDid,
         this.secretPinNumber,
       );
-    } catch (e) {
-      console.error(e);
+    } catch {
       throw new Error(
         'Repository failure while retrieving private keys for senderDid',
       );
@@ -355,9 +349,8 @@ export class MessagePickup {
 
     try {
       return await this.messageRepository.create(messageModel);
-    } catch (error) {
-      console.error('Error processing packet messages', error);
-      throw error; // or return an error message if preferred
+    } catch {
+      throw Error; // or return an error message if preferred
     }
   }
 }

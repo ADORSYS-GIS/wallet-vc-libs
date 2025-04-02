@@ -324,21 +324,18 @@ describe('MessagePickupService', () => {
       direction: 'in',
     });
 
-    console.log('Setting up nock for status-request');
     nock('https://mediator.socious.io')
       .post(/.*/, (body) => {
         return true;
       })
       .reply(200, responseFromStatusRequest);
 
-    console.log('Setting up nock for delivery-request');
     nock('https://mediator.socious.io')
       .post(/.*/, (body) => {
         return true;
       })
       .reply(200, responseFromDeliveryRequest);
 
-    console.log('Setting up nock for messages-received');
     nock('https://mediator.socious.io')
       .post(/.*/, (body) => {
         return true;
@@ -354,7 +351,6 @@ describe('MessagePickupService', () => {
 
     const channel = waitForEvent(MessagePickupEvent.MessagePickup);
 
-    console.log('Calling receiveMessages');
     await messagePickupService.receiveMessages(
       mediatorDidTest,
       aliceDidTest,

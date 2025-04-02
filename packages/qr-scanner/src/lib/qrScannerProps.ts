@@ -36,7 +36,6 @@ export interface IQrScannerProps<T = unknown> {
    *   <div style={{ width: "50vw" }}>
    *     <QrCodeScanner
    *       onResult={(result) => {
-   *         console.log(result);
    *       }}
    *     >
    *       {(videoElement) => (

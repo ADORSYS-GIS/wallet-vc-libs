@@ -93,7 +93,6 @@ export class MessageRouter {
     );
 
     // Log and return persisted message
-    console.log(`Message ${persistedMessage.id} successfully routed`);
     return persistedMessage;
   }
 
@@ -173,8 +172,7 @@ export class MessageRouter {
       );
 
       return packedMessage;
-    } catch (e) {
-      console.error(String(e));
+    } catch {
       throw new Error('Forward message packing failed');
     }
   }
@@ -246,8 +244,7 @@ export class MessageRouter {
         senderDid,
         this.secretPinNumber,
       );
-    } catch (e) {
-      console.error(e);
+    } catch {
       throw new Error(
         'Repository failure while retrieving private keys for senderDid',
       );

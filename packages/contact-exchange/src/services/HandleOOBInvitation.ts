@@ -11,12 +11,6 @@ messageEmitter.on('error', (errorMessage: string, error?: Error) => {
   logError(error || new Error('Unknown error'), errorMessage);
 });
 
-messageEmitter.on('success', (successMessage: string) => {
-  if (process.env['NODE_ENV'] !== 'test') {
-    console.log(`Success: ${successMessage}`);
-  }
-});
-
 export function handleOOBInvitation(
   wallet: Wallet,
   invitation: OutOfBandInvitation | string,
