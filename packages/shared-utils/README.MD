@@ -5,18 +5,18 @@ A utility library providing common functionality for working with DIDs (Decentra
 ## Keywords
 
 ```
-did, didcomm, decentralized-identity, verifiable-credentials, peer-did, did-resolution, 
-identity-management, cryptography, public-key, jwk, base58, messaging, utilities, 
+did, didcomm, decentralized-identity, verifiable-credentials, peer-did, did-resolution,
+identity-management, cryptography, public-key, jwk, base58, messaging, utilities,
 typescript, wallet, vc, verifiable-credentials-wallet
 ```
 
 ## Features
 
-| **Category**      | **Description**                                                                 | **Status**     |
-|-------------------|---------------------------------------------------------------------------------|----------------|
-| DID Resolution   | Provides a stable DID resolver implementation for peer DIDs                      | ✅ Implemented |
-| DIDComm Utils    | Helper functions for working with DIDComm messaging endpoints and key conversion | ✅ Implemented |
-| General Utils    | Common utility functions for array normalization and other operations            | ✅ Implemented |
+| **Category**   | **Description**                                                                  | **Status**     |
+| -------------- | -------------------------------------------------------------------------------- | -------------- |
+| DID Resolution | Provides a stable DID resolver implementation for peer DIDs                      | ✅ Implemented |
+| DIDComm Utils  | Helper functions for working with DIDComm messaging endpoints and key conversion | ✅ Implemented |
+| General Utils  | Common utility functions for array normalization and other operations            | ✅ Implemented |
 
 ## Installation
 
@@ -31,7 +31,10 @@ npm install @adorsys-gis/shared-utils
 The package provides a `StableDIDResolver` for resolving peer DIDs:
 
 ```ts
-import { StableDIDResolver, PeerDIDResolverProfile } from '@adorsys-gis/shared-utils';
+import {
+  StableDIDResolver,
+  PeerDIDResolverProfile,
+} from '@adorsys-gis/shared-utils';
 
 const resolver = new StableDIDResolver();
 const didDocument = await resolver.resolve('did:peer:2...');
@@ -42,9 +45,9 @@ const didDocument = await resolver.resolve('did:peer:2...');
 Helper functions for working with DIDComm messaging:
 
 ```ts
-import { 
+import {
   isDIDCommMessagingServiceEndpoint,
-  jwkToPublicKeyBase58 
+  jwkToPublicKeyBase58,
 } from '@adorsys-gis/shared-utils';
 
 // Check if an endpoint is a valid DIDComm messaging service
@@ -80,6 +83,7 @@ The library includes comprehensive tests for all its functionality, ensuring rel
 ## Integration
 
 This package is designed to work seamlessly with other packages in the wallet-vc-libs ecosystem, particularly:
+
 - message-exchange
 - message-service
 - multiple-did-identities
@@ -87,6 +91,7 @@ This package is designed to work seamlessly with other packages in the wallet-vc
 ## Contributing
 
 When contributing to this package, ensure that:
+
 1. All new utilities are properly typed
 2. Unit tests are provided for new functionality
 3. Documentation is updated to reflect any changes
