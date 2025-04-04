@@ -11,10 +11,6 @@ messageEmitter.on('error', (errorMessage: string, error?: Error) => {
   logError(error || new Error('Unknown error'), errorMessage);
 });
 
-messageEmitter.on('success', (successMessage: string) => {
-  console.log(`Success: ${successMessage}`);
-});
-
 export function handleOOBInvitation(
   wallet: Wallet,
   invitation: OutOfBandInvitation | string,

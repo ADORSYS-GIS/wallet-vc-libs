@@ -12,7 +12,4 @@ export function logError(error: Error, context: string): void {
     stack: error.stack,
     context,
   };
-
-  // Log to the console
-  console.error(`[Error] ${context}:`, errorDetails);
 }

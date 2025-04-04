@@ -12,9 +12,7 @@ describe('eventBus', () => {
   let callback1: jest.Func, callback2: jest.Func;
 
   beforeAll(() => {
-    callback1 = jest.fn((data) => {
-      console.log('Subscriber 1 received event1 with data:', data);
-    });
+    callback1 = jest.fn((data) => {});
     callback2 = jest.fn(async () => {
       await new Promise((resolve) => setTimeout(resolve, 1000));
       eventBus.emit(Events.AsyncComplete);

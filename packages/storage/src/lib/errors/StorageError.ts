@@ -11,9 +11,6 @@ export class StorageError extends Error {
    */
   constructor(message: string, context?: MethodNames) {
     const errorMessage = `StorageError: ${message}`;
-    if (context)
-      console.log(`Error occurred in method <${context}>\n ${errorMessage}`);
-
     super(errorMessage);
     this.name = `StorageError`;
   }

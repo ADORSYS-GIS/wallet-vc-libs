@@ -24,7 +24,6 @@ export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
         video.videoWidth === 0 ||
         video.videoHeight === 0
       ) {
-        console.log('Video not ready yet');
         return;
       }
 
@@ -35,7 +34,6 @@ export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
       context.drawImage(video, 0, 0, canvas.width, canvas.height);
 
       if (canvas.width === 0 || canvas.height === 0) {
-        console.log('Canvas not ready yet');
         return;
       }
 
@@ -47,25 +45,21 @@ export function QrScanner<T = unknown>(props: IQrScannerProps<T>) {
           canvas.height,
         );
         if (imageData.data.length === 0) {
-          console.log('Image data not ready yet');
           return;
         }
         const code = jsQR(imageData.data, canvas.width, canvas.height);
         if (code) {
           try {
-            console.log('QR code data:', code.data);
             const data = decodeURIComponent(code.data);
             props.onResult(data, code);
-          } catch (error: unknown) {
+          } catch {
             setError('Failed to parse QR data');
-            console.error(error);
           }
         } /*else {
           setError('QR code not found');
         }*/
-      } catch (error: unknown) {
+      } catch {
         setError('Error decoding QR code');
-        console.error(error);
       }
     }
   }, [props]);
