@@ -1,6 +1,6 @@
 {
   "name": "@adorsys-gis/shared-utils",
-  "version": "1.0.0",
+  "version": "1.0.2",
   "description": "Shared utilities used across packages",
   "keywords": [
     "did",
@@ -35,10 +35,10 @@
     "typescript": "^5.7.3"
   },
   "devDependencies": {
-    "eslint": "*",
-    "vitest": "^3.0.4",
-    "prettier": "^3.5.2",
     "@typescript-eslint/eslint-plugin": "*",
-    "@typescript-eslint/parser": "*"
+    "@typescript-eslint/parser": "*",
+    "eslint": "*",
+    "prettier": "^3.5.2",
+    "vitest": "^3.0.4"
   }
 }
