@@ -7,7 +7,7 @@ import { sanitizeDidDoc } from '@adorsys-gis/multiple-did-identities/src/utils/s
 import type { ServiceResponse } from '@adorsys-gis/status-service';
 import { ServiceResponseStatus } from '@adorsys-gis/status-service';
 import fetch from 'cross-fetch';
-import { PeerDIDResolver } from 'did-resolver-lib';
+import { PeerDIDResolver } from '@adorsys-gis/did-resolver-lib';
 import type { IMessage, Secret, SecretsResolver } from 'didcomm';
 import { Message } from 'didcomm';
 import type { EventEmitter } from 'eventemitter3';
