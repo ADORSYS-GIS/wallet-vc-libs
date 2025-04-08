@@ -1,6 +1,6 @@
 {
   "name": "@adorsys-gis/shared-utils",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Shared utilities used across packages",
   "keywords": [
     "did",
@@ -26,19 +26,19 @@
     "test": "vitest --run"
   },
   "dependencies": {
+    "@adorsys-gis/did-resolver-lib": "^1.0.1",
     "@adorsys-gis/multiple-did-identities": "^1.0.7",
     "@scure/base": "^1.2.4",
-    "did-resolver-lib": "https://gitpkg.vercel.app/adorsys/didcomm-messaging-clients-utilities/libs/did-resolver-lib?main",
     "didcomm": "^0.4.1"
   },
   "peerDependencies": {
     "typescript": "^5.7.3"
   },
   "devDependencies": {
-    "eslint": "*",
-    "vitest": "^3.0.4",
-    "prettier": "^3.5.2",
     "@typescript-eslint/eslint-plugin": "*",
-    "@typescript-eslint/parser": "*"
+    "@typescript-eslint/parser": "*",
+    "eslint": "*",
+    "prettier": "^3.5.2",
+    "vitest": "^3.0.4"
   }
 }

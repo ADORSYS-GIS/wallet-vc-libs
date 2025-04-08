@@ -1,4 +1,4 @@
-import { PeerDIDResolver } from 'did-resolver-lib';
+import { PeerDIDResolver } from '@adorsys-gis/did-resolver-lib';
 import type { DIDDoc, Service } from 'didcomm';
 import { DIDCOMM_MESSAGING_SERVICE_TYPE } from '../constants';
 import { isDIDCommMessagingServiceEndpoint } from '../utils/didcomm';
