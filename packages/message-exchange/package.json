@@ -1,13 +1,13 @@
 {
   "name": "@adorsys-gis/message-exchange",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "A library for DIDComm message routing.",
   "license": "ISC",
   "author": "adorsys",
   "main": "dist/src/index.js",
   "typings": "dist/src/index.d.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "tsc -p tsconfig.lib.json",
     "format": "prettier --write .",
     "lint": "eslint . --no-error-on-unmatched-pattern",
     "lint:fix": "eslint . --fix",

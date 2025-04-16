@@ -7,7 +7,7 @@ import type {
   DidRepository,
   PrivateKeyJWK,
 } from '@adorsys-gis/multiple-did-identities';
-import { fetch } from 'cross-fetch';
+import fetch from 'cross-fetch';
 import type { DIDCommMessagingService, Secret } from 'didcomm';
 import { Message } from 'didcomm';
 import {
