@@ -7,6 +7,7 @@ import type {
   DidRepository,
   PrivateKeyJWK,
 } from '@adorsys-gis/multiple-did-identities';
+import fetch from 'cross-fetch';
 import type { DIDCommMessagingService, Secret } from 'didcomm';
 import { Message } from 'didcomm';
 import {
@@ -185,7 +186,7 @@ export class MessageRouter {
   ): Promise<void> {
     for (const mediatorEndpointUri of mediatorEndpointUris) {
       try {
-        const response = await window.fetch(mediatorEndpointUri, {
+        const response = await fetch(mediatorEndpointUri, {
           method: 'POST',
           headers: { 'Content-Type': ENCRYPTED_DIDCOMM_MESSAGE_TYPE },
           body: packedMessage,
